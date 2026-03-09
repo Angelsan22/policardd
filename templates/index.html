@@ -1,55 +1,247 @@
 {% extends 'base.html' %}
+{% block title %}PoliCard — Inicio{% endblock %}
+
+{% block extra_styles %}
+<style>
+.hero {
+    background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+    border-radius: var(--radio-lg);
+    padding: 4rem 3rem;
+    color: var(--blanco);
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: rgba(186,200,177,0.12);
+}
+.hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 40%;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(186,200,177,0.08);
+}
+.hero-content { position: relative; z-index: 1; max-width: 600px; }
+.hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3rem;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    color: var(--blanco);
+}
+.hero p {
+    font-size: 1.1rem;
+    color: var(--verde-claro);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+.hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+.hero-ctas .btn-hero-primary {
+    background: var(--blanco);
+    color: var(--verde-oscuro);
+    font-weight: 700;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.95rem;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+}
+.hero-ctas .btn-hero-primary:hover { background: var(--beige); }
+.hero-ctas .btn-hero-outline {
+    border: 2px solid rgba(255,255,255,0.4);
+    color: var(--blanco);
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.95rem;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+}
+.hero-ctas .btn-hero-outline:hover { border-color: var(--blanco); background: rgba(255,255,255,0.08); }
+.hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(186,200,177,0.2);
+    border: 1px solid rgba(186,200,177,0.3);
+    color: var(--verde-claro);
+    padding: 0.3rem 0.9rem;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Feature grid */
+.feature-card {
+    background: var(--blanco);
+    border-radius: var(--radio-lg);
+    padding: 2rem;
+    box-shadow: var(--sombra);
+    transition: all 0.25s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+.feature-card:hover {
+    box-shadow: var(--sombra-lg);
+    transform: translateY(-3px);
+}
+.feature-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: 1.1rem;
+}
+.feature-card h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    color: var(--verde-oscuro);
+    margin-bottom: 0.4rem;
+}
+.feature-card p {
+    font-size: 0.88rem;
+    color: var(--verde-medio);
+    line-height: 1.55;
+    margin-bottom: 1.2rem;
+}
+.feature-link {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: inline-flex; align-items: center; gap: 5px;
+}
+
+/* Stats row */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+@media (max-width: 768px) {
+    .stats-row { grid-template-columns: repeat(2,1fr); }
+    .hero { padding: 2.5rem 1.75rem; }
+    .hero h1 { font-size: 2.1rem; }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="text-center mb-12">
-<h1 class="text-5xl font-bold text-blue-600 mb-4 flex items-center justify-center">
-    Bienvenido a PoliCard 
-    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="PoliCard Logo" class="h-24 ml-3">
-</h1>
-    <p class="text-xl text-gray-600">Tu guía completa para entender el mundo de las tarjetas de crédito</p>
-</div>
-
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
-        <div class="text-center mb-4"><i class="fas fa-credit-card text-6xl text-blue-600"></i></div>
-        <h3 class="text-xl font-bold mb-2 text-center">Explora Tarjetas</h3>
-        <p class="text-gray-600 mb-4 text-center">Conoce las mejores tarjetas para jóvenes</p>
-        <a href="/tarjetas" class="block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Ver tarjetas</a>
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge"><i class="fas fa-leaf"></i> Finanzas para jóvenes</div>
+        <h1>Encuentra la tarjeta de crédito ideal para ti</h1>
+        <p>Compara, aprende y decide con confianza. PoliCard te guía en el mundo de las tarjetas de crédito con información clara y sin letra pequeña.</p>
+        <div class="hero-ctas">
+            <a href="/buscar" class="btn-hero-primary"><i class="fas fa-search"></i> Buscar mi tarjeta</a>
+            <a href="/educacion" class="btn-hero-outline"><i class="fas fa-graduation-cap"></i> Aprender finanzas</a>
+        </div>
     </div>
+</section>
 
-    <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
-        <div class="text-center mb-4"><i class="fas fa-search text-6xl text-green-600"></i></div>
-        <h3 class="text-xl font-bold mb-2 text-center">Busca tu Tarjeta</h3>
-        <p class="text-gray-600 mb-4 text-center">Encuentra la tarjeta perfecta para ti</p>
-        <a href="/buscar" class="block text-center bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Buscar</a>
+<!-- STATS -->
+<div class="stats-row">
+    <div class="stat-box">
+        <span class="stat-label">Tarjetas</span>
+        <span class="stat-value">12+</span>
     </div>
-
-    <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
-        <div class="text-center mb-4"><i class="fas fa-graduation-cap text-6xl text-purple-600"></i></div>
-        <h3 class="text-xl font-bold mb-2 text-center">Aprende</h3>
-        <p class="text-gray-600 mb-4 text-center">Educación financiera básica</p>
-        <a href="/educacion" class="block text-center bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Aprender</a>
+    <div class="stat-box">
+        <span class="stat-label">Bancos</span>
+        <span class="stat-value">6</span>
     </div>
-
-    <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
-        <div class="text-center mb-4"><i class="fas fa-calculator text-6xl text-orange-600"></i></div>
-        <h3 class="text-xl font-bold mb-2 text-center">Calcula</h3>
-        <p class="text-gray-600 mb-4 text-center">Calculadora de intereses</p>
-        <a href="/calculadora" class="block text-center bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">Calcular</a>
+    <div class="stat-box">
+        <span class="stat-label">CAT mínimo</span>
+        <span class="stat-value">35%</span>
     </div>
-
-    <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
-        <div class="text-center mb-4"><i class="fas fa-chart-line text-6xl text-red-600"></i></div>
-        <h3 class="text-xl font-bold mb-2 text-center">Compara</h3>
-        <p class="text-gray-600 mb-4 text-center">Compara diferentes tarjetas</p>
-        <a href="/tarjetas" class="block text-center bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Comparar</a>
-    </div>
-
-    <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
-        <div class="text-center mb-4"><i class="fas fa-info-circle text-6xl text-indigo-600"></i></div>
-        <h3 class="text-xl font-bold mb-2 text-center">Información</h3>
-        <p class="text-gray-600 mb-4 text-center">Términos importantes</p>
-        <a href="/educacion" class="block text-center bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Ver más</a>
+    <div class="stat-box">
+        <span class="stat-label">Sin anualidad</span>
+        <span class="stat-value">50%</span>
     </div>
 </div>
+
+<!-- FEATURES -->
+<h2 class="section-title">¿Qué puedes hacer en PoliCard?</h2>
+<p class="section-subtitle">Todo lo que necesitas para tomar decisiones financieras informadas</p>
+
+<div class="grid-3" style="margin-bottom: 3rem;">
+    <a href="/tarjetas" class="feature-card">
+        <div class="feature-icon" style="background:#e8f0e9; color: var(--verde-oscuro);">
+            <i class="fas fa-credit-card"></i>
+        </div>
+        <h3>Explorar Tarjetas</h3>
+        <p>Catálogo completo de tarjetas para jóvenes y estudiantes con sus características detalladas.</p>
+        <span class="feature-link" style="color: var(--verde-oscuro);">Ver catálogo <i class="fas fa-arrow-right"></i></span>
+    </a>
+
+    <a href="/buscar" class="feature-card">
+        <div class="feature-icon" style="background: #d4edda; color: #276339;">
+            <i class="fas fa-sliders-h"></i>
+        </div>
+        <h3>Buscar y Filtrar</h3>
+        <p>Filtra por tipo, anualidad, CAT y edad mínima para encontrar la tarjeta perfecta para tu perfil.</p>
+        <span class="feature-link" style="color: #276339;">Buscar ahora <i class="fas fa-arrow-right"></i></span>
+    </a>
+
+    <a href="/calculadora" class="feature-card">
+        <div class="feature-icon" style="background: var(--beige); color: #7a5c3a;">
+            <i class="fas fa-calculator"></i>
+        </div>
+        <h3>Calculadora CAT</h3>
+        <p>Calcula cuánto pagarás de intereses y comprende el verdadero costo de tu crédito.</p>
+        <span class="feature-link" style="color: #7a5c3a;">Calcular <i class="fas fa-arrow-right"></i></span>
+    </a>
+
+    <a href="/educacion" class="feature-card">
+        <div class="feature-icon" style="background: #e8f0e9; color: var(--verde-medio);">
+            <i class="fas fa-graduation-cap"></i>
+        </div>
+        <h3>Educación Financiera</h3>
+        <p>Aprende qué es el CAT, cómo funciona el crédito y cómo manejar bien tu tarjeta.</p>
+        <span class="feature-link" style="color: var(--verde-medio);">Aprender <i class="fas fa-arrow-right"></i></span>
+    </a>
+
+    <a href="/tarjetas" class="feature-card">
+        <div class="feature-icon" style="background: #fdebd0; color: #a0522d;">
+            <i class="fas fa-balance-scale"></i>
+        </div>
+        <h3>Comparar Tarjetas</h3>
+        <p>Pon a competir las tarjetas lado a lado y elige la que más te conviene según tu situación.</p>
+        <span class="feature-link" style="color: #a0522d;">Comparar <i class="fas fa-arrow-right"></i></span>
+    </a>
+
+    <a href="/educacion" class="feature-card">
+        <div class="feature-icon" style="background: var(--gris-claro); color: var(--texto-oscuro);">
+            <i class="fas fa-book-open"></i>
+        </div>
+        <h3>Glosario Financiero</h3>
+        <p>Términos explicados de forma sencilla: CAT, tasa de interés, anualidad, cashback y más.</p>
+        <span class="feature-link" style="color: var(--texto-oscuro);">Ver glosario <i class="fas fa-arrow-right"></i></span>
+    </a>
+</div>
+
+<!-- REGISTRO BANCO CTA -->
+{% if not session.get('usuario_id') %}
+<div style="background: var(--verde-oscuro); border-radius: var(--radio-lg); padding: 2.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
+    <div>
+        <h3 style="font-family: 'DM Serif Display', serif; color: var(--blanco); font-size: 1.5rem; margin-bottom: 0.4rem;">¿Representas a un banco?</h3>
+        <p style="color: var(--verde-claro); font-size: 0.95rem;">Registra tu institución y gestiona tus tarjetas en nuestra plataforma.</p>
+    </div>
+    <a href="/registro_banco" class="btn btn-secondary btn-lg">
+        <i class="fas fa-building"></i> Registrar banco
+    </a>
+</div>
+{% endif %}
+
 {% endblock %}

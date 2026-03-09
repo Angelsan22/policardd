@@ -1,40 +1,214 @@
 {% extends 'base.html' %}
+{% block title %}Catálogo de Tarjetas — PoliCard{% endblock %}
+
+{% block extra_styles %}
+<style>
+.tarjeta-card {
+    background: var(--blanco);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra);
+    overflow: hidden;
+    transition: all 0.25s;
+    display: flex;
+    flex-direction: column;
+}
+.tarjeta-card:hover { box-shadow: var(--sombra-lg); transform: translateY(-3px); }
+
+.tarjeta-header {
+    padding: 1.4rem 1.5rem 1.2rem;
+    position: relative;
+}
+.tarjeta-header h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    color: var(--blanco);
+    margin-bottom: 0.15rem;
+}
+.tarjeta-header .banco-name { font-size: 0.82rem; opacity: 0.85; color: var(--blanco); }
+.tarjeta-header .card-chip {
+    position: absolute;
+    top: 1.2rem; right: 1.4rem;
+    width: 32px; height: 24px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.tarjeta-body { padding: 1.4rem 1.5rem; flex: 1; }
+.tarjeta-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--gris-claro);
+    font-size: 0.9rem;
+}
+.tarjeta-stat:last-of-type { border-bottom: none; }
+.tarjeta-stat .label { color: var(--verde-medio); display: flex; align-items: center; gap: 7px; }
+.tarjeta-stat .value { font-weight: 700; color: var(--verde-oscuro); }
+.beneficios-box {
+    margin-top: 1rem;
+    background: var(--beige);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    font-size: 0.83rem;
+    color: var(--texto-medio);
+    line-height: 1.5;
+}
+
+/* Colores por banco */
+.grad-bbva      { background: linear-gradient(135deg, #004A97, #1565C0); }
+.grad-santander { background: linear-gradient(135deg, #CC0000, #E53935); }
+.grad-banamex   { background: linear-gradient(135deg, #B8860B, #D4A017); }
+.grad-hsbc      { background: linear-gradient(135deg, #DB0011, #B71C1C); }
+.grad-banorte   { background: linear-gradient(135deg, #E65100, #EF6C00); }
+.grad-nu        { background: linear-gradient(135deg, #5C068C, #7B1FA2); }
+.grad-default   { background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio)); }
+
+/* Filter bar */
+.filter-bar {
+    background: var(--blanco);
+    border-radius: var(--radio-lg);
+    padding: 1.25rem 1.5rem;
+    box-shadow: var(--sombra);
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+.filter-bar .form-group { margin-bottom: 0; flex: 1; min-width: 150px; }
+</style>
+{% endblock %}
 
 {% block content %}
-<h1 class="text-4xl font-bold text-center mb-8 text-blue-600"><i class="fas fa-credit-card mr-2"></i>Catálogo de Tarjetas</h1>
+<div style="margin-bottom: 2rem;">
+    <h1 class="section-title"><i class="fas fa-credit-card" style="color: var(--verde-salvia); margin-right: 0.5rem;"></i>Catálogo de Tarjetas</h1>
+    <p class="section-subtitle">Compara todas las opciones disponibles para jóvenes y estudiantes</p>
+</div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- FILTROS RÁPIDOS -->
+<div class="filter-bar">
+    <div class="form-group">
+        <label>Filtrar por tipo</label>
+        <select class="form-control" id="filtroTipo" onchange="filtrarTarjetas()">
+            <option value="">Todos los tipos</option>
+            <option value="estudiante">Estudiante</option>
+            <option value="joven">Joven</option>
+            <option value="clasica">Clásica</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Anualidad</label>
+        <select class="form-control" id="filtroAnualidad" onchange="filtrarTarjetas()">
+            <option value="">Todas</option>
+            <option value="gratis">Sin anualidad</option>
+            <option value="con">Con anualidad</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Ordenar por</label>
+        <select class="form-control" id="filtroOrden" onchange="filtrarTarjetas()">
+            <option value="">Predeterminado</option>
+            <option value="cat_asc">Menor CAT</option>
+            <option value="cat_desc">Mayor CAT</option>
+            <option value="anualidad_asc">Menor anualidad</option>
+        </select>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="limpiarFiltros()">
+        <i class="fas fa-undo"></i> Limpiar
+    </button>
+</div>
+
+<!-- GRID TARJETAS -->
+<div class="grid-auto" id="tarjetasGrid">
     {% for tarjeta in tarjetas %}
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
-        <div class="bg-gradient-to-r from-blue-500 to-blue-700 text-white p-4">
-            <h3 class="text-xl font-bold">{{ tarjeta.nombre }}</h3>
-            <p class="text-blue-100">{{ tarjeta.banco }}</p>
+    {% set banco_nombre = tarjeta.banco.nombre_banco if tarjeta.banco else '' %}
+    {% set grad_class = 'grad-' + banco_nombre.lower() if banco_nombre.lower() in ['bbva','santander','banamex','hsbc','banorte','nu'] else 'grad-default' %}
+    <div class="tarjeta-card"
+         data-tipo="{{ tarjeta.tipo }}"
+         data-anualidad="{{ tarjeta.anualidad }}"
+         data-cat="{{ tarjeta.cat }}">
+        <div class="tarjeta-header {{ grad_class }}">
+            <div class="card-chip"></div>
+            <h3>{{ tarjeta.nombre }}</h3>
+            <div class="banco-name">{{ banco_nombre }}</div>
         </div>
-        <div class="p-6">
-            <span class="inline-block bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-semibold mb-4">
-                {{ tarjeta.tipo|capitalize }}
-            </span>
-            
-            <div class="space-y-3 mb-4">
-                <div class="flex justify-between">
-                    <span class="text-gray-600"><i class="fas fa-percentage mr-2"></i>CAT:</span>
-                    <span class="font-bold text-lg">{{ tarjeta.cat }}%</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-600"><i class="fas fa-dollar-sign mr-2"></i>Anualidad:</span>
-                    <span class="font-bold">{% if tarjeta.anualidad == 0 %}<span class="text-green-600">GRATIS</span>{% else %}${{ tarjeta.anualidad|int }}{% endif %}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-600"><i class="fas fa-user-clock mr-2"></i>Edad mínima:</span>
-                    <span class="font-bold">{{ tarjeta.edad_minima }} años</span>
-                </div>
+        <div class="tarjeta-body">
+            <div style="margin-bottom: 0.8rem;">
+                {% if tarjeta.tipo == 'estudiante' %}
+                    <span class="badge badge-estudiante"><i class="fas fa-user-graduate" style="margin-right:4px;"></i>Estudiante</span>
+                {% elif tarjeta.tipo == 'joven' %}
+                    <span class="badge badge-joven"><i class="fas fa-star" style="margin-right:4px;"></i>Joven</span>
+                {% else %}
+                    <span class="badge badge-clasica"><i class="fas fa-credit-card" style="margin-right:4px;"></i>Clásica</span>
+                {% endif %}
             </div>
 
-            <div class="bg-gray-50 p-3 rounded">
-                <p class="text-sm text-gray-700"><i class="fas fa-gift text-purple-600 mr-2"></i><strong>Beneficios:</strong> {{ tarjeta.beneficios }}</p>
+            <div class="tarjeta-stat">
+                <span class="label"><i class="fas fa-percentage"></i> CAT Anual</span>
+                <span class="value">{{ tarjeta.cat }}%</span>
+            </div>
+            <div class="tarjeta-stat">
+                <span class="label"><i class="fas fa-dollar-sign"></i> Anualidad</span>
+                <span class="value">
+                    {% if tarjeta.anualidad == 0 %}
+                        <span class="text-success">GRATIS</span>
+                    {% else %}
+                        ${{ tarjeta.anualidad|int }}
+                    {% endif %}
+                </span>
+            </div>
+            <div class="tarjeta-stat">
+                <span class="label"><i class="fas fa-user-clock"></i> Edad mínima</span>
+                <span class="value">{{ tarjeta.edad_minima }} años</span>
+            </div>
+
+            <div class="beneficios-box">
+                <i class="fas fa-gift" style="color: var(--verde-salvia); margin-right: 5px;"></i>
+                {{ tarjeta.beneficios }}
             </div>
         </div>
     </div>
+    {% else %}
+    <div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--verde-medio);">
+        <i class="fas fa-credit-card" style="font-size: 3rem; margin-bottom: 1rem; display: block; opacity: 0.4;"></i>
+        <p>No hay tarjetas disponibles por el momento.</p>
+    </div>
     {% endfor %}
 </div>
+
+<script>
+function filtrarTarjetas() {
+    const tipo = document.getElementById('filtroTipo').value;
+    const anualidad = document.getElementById('filtroAnualidad').value;
+    const orden = document.getElementById('filtroOrden').value;
+    const cards = Array.from(document.querySelectorAll('#tarjetasGrid .tarjeta-card'));
+
+    cards.forEach(c => {
+        let show = true;
+        if (tipo && c.dataset.tipo !== tipo) show = false;
+        if (anualidad === 'gratis' && parseFloat(c.dataset.anualidad) !== 0) show = false;
+        if (anualidad === 'con' && parseFloat(c.dataset.anualidad) === 0) show = false;
+        c.style.display = show ? '' : 'none';
+    });
+
+    if (orden) {
+        const grid = document.getElementById('tarjetasGrid');
+        const visible = cards.filter(c => c.style.display !== 'none');
+        visible.sort((a, b) => {
+            if (orden === 'cat_asc') return parseFloat(a.dataset.cat) - parseFloat(b.dataset.cat);
+            if (orden === 'cat_desc') return parseFloat(b.dataset.cat) - parseFloat(a.dataset.cat);
+            if (orden === 'anualidad_asc') return parseFloat(a.dataset.anualidad) - parseFloat(b.dataset.anualidad);
+        });
+        visible.forEach(c => grid.appendChild(c));
+    }
+}
+function limpiarFiltros() {
+    document.getElementById('filtroTipo').value = '';
+    document.getElementById('filtroAnualidad').value = '';
+    document.getElementById('filtroOrden').value = '';
+    document.querySelectorAll('#tarjetasGrid .tarjeta-card').forEach(c => c.style.display = '');
+}
+</script>
 {% endblock %}

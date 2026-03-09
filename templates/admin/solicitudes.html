@@ -1,143 +1,193 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% block title %}Solicitudes — Admin PoliCard{% endblock %}
 
-{% block title %}Solicitudes Pendientes - PoliCard{% endblock %}
+{% block extra_styles %}
+<style>
+.page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;
+}
+.solicitud-card {
+    background: var(--blanco);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra);
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+    transition: box-shadow 0.2s;
+}
+.solicitud-card:hover { box-shadow: var(--sombra-lg); }
+.solicitud-header {
+    padding: 1.1rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;
+}
+.solicitud-header .sh-left { display: flex; align-items: center; gap: 1rem; }
+.solicitud-header .sh-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; color: var(--blanco); flex-shrink: 0;
+}
+.solicitud-header h3 { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--blanco); margin-bottom: 0.1rem; }
+.solicitud-header .sh-sub { font-size: 0.82rem; color: rgba(255,255,255,0.8); }
+.badge-pending {
+    background: #fef9e7; color: #9a6e00;
+    border: 1px solid #f9d978;
+    padding: 0.3rem 0.85rem; border-radius: 99px;
+    font-size: 0.75rem; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 5px;
+}
+.solicitud-body { padding: 1.5rem; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+@media (max-width: 640px) { .info-grid { grid-template-columns: 1fr; } }
+.info-section h4 {
+    font-size: 0.78rem; font-weight: 700; color: var(--verde-medio);
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;
+}
+.info-row { display: flex; gap: 0.5rem; font-size: 0.875rem; margin-bottom: 0.5rem; }
+.info-row .ir-label { color: var(--verde-medio); font-weight: 600; min-width: 90px; flex-shrink: 0; }
+.info-row .ir-val { color: var(--texto-oscuro); }
+.meta-box { background: var(--beige); border-radius: var(--radio); padding: 1rem; }
+.meta-item { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; font-size: 0.85rem; }
+.meta-item:last-child { margin-bottom: 0; }
+.meta-item .mi-icon { width: 30px; height: 30px; background: var(--blanco); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--verde-medio); flex-shrink: 0; font-size: 0.85rem; }
+.meta-item .mi-label { font-size: 0.72rem; color: var(--verde-medio); text-transform: uppercase; letter-spacing: 0.04em; }
+.meta-item .mi-val { font-weight: 600; color: var(--verde-oscuro); font-size: 0.85rem; }
+.actions-row { border-top: 2px solid var(--gris-claro); padding-top: 1.25rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.empty-state { background: var(--blanco); border-radius: var(--radio-lg); padding: 4rem; text-align: center; box-shadow: var(--sombra); }
+.empty-state i { font-size: 3rem; color: var(--verde-salvia); display: block; margin-bottom: 1rem; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="mb-8">
-    <div class="flex items-center justify-between">
-        <h1 class="text-4xl font-bold text-gray-800">
-            <i class="fas fa-bell text-yellow-600 mr-3"></i>Solicitudes Pendientes
-        </h1>
-        <a href="{{ url_for('admin_dashboard') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition">
-            <i class="fas fa-arrow-left mr-2"></i>Volver al Dashboard
-        </a>
+<div class="page-header">
+    <div>
+        <h1 class="section-title"><i class="fas fa-tasks" style="color:var(--verde-salvia); margin-right:0.5rem;"></i>Solicitudes Pendientes</h1>
+        <p class="section-subtitle">Revisa y aprueba solicitudes de bancos y tarjetas</p>
     </div>
+    <a href="/admin/dashboard" class="btn btn-outline btn-sm">
+        <i class="fas fa-arrow-left"></i> Volver al panel
+    </a>
 </div>
 
-{% if solicitudes|length == 0 %}
-    <div class="bg-white rounded-2xl shadow-lg p-12 text-center">
-        <i class="fas fa-check-circle text-8xl text-green-500 mb-6"></i>
-        <h2 class="text-3xl font-bold text-gray-800 mb-4">¡Todo al día!</h2>
-        <p class="text-gray-600 text-lg">No hay solicitudes pendientes por revisar</p>
-    </div>
-{% else %}
-    <div class="space-y-6">
-        {% for solicitud in solicitudes %}
-        <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 {% if solicitud.tipo_solicitud == 'banco' %}border-blue-500{% else %}border-green-500{% endif %}">
-            <div class="flex items-start justify-between">
-                <div class="flex-1">
-                    <div class="flex items-center gap-3 mb-4">
-                        <span class="px-4 py-2 rounded-full text-sm font-semibold {% if solicitud.tipo_solicitud == 'banco' %}bg-blue-100 text-blue-700{% else %}bg-green-100 text-green-700{% endif %}">
-                            <i class="fas fa-{% if solicitud.tipo_solicitud == 'banco' %}building{% else %}credit-card{% endif %} mr-2"></i>
-                            {{ solicitud.tipo_solicitud|upper }}
-                        </span>
-                        <span class="text-gray-500 text-sm">
-                            <i class="fas fa-calendar-alt mr-1"></i>
-                            {{ solicitud.fecha_solicitud.strftime('%d/%m/%Y %H:%M') }}
-                        </span>
-                    </div>
+{% if solicitudes %}
+    {% for solicitud in solicitudes %}
+    <div class="solicitud-card">
+        <div class="solicitud-header" style="background: linear-gradient(135deg, {% if solicitud.tipo_solicitud == 'banco' %}var(--verde-oscuro), var(--verde-medio){% else %}var(--verde-salvia), #5d7a4a{% endif %});">
+            <div class="sh-left">
+                <div class="sh-icon">
+                    <i class="fas fa-{% if solicitud.tipo_solicitud == 'banco' %}building{% else %}credit-card{% endif %}"></i>
+                </div>
+                <div>
+                    <h3>Solicitud de {{ solicitud.tipo_solicitud|capitalize }}</h3>
+                    <div class="sh-sub">{{ solicitud.banco.nombre_banco }}</div>
+                </div>
+            </div>
+            <span class="badge-pending"><i class="fas fa-clock"></i> Pendiente</span>
+        </div>
 
+        <div class="solicitud-body">
+            <div class="info-grid">
+                <div class="info-section">
+                    <h4>Detalles</h4>
                     {% if solicitud.tipo_solicitud == 'banco' %}
-                        <h3 class="text-2xl font-bold text-gray-800 mb-2">
-                            {{ solicitud.banco.nombre_banco }}
-                        </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                            <div>
-                                <p class="text-sm text-gray-600"><strong>Contacto:</strong> {{ solicitud.banco.usuario.nombre }}</p>
-                                <p class="text-sm text-gray-600"><strong>Email:</strong> {{ solicitud.banco.usuario.email }}</p>
-                                <p class="text-sm text-gray-600"><strong>Teléfono:</strong> {{ solicitud.banco.telefono }}</p>
-                            </div>
-                            <div>
-                                {% if solicitud.banco.sitio_web %}
-                                    <p class="text-sm text-gray-600"><strong>Sitio Web:</strong> 
-                                        <a href="{{ solicitud.banco.sitio_web }}" target="_blank" class="text-blue-600 hover:underline">
-                                            {{ solicitud.banco.sitio_web }}
-                                        </a>
-                                    </p>
-                                {% endif %}
-                                {% if solicitud.banco.descripcion %}
-                                    <p class="text-sm text-gray-600 mt-2"><strong>Descripción:</strong><br>{{ solicitud.banco.descripcion }}</p>
-                                {% endif %}
-                            </div>
-                        </div>
+                        {% set bi = solicitud.banco %}
+                        <div class="info-row"><span class="ir-label">Banco</span><span class="ir-val">{{ bi.nombre_banco }}</span></div>
+                        <div class="info-row"><span class="ir-label">Contacto</span><span class="ir-val">{{ bi.usuario.nombre }}</span></div>
+                        <div class="info-row"><span class="ir-label">Email</span><span class="ir-val">{{ bi.usuario.email }}</span></div>
+                        <div class="info-row"><span class="ir-label">Teléfono</span><span class="ir-val">{{ bi.telefono or 'N/A' }}</span></div>
+                        {% if bi.sitio_web %}
+                        <div class="info-row"><span class="ir-label">Sitio web</span><span class="ir-val"><a href="{{ bi.sitio_web }}" target="_blank" style="color:var(--verde-salvia);">Ver sitio <i class="fas fa-external-link-alt" style="font-size:0.7rem;"></i></a></span></div>
+                        {% endif %}
+                        {% if bi.descripcion %}
+                        <div style="margin-top:0.75rem; background:var(--beige); border-radius:10px; padding:0.85rem; font-size:0.83rem; color:var(--texto-medio);">{{ bi.descripcion }}</div>
+                        {% endif %}
                     {% else %}
-                        {% set tarjeta = solicitud.banco.tarjetas|selectattr('id', 'equalto', solicitud.referencia_id)|first %}
-                        {% if tarjeta %}
-                            <h3 class="text-2xl font-bold text-gray-800 mb-2">
-                                {{ tarjeta.nombre }}
-                            </h3>
-                            <p class="text-gray-600 mb-3">Banco: <strong>{{ solicitud.banco.nombre_banco }}</strong></p>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                                <div class="bg-gray-50 p-3 rounded-lg">
-                                    <p class="text-xs text-gray-600 mb-1">Tipo</p>
-                                    <p class="font-semibold text-gray-800">{{ tarjeta.tipo|capitalize }}</p>
-                                </div>
-                                <div class="bg-gray-50 p-3 rounded-lg">
-                                    <p class="text-xs text-gray-600 mb-1">CAT</p>
-                                    <p class="font-semibold text-gray-800">{{ tarjeta.cat }}%</p>
-                                </div>
-                                <div class="bg-gray-50 p-3 rounded-lg">
-                                    <p class="text-xs text-gray-600 mb-1">Anualidad</p>
-                                    <p class="font-semibold text-gray-800">${{ tarjeta.anualidad }}</p>
-                                </div>
-                                <div class="bg-gray-50 p-3 rounded-lg">
-                                    <p class="text-xs text-gray-600 mb-1">Edad Mínima</p>
-                                    <p class="font-semibold text-gray-800">{{ tarjeta.edad_minima }} años</p>
-                                </div>
-                            </div>
-                            {% if tarjeta.beneficios %}
-                                <div class="mt-4 p-4 bg-blue-50 rounded-lg">
-                                    <p class="text-sm font-semibold text-gray-700 mb-2">Beneficios:</p>
-                                    <p class="text-sm text-gray-600">{{ tarjeta.beneficios }}</p>
-                                </div>
-                            {% endif %}
+                        {% set tarjeta = namespace() %}
+                        {% for t in solicitud.banco.tarjetas %}
+                            {% if t.id == solicitud.referencia_id %}{% set tarjeta.info = t %}{% endif %}
+                        {% endfor %}
+                        {% if tarjeta.info %}
+                        <div class="info-row"><span class="ir-label">Tarjeta</span><span class="ir-val fw-bold">{{ tarjeta.info.nombre }}</span></div>
+                        <div class="info-row"><span class="ir-label">Banco</span><span class="ir-val">{{ solicitud.banco.nombre_banco }}</span></div>
+                        <div class="info-row"><span class="ir-label">Tipo</span><span class="ir-val"><span class="badge badge-{{ tarjeta.info.tipo }}">{{ tarjeta.info.tipo|capitalize }}</span></span></div>
+                        <div class="info-row"><span class="ir-label">CAT</span><span class="ir-val fw-bold">{{ tarjeta.info.cat }}%</span></div>
+                        <div class="info-row"><span class="ir-label">Anualidad</span><span class="ir-val">{% if tarjeta.info.anualidad == 0 %}<span class="text-success fw-bold">GRATIS</span>{% else %}${{ tarjeta.info.anualidad|int }}{% endif %}</span></div>
+                        <div class="info-row"><span class="ir-label">Edad mín.</span><span class="ir-val">{{ tarjeta.info.edad_minima }} años</span></div>
+                        {% if tarjeta.info.beneficios %}
+                        <div style="margin-top:0.75rem; background:var(--beige); border-radius:10px; padding:0.85rem; font-size:0.83rem; color:var(--texto-medio);"><i class="fas fa-gift" style="color:var(--verde-salvia); margin-right:5px;"></i>{{ tarjeta.info.beneficios }}</div>
+                        {% endif %}
                         {% endif %}
                     {% endif %}
                 </div>
 
-                <div class="flex flex-col gap-2 ml-6">
-                    <form method="POST" action="{{ url_for('aprobar_solicitud', id=solicitud.id) }}" onsubmit="return confirm('¿Aprobar esta solicitud?')">
-                        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition shadow-lg font-semibold whitespace-nowrap">
-                            <i class="fas fa-check mr-2"></i>Aprobar
-                        </button>
-                    </form>
-                    
-                    <button onclick="rechazarSolicitud({{ solicitud.id }})" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg transition shadow-lg font-semibold whitespace-nowrap">
-                        <i class="fas fa-times mr-2"></i>Rechazar
-                    </button>
+                <div class="info-section">
+                    <h4>Información adicional</h4>
+                    <div class="meta-box">
+                        <div class="meta-item">
+                            <div class="mi-icon"><i class="fas fa-calendar"></i></div>
+                            <div><div class="mi-label">Fecha de solicitud</div><div class="mi-val">{{ solicitud.fecha_solicitud.strftime('%d/%m/%Y %H:%M') }}</div></div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="mi-icon"><i class="fas fa-hashtag"></i></div>
+                            <div><div class="mi-label">ID Solicitud</div><div class="mi-val">#{{ solicitud.id }}</div></div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="mi-icon"><i class="fas fa-tag"></i></div>
+                            <div><div class="mi-label">Tipo</div><div class="mi-val">{{ solicitud.tipo_solicitud|capitalize }}</div></div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <div class="actions-row">
+                <form method="POST" action="{{ url_for('aprobar_solicitud', id=solicitud.id) }}" style="flex:1; min-width:180px;">
+                    <button type="submit" onclick="return confirm('¿Aprobar esta solicitud?')" class="btn btn-secondary btn-full">
+                        <i class="fas fa-check-circle"></i> Aprobar solicitud
+                    </button>
+                </form>
+                <button onclick="mostrarRechazo({{ solicitud.id }})" class="btn btn-danger" style="flex:1; min-width:180px; justify-content:center;">
+                    <i class="fas fa-times-circle"></i> Rechazar solicitud
+                </button>
+            </div>
         </div>
-        {% endfor %}
     </div>
+    {% endfor %}
+
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-check-circle"></i>
+    <h3 style="font-family:'DM Serif Display',serif; color:var(--verde-oscuro); font-size:1.5rem; margin-bottom:0.5rem;">¡Todo al día!</h3>
+    <p style="color:var(--verde-medio);">No hay solicitudes pendientes por el momento.</p>
+    <a href="/admin/dashboard" class="btn btn-primary mt-3">Volver al panel</a>
+</div>
 {% endif %}
 
+<!-- Modal rechazo -->
+<div id="modalRechazo" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:var(--blanco); border-radius:var(--radio-lg); padding:2rem; width:100%; max-width:440px; margin:1rem;">
+        <h3 style="font-family:'DM Serif Display',serif; color:var(--verde-oscuro); margin-bottom:0.5rem;">Rechazar solicitud</h3>
+        <p style="color:var(--verde-medio); font-size:0.88rem; margin-bottom:1.25rem;">Escribe el motivo del rechazo (opcional)</p>
+        <form id="formRechazo" method="POST">
+            <div class="form-group">
+                <label>Comentario</label>
+                <textarea name="comentario" class="form-control" rows="3" placeholder="Motivo del rechazo..."></textarea>
+            </div>
+            <div style="display:flex; gap:0.75rem; margin-top:1rem;">
+                <button type="submit" class="btn btn-danger" style="flex:1; justify-content:center;">Rechazar</button>
+                <button type="button" onclick="cerrarModal()" class="btn btn-light" style="flex:1; justify-content:center;">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-function rechazarSolicitud(id) {
-    Swal.fire({
-        title: '¿Rechazar solicitud?',
-        input: 'textarea',
-        inputLabel: 'Motivo del rechazo (opcional)',
-        inputPlaceholder: 'Escribe el motivo...',
-        showCancelButton: true,
-        confirmButtonText: 'Rechazar',
-        confirmButtonColor: '#ef4444',
-        cancelButtonText: 'Cancelar',
-        preConfirm: (comentario) => {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/admin/solicitud/${id}/rechazar`;
-            
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'comentario';
-            input.value = comentario || '';
-            form.appendChild(input);
-            
-            document.body.appendChild(form);
-            form.submit();
-        }
-    });
+function mostrarRechazo(id) {
+    document.getElementById('formRechazo').action = `/admin/solicitud/${id}/rechazar`;
+    const m = document.getElementById('modalRechazo');
+    m.style.display = 'flex';
+}
+function cerrarModal() {
+    document.getElementById('modalRechazo').style.display = 'none';
 }
 </script>
 {% endblock %}

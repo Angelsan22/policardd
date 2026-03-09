@@ -1,156 +1,204 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Panel del Banco - PoliCard{% endblock %}
+{% block title %}Panel de Banco - {{ banco.nombre_banco }}{% endblock %}
 
 {% block content %}
-<div class="mb-8">
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-4xl font-bold text-gray-800">
-                <i class="fas fa-building text-blue-600 mr-3"></i>{{ banco.nombre_banco }}
-            </h1>
-            <p class="text-gray-600 mt-2">Bienvenido, {{ session.user_name }}</p>
-        </div>
-        <div>
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">
+                    <i class="fas fa-building text-green-600 mr-2"></i>{{ banco.nombre_banco }}
+                </h1>
+                <p class="text-gray-600">Bienvenido, {{ session.user_name }}</p>
+            </div>
             {% if banco.aprobado %}
-                <span class="bg-green-100 text-green-700 px-6 py-3 rounded-full font-semibold inline-flex items-center">
-                    <i class="fas fa-check-circle mr-2"></i>Banco Aprobado
+                <span class="bg-green-100 text-green-800 px-4 py-2 rounded-full font-semibold">
+                    <i class="fas fa-check-circle mr-1"></i>Banco Aprobado
                 </span>
             {% else %}
-                <span class="bg-yellow-100 text-yellow-700 px-6 py-3 rounded-full font-semibold inline-flex items-center">
-                    <i class="fas fa-clock mr-2"></i>Pendiente de Aprobación
+                <span class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full font-semibold">
+                    <i class="fas fa-clock mr-1"></i>Pendiente de Aprobación
                 </span>
             {% endif %}
         </div>
     </div>
-</div>
 
-{% if not banco.aprobado %}
-    <div class="mb-8 bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg shadow-md">
-        <div class="flex items-center">
-            <i class="fas fa-exclamation-triangle text-3xl text-yellow-600 mr-4"></i>
+    <!-- Alert si no está aprobado -->
+    {% if not banco.aprobado %}
+    <div class="mb-8 bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg shadow-lg animate-slide-in">
+        <div class="flex items-start">
+            <i class="fas fa-exclamation-triangle text-yellow-600 text-2xl mr-4 mt-1"></i>
             <div>
-                <h3 class="text-xl font-bold text-yellow-800 mb-2">Tu banco está en revisión</h3>
-                <p class="text-yellow-700">Nuestro equipo está revisando tu solicitud. Podrás publicar tarjetas una vez que tu banco sea aprobado.</p>
+                <h3 class="font-bold text-yellow-800 text-lg mb-2">Tu banco está pendiente de aprobación</h3>
+                <p class="text-yellow-700 mb-2">
+                    Un administrador revisará tu solicitud pronto. Una vez aprobado, podrás crear y publicar tarjetas de crédito.
+                </p>
+                <p class="text-sm text-yellow-600">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Mientras tanto, puedes explorar las funcionalidades del panel.
+                </p>
             </div>
         </div>
     </div>
-{% endif %}
-
-<!-- Estadísticas -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <div class="bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-2xl shadow-xl p-6 transform hover:scale-105 transition">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-blue-100 text-sm font-medium">Tarjetas Totales</p>
-                <p class="text-4xl font-bold mt-2">{{ stats.tarjetas_count }}</p>
-            </div>
-            <i class="fas fa-credit-card text-5xl opacity-20"></i>
-        </div>
-    </div>
-
-    <div class="bg-gradient-to-br from-green-500 to-green-700 text-white rounded-2xl shadow-xl p-6 transform hover:scale-105 transition">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-green-100 text-sm font-medium">Tarjetas Aprobadas</p>
-                <p class="text-4xl font-bold mt-2">{{ stats.tarjetas_aprobadas }}</p>
-            </div>
-            <i class="fas fa-check-circle text-5xl opacity-20"></i>
-        </div>
-    </div>
-
-    <div class="bg-gradient-to-br from-yellow-500 to-yellow-700 text-white rounded-2xl shadow-xl p-6 transform hover:scale-105 transition">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-yellow-100 text-sm font-medium">Solicitudes Pendientes</p>
-                <p class="text-4xl font-bold mt-2">{{ stats.solicitudes_pendientes }}</p>
-            </div>
-            <i class="fas fa-hourglass-half text-5xl opacity-20"></i>
-        </div>
-    </div>
-
-    <div class="bg-gradient-to-br from-purple-500 to-purple-700 text-white rounded-2xl shadow-xl p-6 transform hover:scale-105 transition">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-purple-100 text-sm font-medium">Estado del Banco</p>
-                <p class="text-xl font-bold mt-2">{% if banco.aprobado %}Activo{% else %}En Revisión{% endif %}</p>
-            </div>
-            <i class="fas fa-{% if banco.aprobado %}check-circle{% else %}clock{% endif %} text-5xl opacity-20"></i>
-        </div>
-    </div>
-</div>
-
-<!-- Acciones Rápidas -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-    <a href="{{ url_for('banco_tarjetas') }}" class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition transform hover:-translate-y-1 border-l-4 border-blue-500">
-        <div class="flex items-center mb-4">
-            <div class="bg-blue-100 p-4 rounded-full">
-                <i class="fas fa-credit-card text-3xl text-blue-600"></i>
-            </div>
-            <h3 class="text-2xl font-bold text-gray-800 ml-4">Mis Tarjetas</h3>
-        </div>
-        <p class="text-gray-600">Gestiona todas tus tarjetas de crédito publicadas</p>
-        <div class="mt-4 text-blue-600 font-semibold">
-            Ver todas <i class="fas fa-arrow-right ml-2"></i>
-        </div>
-    </a>
-
-    {% if banco.aprobado %}
-        <a href="{{ url_for('banco_nueva_tarjeta') }}" class="bg-gradient-to-br from-green-500 to-green-700 text-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition transform hover:-translate-y-1">
-            <div class="flex items-center mb-4">
-                <div class="bg-white bg-opacity-20 p-4 rounded-full">
-                    <i class="fas fa-plus-circle text-3xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold ml-4">Nueva Tarjeta</h3>
-            </div>
-            <p class="text-green-100">Publica una nueva tarjeta de crédito</p>
-            <div class="mt-4 font-semibold">
-                Crear ahora <i class="fas fa-arrow-right ml-2"></i>
-            </div>
-        </a>
-    {% else %}
-        <div class="bg-gray-100 rounded-2xl shadow-lg p-8 border-l-4 border-gray-400 opacity-60">
-            <div class="flex items-center mb-4">
-                <div class="bg-gray-300 p-4 rounded-full">
-                    <i class="fas fa-lock text-3xl text-gray-600"></i>
-                </div>
-                <h3 class="text-2xl font-bold text-gray-600 ml-4">Nueva Tarjeta</h3>
-            </div>
-            <p class="text-gray-600">Disponible una vez aprobado tu banco</p>
-        </div>
     {% endif %}
-</div>
 
-<!-- Información del Banco -->
-<div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
-    <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-blue-600 pb-3">
-        <i class="fas fa-info-circle text-blue-600 mr-2"></i>Información del Banco
-    </h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-            <p class="text-sm text-gray-600 mb-1">Nombre del Banco</p>
-            <p class="text-lg font-semibold text-gray-800">{{ banco.nombre_banco }}</p>
+    <!-- Estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <!-- Total Tarjetas -->
+        <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
+            <div class="flex items-center justify-between mb-4">
+                <div class="bg-blue-100 p-3 rounded-full">
+                    <i class="fas fa-credit-card text-blue-600 text-2xl"></i>
+                </div>
+            </div>
+            <h3 class="text-gray-600 text-sm mb-1">Total Tarjetas</h3>
+            <p class="text-3xl font-bold text-gray-800">{{ stats.tarjetas_count }}</p>
         </div>
-        <div>
-            <p class="text-sm text-gray-600 mb-1">Email de Contacto</p>
-            <p class="text-lg font-semibold text-gray-800">{{ banco.usuario.email }}</p>
+
+        <!-- Tarjetas Aprobadas -->
+        <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
+            <div class="flex items-center justify-between mb-4">
+                <div class="bg-green-100 p-3 rounded-full">
+                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                </div>
+            </div>
+            <h3 class="text-gray-600 text-sm mb-1">Aprobadas</h3>
+            <p class="text-3xl font-bold text-green-600">{{ stats.tarjetas_aprobadas }}</p>
         </div>
-        <div>
-            <p class="text-sm text-gray-600 mb-1">Teléfono</p>
-            <p class="text-lg font-semibold text-gray-800">{{ banco.telefono }}</p>
+
+        <!-- Pendientes -->
+        <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
+            <div class="flex items-center justify-between mb-4">
+                <div class="bg-yellow-100 p-3 rounded-full">
+                    <i class="fas fa-clock text-yellow-600 text-2xl"></i>
+                </div>
+            </div>
+            <h3 class="text-gray-600 text-sm mb-1">Pendientes</h3>
+            <p class="text-3xl font-bold text-yellow-600">{{ stats.tarjetas_count - stats.tarjetas_aprobadas }}</p>
         </div>
-        {% if banco.sitio_web %}
-        <div>
-            <p class="text-sm text-gray-600 mb-1">Sitio Web</p>
-            <a href="{{ banco.sitio_web }}" target="_blank" class="text-lg font-semibold text-blue-600 hover:underline">
-                {{ banco.sitio_web }}
-            </a>
+
+        <!-- Solicitudes -->
+        <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
+            <div class="flex items-center justify-between mb-4">
+                <div class="bg-purple-100 p-3 rounded-full">
+                    <i class="fas fa-bell text-purple-600 text-2xl"></i>
+                </div>
+            </div>
+            <h3 class="text-gray-600 text-sm mb-1">Solicitudes</h3>
+            <p class="text-3xl font-bold text-purple-600">{{ stats.solicitudes_pendientes }}</p>
         </div>
-        {% endif %}
+    </div>
+
+    <!-- Acciones Rápidas -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Gestionar Tarjetas -->
+        <a href="/banco/tarjetas" class="bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-lg shadow-lg p-8 card-hover">
+            <div class="flex items-center justify-between mb-4">
+                <div class="bg-white bg-opacity-20 p-4 rounded-full">
+                    <i class="fas fa-credit-card text-4xl"></i>
+                </div>
+                <i class="fas fa-arrow-right text-3xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-2">Gestionar Tarjetas</h3>
+            <p class="text-blue-100">Ver, editar y eliminar tus tarjetas</p>
+            <div class="mt-4 text-3xl font-bold">{{ stats.tarjetas_count }} Tarjeta{% if stats.tarjetas_count != 1 %}s{% endif %}</div>
+        </a>
+
+        <!-- Crear Nueva Tarjeta -->
+        <a href="/banco/tarjeta/nueva" class="bg-gradient-to-br from-green-500 to-green-700 text-white rounded-lg shadow-lg p-8 card-hover {% if not banco.aprobado %}opacity-50 cursor-not-allowed{% endif %}" {% if not banco.aprobado %}onclick="return false;"{% endif %}>
+            <div class="flex items-center justify-between mb-4">
+                <div class="bg-white bg-opacity-20 p-4 rounded-full">
+                    <i class="fas fa-plus-circle text-4xl"></i>
+                </div>
+                <i class="fas fa-arrow-right text-3xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-2">Nueva Tarjeta</h3>
+            <p class="text-green-100">
+                {% if banco.aprobado %}
+                    Crear y publicar una nueva tarjeta
+                {% else %}
+                    Disponible después de aprobación
+                {% endif %}
+            </p>
+            {% if not banco.aprobado %}
+            <div class="mt-4 text-sm bg-white bg-opacity-20 rounded p-2">
+                <i class="fas fa-lock mr-1"></i>Requiere aprobación del banco
+            </div>
+            {% endif %}
+        </a>
+    </div>
+
+    <!-- Información del Banco -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+            Información del Banco
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h3 class="text-sm font-semibold text-gray-600 mb-3">Datos de Contacto</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center">
+                        <i class="fas fa-user text-gray-400 w-6"></i>
+                        <span class="text-gray-700">{{ banco.usuario.nombre }}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-envelope text-gray-400 w-6"></i>
+                        <span class="text-gray-700">{{ banco.usuario.email }}</span>
+                    </div>
+                    {% if banco.telefono %}
+                    <div class="flex items-center">
+                        <i class="fas fa-phone text-gray-400 w-6"></i>
+                        <span class="text-gray-700">{{ banco.telefono }}</span>
+                    </div>
+                    {% endif %}
+                    {% if banco.sitio_web %}
+                    <div class="flex items-center">
+                        <i class="fas fa-globe text-gray-400 w-6"></i>
+                        <a href="{{ banco.sitio_web }}" target="_blank" class="text-blue-600 hover:text-blue-800">
+                            Visitar sitio web <i class="fas fa-external-link-alt text-xs"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-semibold text-gray-600 mb-3">Estado y Fechas</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-700">Estado:</span>
+                        {% if banco.aprobado %}
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                <i class="fas fa-check-circle"></i> Aprobado
+                            </span>
+                        {% else %}
+                            <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                <i class="fas fa-clock"></i> Pendiente
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-700">Registro:</span>
+                        <span class="font-semibold">{{ banco.usuario.fecha_registro.strftime('%d/%m/%Y') }}</span>
+                    </div>
+                    {% if banco.aprobado and banco.fecha_aprobacion %}
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-700">Aprobación:</span>
+                        <span class="font-semibold">{{ banco.fecha_aprobacion.strftime('%d/%m/%Y') }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
         {% if banco.descripcion %}
-        <div class="md:col-span-2">
-            <p class="text-sm text-gray-600 mb-1">Descripción</p>
-            <p class="text-gray-800">{{ banco.descripcion }}</p>
+        <div class="mt-6 pt-6 border-t">
+            <h3 class="text-sm font-semibold text-gray-600 mb-2">Descripción</h3>
+            <p class="text-gray-700">{{ banco.descripcion }}</p>
         </div>
         {% endif %}
     </div>

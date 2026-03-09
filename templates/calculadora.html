@@ -1,100 +1,213 @@
 {% extends 'base.html' %}
+{% block title %}Calculadora de Intereses — PoliCard{% endblock %}
+
+{% block extra_styles %}
+<style>
+.calc-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+@media (max-width: 768px) { .calc-layout { grid-template-columns: 1fr; } }
+
+.calc-panel {
+    background: var(--blanco);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra);
+    padding: 2rem;
+}
+.calc-panel h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    color: var(--verde-oscuro);
+    margin-bottom: 0.25rem;
+}
+.calc-panel .sub { color: var(--verde-medio); font-size: 0.88rem; margin-bottom: 1.5rem; }
+
+/* Result display */
+.result-display {
+    background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));
+    border-radius: var(--radio-lg);
+    padding: 2rem;
+    color: var(--blanco);
+    margin-top: 1.5rem;
+    display: none;
+}
+.result-display.visible { display: block; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+.result-display h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1rem;
+    color: var(--verde-claro);
+    margin-bottom: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem; }
+.result-item { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 1rem; }
+.result-item .r-label { font-size: 0.75rem; color: var(--verde-claro); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+.result-item .r-value { font-size: 1.5rem; font-weight: 700; color: var(--blanco); }
+.result-item.highlight { background: rgba(255,255,255,0.2); }
+
+.alerta-box {
+    background: rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 1rem;
+    font-size: 0.85rem;
+    color: var(--verde-claro);
+    line-height: 1.55;
+}
+
+/* Info cards */
+.info-card {
+    background: var(--beige);
+    border-radius: var(--radio);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+}
+.info-card h4 {
+    font-weight: 700;
+    color: var(--verde-oscuro);
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    display: flex; align-items: center; gap: 7px;
+}
+.info-card p { font-size: 0.85rem; color: var(--texto-medio); line-height: 1.55; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
-    <h1 class="text-4xl font-bold text-center mb-8 text-purple-600"><i class="fas fa-calculator mr-2"></i>Calculadora de Intereses</h1>
+<div style="margin-bottom: 2rem;">
+    <h1 class="section-title"><i class="fas fa-calculator" style="color: var(--verde-salvia); margin-right: 0.5rem;"></i>Calculadora de Intereses</h1>
+    <p class="section-subtitle">Calcula cuánto pagarás realmente con tu tarjeta de crédito</p>
+</div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div class="bg-white p-6 rounded-lg shadow-lg">
-            <h3 class="text-xl font-bold mb-4">Datos de tu compra</h3>
-            
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Monto a financiar ($)</label>
-                <input type="number" id="monto" class="w-full px-4 py-2 border rounded-lg" placeholder="5000" required>
+<div class="calc-layout">
+    <!-- Panel izquierdo: formulario -->
+    <div>
+        <div class="calc-panel">
+            <h2>Ingresa tus datos</h2>
+            <p class="sub">Completa los campos para calcular tu deuda e intereses</p>
+
+            <div class="form-group">
+                <label>Monto de la compra / deuda ($)</label>
+                <input type="number" id="monto" class="form-control" placeholder="Ej. 5000" min="0" step="100" oninput="calcular()">
+            </div>
+            <div class="form-group">
+                <label>CAT anual (%)</label>
+                <input type="number" id="cat" class="form-control" placeholder="Ej. 45" min="0" max="200" step="0.5" oninput="calcular()">
+            </div>
+            <div class="form-group">
+                <label>Pago mensual mínimo ($)</label>
+                <input type="number" id="pago" class="form-control" placeholder="Ej. 500" min="0" step="50" oninput="calcular()">
+            </div>
+            <div class="form-group">
+                <label>Plazo (meses)</label>
+                <input type="number" id="plazo" class="form-control" placeholder="Ej. 12" min="1" max="120" oninput="calcular()">
             </div>
 
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Tasa de interés mensual (%)</label>
-                <input type="number" id="tasa" class="w-full px-4 py-2 border rounded-lg" placeholder="3.5" step="0.1" required>
+            <!-- Resultado -->
+            <div class="result-display" id="resultado">
+                <h3><i class="fas fa-chart-bar" style="margin-right:6px;"></i>Resultado del cálculo</h3>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <div class="r-label">Capital original</div>
+                        <div class="r-value" id="res-capital">—</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="r-label">Interés mensual</div>
+                        <div class="r-value" id="res-interes-mes">—</div>
+                    </div>
+                    <div class="result-item highlight">
+                        <div class="r-label">Total a pagar</div>
+                        <div class="r-value" id="res-total">—</div>
+                    </div>
+                    <div class="result-item highlight">
+                        <div class="r-label">Interés total</div>
+                        <div class="r-value" id="res-interes-total">—</div>
+                    </div>
+                </div>
+                <div class="alerta-box" id="res-alerta"></div>
             </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Plazo (meses)</label>
-                <input type="number" id="plazo" class="w-full px-4 py-2 border rounded-lg" placeholder="12" required>
-            </div>
-
-            <button onclick="calcular()" class="w-full bg-purple-600 text-white py-3 rounded-lg font-bold hover:bg-purple-700">
-                <i class="fas fa-calculator mr-2"></i>Calcular
-            </button>
         </div>
+    </div>
 
-        <div class="bg-white p-6 rounded-lg shadow-lg">
-            <h3 class="text-xl font-bold mb-4">Resultados</h3>
-            <div id="resultados" class="hidden">
-                <div class="mb-4 p-4 bg-blue-50 rounded">
-                    <p class="text-gray-600">Pago mensual</p>
-                    <p class="text-3xl font-bold text-blue-600">$<span id="pago-mensual">0</span></p>
-                </div>
-                <div class="mb-4 p-4 bg-green-50 rounded">
-                    <p class="text-gray-600">Total a pagar</p>
-                    <p class="text-2xl font-bold text-green-600">$<span id="total">0</span></p>
-                </div>
-                <div class="p-4 bg-red-50 rounded">
-                    <p class="text-gray-600">Total de intereses</p>
-                    <p class="text-2xl font-bold text-red-600">$<span id="intereses">0</span></p>
-                </div>
+    <!-- Panel derecho: información -->
+    <div>
+        <div class="calc-panel">
+            <h2>¿Qué estás calculando?</h2>
+            <p class="sub">Entiende qué significa cada número</p>
+
+            <div class="info-card">
+                <h4><i class="fas fa-percentage" style="color: var(--verde-salvia);"></i> ¿Qué es el CAT?</h4>
+                <p>El <strong>Costo Anual Total</strong> incluye la tasa de interés más todas las comisiones. Es el costo real de tu crédito. Un CAT más bajo = pagas menos.</p>
             </div>
-            <div id="mensaje-inicial" class="text-center text-gray-400 py-12">
-                <i class="fas fa-chart-line text-6xl mb-4"></i>
-                <p>Completa el formulario para ver los resultados</p>
+            <div class="info-card">
+                <h4><i class="fas fa-exclamation-triangle" style="color: #a0522d;"></i> Pago mínimo: la trampa</h4>
+                <p>Si solo pagas el mínimo cada mes, la deuda puede crecer más rápido de lo que la reduces. Siempre paga más del mínimo.</p>
+            </div>
+            <div class="info-card">
+                <h4><i class="fas fa-lightbulb" style="color: var(--verde-oscuro);"></i> Consejo PoliCard</h4>
+                <p>Liquida el <strong>100% de tu saldo</strong> antes de la fecha límite de pago y no pagarás intereses. ¡Esa es la forma correcta de usar una tarjeta!</p>
+            </div>
+
+            <div style="background: var(--verde-oscuro); border-radius: var(--radio); padding: 1.25rem; color: var(--verde-claro); font-size: 0.85rem; line-height: 1.6;">
+                <strong style="color: var(--blanco);">📊 CATs de referencia (2025):</strong><br>
+                Nu Ultravioleta: <strong style="color: var(--blanco);">35%</strong> · Banamex Tec: <strong style="color: var(--blanco);">38.5%</strong><br>
+                Santander Like U: <strong style="color: var(--blanco);">42%</strong> · HSBC Zero: <strong style="color: var(--blanco);">50%</strong>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+function fmt(n) {
+    return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
 function calcular() {
-    const monto = parseFloat(document.getElementById('monto').value);
-    const tasa = parseFloat(document.getElementById('tasa').value) / 100;
-    const plazo = parseInt(document.getElementById('plazo').value);
+    const monto  = parseFloat(document.getElementById('monto').value);
+    const cat    = parseFloat(document.getElementById('cat').value);
+    const pago   = parseFloat(document.getElementById('pago').value);
+    const plazo  = parseInt(document.getElementById('plazo').value);
 
-    if (!monto || !tasa || !plazo) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Campos incompletos',
-            text: 'Por favor completa todos los campos',
-            confirmButtonColor: '#9333ea'
-        });
-        return;
+    if (!monto || !cat || !plazo) return;
+
+    const tasaMes = cat / 100 / 12;
+    const interesMes = monto * tasaMes;
+
+    let total = 0;
+    if (pago && pago > 0) {
+        total = pago * plazo;
+    } else {
+        // Amortización clásica
+        if (tasaMes > 0) {
+            const factor = Math.pow(1 + tasaMes, plazo);
+            const cuota = monto * (tasaMes * factor) / (factor - 1);
+            total = cuota * plazo;
+        } else {
+            total = monto;
+        }
+    }
+    const interesTotal = total - monto;
+
+    document.getElementById('res-capital').textContent     = fmt(monto);
+    document.getElementById('res-interes-mes').textContent = fmt(interesMes);
+    document.getElementById('res-total').textContent       = fmt(total);
+    document.getElementById('res-interes-total').textContent = fmt(interesTotal > 0 ? interesTotal : 0);
+
+    const pct = interesTotal / monto * 100;
+    const alerta = document.getElementById('res-alerta');
+    if (pct < 20) {
+        alerta.innerHTML = '✅ Excelente plan. Los intereses son moderados respecto al capital.';
+    } else if (pct < 60) {
+        alerta.innerHTML = '⚠️ Considera aumentar tu pago mensual para reducir el interés total.';
+    } else {
+        alerta.innerHTML = '🔴 ¡Cuidado! Estás pagando mucho en intereses. Intenta liquidar la deuda en menos tiempo.';
     }
 
-    if (monto <= 0 || tasa <= 0 || plazo <= 0) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Valores inválidos',
-            text: 'Todos los valores deben ser mayores a 0',
-            confirmButtonColor: '#9333ea'
-        });
-        return;
-    }
-
-    const pagoMensual = (monto * tasa * Math.pow(1 + tasa, plazo)) / (Math.pow(1 + tasa, plazo) - 1);
-    const totalPagar = pagoMensual * plazo;
-    const totalIntereses = totalPagar - monto;
-
-    document.getElementById('pago-mensual').textContent = pagoMensual.toFixed(2);
-    document.getElementById('total').textContent = totalPagar.toFixed(2);
-    document.getElementById('intereses').textContent = totalIntereses.toFixed(2);
-    document.getElementById('resultados').classList.remove('hidden');
-    document.getElementById('mensaje-inicial').classList.add('hidden');
-
-    Swal.fire({
-        icon: 'success',
-        title: '¡Cálculo realizado!',
-        text: `Tu pago mensual sería de $${pagoMensual.toFixed(2)}`,
-        timer: 2000,
-        confirmButtonColor: '#9333ea'
-    });
+    document.getElementById('resultado').classList.add('visible');
 }
 </script>
 {% endblock %}
