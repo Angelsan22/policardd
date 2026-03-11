@@ -34,6 +34,7 @@
     margin-bottom: 0.25rem;
 }
 .login-header p { color: var(--verde-medio); font-size: 0.9rem; }
+
 .login-divider {
     text-align: center;
     color: var(--verde-medio);
@@ -83,6 +84,7 @@
     font-size: 1.4rem;
 }
 .face-modal p { color: var(--verde-medio); font-size: 0.88rem; margin-bottom: 1.25rem; }
+
 #face-video {
     width: 100%;
     border-radius: var(--radio);
@@ -91,6 +93,7 @@
     transform: scaleX(-1);
 }
 #face-canvas { display: none; }
+
 .face-status {
     margin-top: 1rem;
     font-size: 0.88rem;
@@ -98,8 +101,9 @@
     min-height: 22px;
     color: var(--verde-medio);
 }
-.face-status.error  { color: #c62828; }
-.face-status.ok     { color: #276339; }
+.face-status.error { color: #c62828; }
+.face-status.ok    { color: #276339; }
+
 .face-actions {
     display: flex;
     gap: 0.75rem;
@@ -107,7 +111,6 @@
 }
 .face-actions .btn { flex: 1; justify-content: center; }
 
-/* pulse ring while scanning */
 .scanning-ring {
     display: none;
     width: 100%;
@@ -152,7 +155,7 @@
                 <input type="password" name="password" class="form-control"
                        placeholder="Tu contraseña" required>
             </div>
-            <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top: 0.5rem;">
+            <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:0.5rem;">
                 <i class="fas fa-sign-in-alt"></i> Ingresar
             </button>
         </form>
@@ -165,16 +168,16 @@
 
         <div class="login-divider">o</div>
 
-        <div style="text-align: center;">
-            <p style="color: var(--verde-medio); font-size: 0.9rem;">¿Representas a un banco?</p>
-            <a href="/registro_banco" class="btn btn-outline btn-full" style="margin-top: 0.5rem;">
+        <div style="text-align:center;">
+            <p style="color:var(--verde-medio); font-size:0.9rem;">¿Representas a un banco?</p>
+            <a href="/registro_banco" class="btn btn-outline btn-full" style="margin-top:0.5rem;">
                 <i class="fas fa-building"></i> Registrar mi banco
             </a>
         </div>
 
-        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--gris-claro);">
-            <p style="font-size: 0.78rem; color: var(--verde-medio); text-align: center; line-height: 1.5;">
-                <i class="fas fa-shield-alt" style="color: var(--verde-salvia);"></i>
+        <div style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--gris-claro);">
+            <p style="font-size:0.78rem; color:var(--verde-medio); text-align:center; line-height:1.5;">
+                <i class="fas fa-shield-alt" style="color:var(--verde-salvia);"></i>
                 Acceso solo para administradores y representantes de bancos registrados.
             </p>
         </div>
@@ -209,19 +212,32 @@
 {% block extra_scripts %}
 <script>
 (function () {
-    const overlay    = document.getElementById('face-modal-overlay');
-    const video      = document.getElementById('face-video');
-    const canvas     = document.getElementById('face-canvas');
-    const status     = document.getElementById('face-status');
-    const btnOpen    = document.getElementById('btn-face-login');
-    const btnScan    = document.getElementById('btn-scan');
-    const btnClose   = document.getElementById('btn-close-face');
-    const ring       = document.getElementById('scanning-ring');
-    let stream       = null;
+    const overlay = document.getElementById('face-modal-overlay');
+    const video   = document.getElementById('face-video');
+    const canvas  = document.getElementById('face-canvas');
+    const status  = document.getElementById('face-status');
+    const btnOpen = document.getElementById('btn-face-login');
+    const btnScan = document.getElementById('btn-scan');
+    const btnClose= document.getElementById('btn-close-face');
+    const ring    = document.getElementById('scanning-ring');
+    let stream    = null;
+    let scanning  = false;
 
     function setStatus(msg, type) {
         status.textContent = msg;
         status.className   = 'face-status' + (type ? ' ' + type : '');
+    }
+
+    function stopCamera() {
+        if (stream) {
+            stream.getTracks().forEach(t => t.stop());
+            stream = null;
+        }
+        video.srcObject = null;
+        overlay.classList.remove('active');
+        ring.classList.remove('active');
+        scanning = false;
+        btnScan.disabled = false;
     }
 
     async function openCamera() {
@@ -229,26 +245,25 @@
         ring.classList.add('active');
         setStatus('Iniciando cámara…');
         try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'user', width: 640, height: 480 }
+            });
             video.srcObject = stream;
+            await video.play();
             setStatus('Listo. Presiona "Verificar" cuando estés frente a la cámara.');
         } catch (err) {
-            setStatus('No se pudo acceder a la cámara. Revisa los permisos.', 'error');
+            setStatus('No se pudo acceder a la cámara. Usa http://127.0.0.1:5000', 'error');
         }
     }
 
-    function stopCamera() {
-        if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
-        overlay.classList.remove('active');
-        ring.classList.remove('active');
-    }
-
     async function scanFace() {
+        if (scanning) return;
+        scanning = true;
         setStatus('Analizando rostro…');
         btnScan.disabled = true;
 
-        canvas.width  = video.videoWidth;
-        canvas.height = video.videoHeight;
+        canvas.width  = video.videoWidth  || 640;
+        canvas.height = video.videoHeight || 480;
         const ctx = canvas.getContext('2d');
         ctx.translate(canvas.width, 0);
         ctx.scale(-1, 1);
@@ -265,15 +280,17 @@
             const data = await res.json();
 
             if (data.ok) {
-                setStatus('¡Bienvenido ' + data.nombre + '! Redirigiendo…', 'ok');
+                setStatus('✅ ¡Bienvenido ' + data.nombre + '! Redirigiendo…', 'ok');
                 stopCamera();
                 setTimeout(() => { window.location.href = data.redirect; }, 800);
             } else {
                 setStatus(data.msg || 'No reconocido. Intenta de nuevo.', 'error');
+                scanning = false;
                 btnScan.disabled = false;
             }
         } catch (err) {
             setStatus('Error de conexión. Intenta de nuevo.', 'error');
+            scanning = false;
             btnScan.disabled = false;
         }
     }
@@ -281,6 +298,20 @@
     btnOpen.addEventListener('click', openCamera);
     btnScan.addEventListener('click', scanFace);
     btnClose.addEventListener('click', stopCamera);
+
+    // Apagar cámara si el usuario navega o recarga la página
+    window.addEventListener('beforeunload', stopCamera);
+    window.addEventListener('pagehide', stopCamera);
+
+    // Apagar cámara al hacer clic fuera del modal
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) stopCamera();
+    });
+
+    // Apagar cámara con tecla Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && overlay.classList.contains('active')) stopCamera();
+    });
 })();
 </script>
-{% endblock %}
+{% endblock %}  
