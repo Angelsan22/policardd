@@ -1,139 +1,97 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% block title %}Gestionar Bancos — Admin PoliCard{% endblock %}
 
-{% block title %}Gestión de Bancos - PoliCard{% endblock %}
+{% block extra_styles %}
+<style>
+.page-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:2rem; }
+.banco-card { background:var(--blanco); border-radius:var(--radio-lg); box-shadow:var(--sombra); overflow:hidden; transition:all 0.2s; }
+.banco-card:hover { box-shadow:var(--sombra-lg); transform:translateY(-2px); }
+.banco-header { background:linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio)); padding:1.2rem 1.5rem; display:flex; align-items:center; justify-content:space-between; }
+.banco-header h3 { font-family:'DM Serif Display',serif; color:var(--blanco); font-size:1.15rem; }
+.banco-body { padding:1.4rem 1.5rem; }
+.banco-info-row { display:flex; align-items:center; gap:0.6rem; font-size:0.85rem; margin-bottom:0.6rem; color:var(--texto-medio); }
+.banco-info-row i { width:16px; color:var(--verde-medio); text-align:center; }
+.banco-stats { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin:1rem 0; }
+.banco-stat { background:var(--beige); border-radius:10px; padding:0.75rem; text-align:center; }
+.banco-stat .bs-val { font-size:1.5rem; font-weight:700; color:var(--verde-oscuro); }
+.banco-stat .bs-lab { font-size:0.72rem; color:var(--verde-medio); text-transform:uppercase; letter-spacing:0.04em; font-weight:600; }
+.banco-footer { padding:0.85rem 1.5rem; border-top:2px solid var(--gris-claro); font-size:0.78rem; color:var(--verde-medio); display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; }
+
+.summary-bar { background:var(--blanco); border-radius:var(--radio); padding:1rem 1.5rem; box-shadow:var(--sombra); margin-top:1.5rem; display:flex; gap:2rem; flex-wrap:wrap; font-size:0.88rem; align-items:center; }
+.summary-bar .sb-item { display:flex; align-items:center; gap:0.5rem; }
+.summary-bar .sb-num { font-weight:700; color:var(--verde-oscuro); font-size:1.1rem; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="mb-8">
-    <div class="flex items-center justify-between">
-        <h1 class="text-4xl font-bold text-gray-800">
-            <i class="fas fa-building text-blue-600 mr-3"></i>Gestión de Bancos
-        </h1>
-        <a href="{{ url_for('admin_dashboard') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition">
-            <i class="fas fa-arrow-left mr-2"></i>Volver al Dashboard
-        </a>
+<div class="page-header">
+    <div>
+        <h1 class="section-title"><i class="fas fa-building" style="color:var(--verde-salvia); margin-right:0.5rem;"></i>Gestionar Bancos</h1>
+        <p class="section-subtitle">Administra todos los bancos registrados en el sistema</p>
     </div>
+    <a href="/admin/dashboard" class="btn btn-outline btn-sm"><i class="fas fa-arrow-left"></i> Volver al panel</a>
 </div>
 
-<div class="mb-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
-    <p class="text-blue-800">
-        <i class="fas fa-info-circle mr-2"></i>
-        <strong>Total de bancos registrados:</strong> {{ bancos|length }}
-    </p>
-</div>
+{% if bancos %}
+<div class="grid-3">
+    {% for banco in bancos %}
+    <div class="banco-card">
+        <div class="banco-header">
+            <h3>{{ banco.nombre_banco }}</h3>
+            {% if banco.aprobado %}
+                <span class="badge" style="background:rgba(255,255,255,0.2); color:var(--blanco); border:1px solid rgba(255,255,255,0.3);"><i class="fas fa-check-circle"></i> Aprobado</span>
+            {% else %}
+                <span class="badge" style="background:#fef9e7; color:#9a6e00;"><i class="fas fa-clock"></i> Pendiente</span>
+            {% endif %}
+        </div>
+        <div class="banco-body">
+            <div class="banco-info-row"><i class="fas fa-user"></i> {{ banco.usuario.nombre }}</div>
+            <div class="banco-info-row"><i class="fas fa-envelope"></i> {{ banco.usuario.email }}</div>
+            {% if banco.telefono %}
+            <div class="banco-info-row"><i class="fas fa-phone"></i> {{ banco.telefono }}</div>
+            {% endif %}
+            {% if banco.sitio_web %}
+            <div class="banco-info-row"><i class="fas fa-globe"></i> <a href="{{ banco.sitio_web }}" target="_blank" style="color:var(--verde-salvia);">Ver sitio web <i class="fas fa-external-link-alt" style="font-size:0.65rem;"></i></a></div>
+            {% endif %}
 
-{% if bancos|length == 0 %}
-    <div class="bg-white rounded-2xl shadow-lg p-12 text-center">
-        <i class="fas fa-building text-8xl text-gray-300 mb-6"></i>
-        <h2 class="text-3xl font-bold text-gray-800 mb-4">No hay bancos registrados</h2>
-        <p class="text-gray-600 text-lg">Los bancos aparecerán aquí cuando se registren</p>
-    </div>
-{% else %}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {% for banco in bancos %}
-        <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 {% if banco.aprobado %}border-green-500{% else %}border-yellow-500{% endif %} hover:shadow-xl transition">
-            <div class="flex items-start justify-between mb-4">
-                <div class="flex-1">
-                    <div class="flex items-center gap-3 mb-2">
-                        <h3 class="text-2xl font-bold text-gray-800">{{ banco.nombre_banco }}</h3>
-                        <span class="px-3 py-1 rounded-full text-xs font-semibold {% if banco.aprobado %}bg-green-100 text-green-700{% else %}bg-yellow-100 text-yellow-700{% endif %}">
-                            {% if banco.aprobado %}
-                                <i class="fas fa-check-circle mr-1"></i>Aprobado
-                            {% else %}
-                                <i class="fas fa-clock mr-1"></i>Pendiente
-                            {% endif %}
-                        </span>
-                    </div>
-                    
-                    <div class="text-sm text-gray-600 space-y-1 mb-4">
-                        <p><i class="fas fa-user text-blue-600 mr-2"></i><strong>Contacto:</strong> {{ banco.usuario.nombre }}</p>
-                        <p><i class="fas fa-envelope text-blue-600 mr-2"></i><strong>Email:</strong> {{ banco.usuario.email }}</p>
-                        <p><i class="fas fa-phone text-blue-600 mr-2"></i><strong>Teléfono:</strong> {{ banco.telefono }}</p>
-                        {% if banco.sitio_web %}
-                            <p><i class="fas fa-globe text-blue-600 mr-2"></i><strong>Web:</strong> 
-                                <a href="{{ banco.sitio_web }}" target="_blank" class="text-blue-600 hover:underline">{{ banco.sitio_web }}</a>
-                            </p>
-                        {% endif %}
-                        {% if banco.fecha_aprobacion %}
-                            <p><i class="fas fa-calendar-check text-blue-600 mr-2"></i><strong>Aprobado:</strong> {{ banco.fecha_aprobacion.strftime('%d/%m/%Y') }}</p>
-                        {% endif %}
-                    </div>
-
-                    {% if banco.descripcion %}
-                        <div class="p-3 bg-gray-50 rounded-lg mb-4">
-                            <p class="text-sm text-gray-700">{{ banco.descripcion }}</p>
-                        </div>
-                    {% endif %}
-
-                    <!-- Estadísticas del Banco -->
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-blue-50 p-3 rounded-lg text-center">
-                            <p class="text-2xl font-bold text-blue-700">{{ banco.tarjetas|length }}</p>
-                            <p class="text-xs text-gray-600">Tarjetas</p>
-                        </div>
-                        <div class="bg-green-50 p-3 rounded-lg text-center">
-                            <p class="text-2xl font-bold text-green-700">{{ banco.tarjetas|selectattr('aprobada', 'equalto', True)|list|length }}</p>
-                            <p class="text-xs text-gray-600">Aprobadas</p>
-                        </div>
-                    </div>
+            <div class="banco-stats">
+                <div class="banco-stat">
+                    <div class="bs-val">{{ banco.tarjetas|length }}</div>
+                    <div class="bs-lab">Tarjetas</div>
+                </div>
+                <div class="banco-stat">
+                    <div class="bs-val" style="color:var(--verde-salvia);">{{ banco.tarjetas|selectattr('aprobada','equalto',True)|list|length }}</div>
+                    <div class="bs-lab">Aprobadas</div>
                 </div>
             </div>
 
-            <div class="flex gap-2 pt-4 border-t">
-                {% if not banco.aprobado %}
-                    <form method="POST" action="/admin/banco/{{ banco.id }}/aprobar" class="flex-1">
-                        <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg transition font-semibold">
-                            <i class="fas fa-check mr-1"></i>Aprobar
-                        </button>
-                    </form>
-                {% endif %}
-                <button onclick="verDetalle({{ banco.id }})" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition font-semibold">
-                    <i class="fas fa-eye mr-1"></i>Ver Detalles
-                </button>
-                <button onclick="toggleEstado({{ banco.id }}, {{ banco.usuario.activo|tojson }})" class="flex-1 bg-{% if banco.usuario.activo %}red{% else %}green{% endif %}-500 hover:bg-{% if banco.usuario.activo %}red{% else %}green{% endif %}-600 text-white py-2 rounded-lg transition font-semibold">
-                    <i class="fas fa-{% if banco.usuario.activo %}ban{% else %}check-circle{% endif %} mr-1"></i>
-                    {% if banco.usuario.activo %}Desactivar{% else %}Activar{% endif %}
-                </button>
+            {% if banco.descripcion %}
+            <div style="font-size:0.83rem; color:var(--texto-medio); line-height:1.55; border-top:1px solid var(--gris-claro); padding-top:0.85rem;">
+                {{ banco.descripcion[:150] }}{% if banco.descripcion|length > 150 %}…{% endif %}
             </div>
+            {% endif %}
         </div>
-        {% endfor %}
+        <div class="banco-footer">
+            <span><i class="fas fa-calendar" style="margin-right:4px;"></i>Registro: {{ banco.usuario.fecha_registro.strftime('%d/%m/%Y') if banco.usuario.fecha_registro else 'N/A' }}</span>
+            {% if banco.aprobado and banco.fecha_aprobacion %}
+            <span style="color:var(--verde-salvia);"><i class="fas fa-check" style="margin-right:4px;"></i>Aprobado: {{ banco.fecha_aprobacion.strftime('%d/%m/%Y') }}</span>
+            {% endif %}
+        </div>
     </div>
+    {% endfor %}
+</div>
+
+<div class="summary-bar">
+    <div class="sb-item"><span class="sb-num">{{ bancos|length }}</span> <span style="color:var(--verde-medio);">Total bancos</span></div>
+    <div class="sb-item" style="color:var(--verde-salvia);"><span class="sb-num" style="color:var(--verde-salvia);">{{ bancos|selectattr('aprobado','equalto',True)|list|length }}</span> <span>Aprobados</span></div>
+    <div class="sb-item" style="color:#e67e22;"><span class="sb-num" style="color:#e67e22;">{{ bancos|selectattr('aprobado','equalto',False)|list|length }}</span> <span>Pendientes</span></div>
+</div>
+
+{% else %}
+<div style="background:var(--blanco); border-radius:var(--radio-lg); padding:4rem; text-align:center; box-shadow:var(--sombra);">
+    <i class="fas fa-building" style="font-size:3rem; color:var(--verde-claro); display:block; margin-bottom:1rem;"></i>
+    <h3 style="font-family:'DM Serif Display',serif; color:var(--verde-oscuro); margin-bottom:0.5rem;">Sin bancos registrados</h3>
+    <p style="color:var(--verde-medio);">Aún no hay bancos en el sistema.</p>
+</div>
 {% endif %}
-
-<script>
-function verDetalle(bancoId) {
-    Swal.fire({
-        title: 'Detalles del Banco',
-        html: `
-            <div class="text-left">
-                <p class="mb-2"><strong>ID:</strong> ${bancoId}</p>
-                <p>Consulta más detalles en el panel de gestión.</p>
-            </div>
-        `,
-        icon: 'info',
-        confirmButtonText: 'Cerrar',
-        confirmButtonColor: '#3B82F6'
-    });
-}
-
-function toggleEstado(bancoId, activo) {
-    const accion = activo ? 'desactivar' : 'activar';
-    Swal.fire({
-        title: `¿${accion.charAt(0).toUpperCase() + accion.slice(1)} banco?`,
-        text: `Esto ${accion === 'desactivar' ? 'impedirá' : 'permitirá'} que el banco acceda al sistema`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: accion.charAt(0).toUpperCase() + accion.slice(1),
-        confirmButtonColor: activo ? '#EF4444' : '#10B981',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch(`/admin/banco/${bancoId}/toggle`, {
-                method: 'POST',
-            }).then(() => {
-                location.reload();
-            });
-        }
-    });
-}
-</script>
 {% endblock %}

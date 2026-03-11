@@ -1,102 +1,154 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% block title %}Gestionar Tarjetas — Admin PoliCard{% endblock %}
 
-{% block title %}Mis Tarjetas - PoliCard{% endblock %}
+{% block extra_styles %}
+<style>
+.page-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:2rem; }
+.filter-bar { background:var(--blanco); border-radius:var(--radio-lg); padding:1.25rem 1.5rem; box-shadow:var(--sombra); margin-bottom:1.5rem; display:flex; gap:1rem; flex-wrap:wrap; align-items:flex-end; }
+.filter-bar .form-group { margin-bottom:0; flex:1; min-width:140px; }
+
+.table-wrap { background:var(--blanco); border-radius:var(--radio-lg); box-shadow:var(--sombra); overflow:hidden; }
+table { width:100%; border-collapse:collapse; }
+thead { background:var(--verde-oscuro); }
+thead th { padding:0.9rem 1rem; text-align:left; font-size:0.75rem; font-weight:700; color:var(--verde-claro); text-transform:uppercase; letter-spacing:0.05em; }
+tbody tr { border-bottom:1px solid var(--gris-claro); transition:background 0.15s; }
+tbody tr:last-child { border-bottom:none; }
+tbody tr:hover { background:var(--beige); }
+td { padding:0.9rem 1rem; font-size:0.875rem; color:var(--texto-oscuro); vertical-align:middle; }
+.td-name { font-weight:600; color:var(--verde-oscuro); }
+.td-id   { font-size:0.75rem; color:var(--verde-medio); }
+.empty-row td { text-align:center; padding:3rem; color:var(--verde-medio); }
+
+.summary-bar { background:var(--blanco); border-radius:var(--radio); padding:1rem 1.5rem; box-shadow:var(--sombra); margin-top:1rem; display:flex; gap:2rem; flex-wrap:wrap; font-size:0.88rem; align-items:center; }
+.summary-bar .sb-num { font-weight:700; color:var(--verde-oscuro); font-size:1.1rem; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="mb-8">
-    <div class="flex items-center justify-between">
-        <h1 class="text-4xl font-bold text-gray-800">
-            <i class="fas fa-credit-card text-blue-600 mr-3"></i>Mis Tarjetas
-        </h1>
-        <div class="flex gap-3">
-            <a href="{{ url_for('banco_dashboard') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition">
-                <i class="fas fa-arrow-left mr-2"></i>Volver
-            </a>
-            {% if banco.aprobado %}
-                <a href="{{ url_for('banco_nueva_tarjeta') }}" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition shadow-lg">
-                    <i class="fas fa-plus mr-2"></i>Nueva Tarjeta
-                </a>
-            {% endif %}
-        </div>
+<div class="page-header">
+    <div>
+        <h1 class="section-title"><i class="fas fa-credit-card" style="color:var(--verde-salvia); margin-right:0.5rem;"></i>Gestionar Tarjetas</h1>
+        <p class="section-subtitle">Administra todas las tarjetas del sistema</p>
+    </div>
+    <a href="/admin/dashboard" class="btn btn-outline btn-sm"><i class="fas fa-arrow-left"></i> Volver al panel</a>
+</div>
+
+<!-- Filtros -->
+<div class="filter-bar">
+    <div class="form-group">
+        <label>Estado</label>
+        <select class="form-control" id="f-estado" onchange="filtrar()">
+            <option value="">Todas</option>
+            <option value="aprobada">Aprobadas</option>
+            <option value="pendiente">Pendientes</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Tipo</label>
+        <select class="form-control" id="f-tipo" onchange="filtrar()">
+            <option value="">Todos</option>
+            <option value="estudiante">Estudiante</option>
+            <option value="joven">Joven</option>
+            <option value="clasica">Clásica</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Buscar banco</label>
+        <input type="text" class="form-control" id="f-banco" placeholder="Nombre del banco..." oninput="filtrar()">
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="limpiar()"><i class="fas fa-undo"></i> Limpiar</button>
+</div>
+
+<!-- Tabla -->
+<div class="table-wrap">
+    <div style="overflow-x:auto;">
+        <table id="tablaT">
+            <thead>
+                <tr>
+                    <th>Tarjeta</th>
+                    <th>Banco</th>
+                    <th>Tipo</th>
+                    <th>CAT</th>
+                    <th>Anualidad</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tarjeta in tarjetas %}
+                <tr data-estado="{% if tarjeta.aprobada %}aprobada{% else %}pendiente{% endif %}"
+                    data-tipo="{{ tarjeta.tipo }}"
+                    data-banco="{{ tarjeta.banco.nombre_banco|lower if tarjeta.banco else '' }}">
+                    <td>
+                        <div class="td-name">{{ tarjeta.nombre }}</div>
+                        <div class="td-id">ID #{{ tarjeta.id }}</div>
+                    </td>
+                    <td>{{ tarjeta.banco.nombre_banco if tarjeta.banco else 'N/A' }}</td>
+                    <td>
+                        {% if tarjeta.tipo == 'estudiante' %}
+                            <span class="badge badge-estudiante">Estudiante</span>
+                        {% elif tarjeta.tipo == 'joven' %}
+                            <span class="badge badge-joven">Joven</span>
+                        {% else %}
+                            <span class="badge badge-clasica">Clásica</span>
+                        {% endif %}
+                    </td>
+                    <td><strong>{{ tarjeta.cat }}%</strong></td>
+                    <td>
+                        {% if tarjeta.anualidad == 0 %}
+                            <span class="text-success fw-bold">GRATIS</span>
+                        {% else %}
+                            ${{ tarjeta.anualidad|int }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if tarjeta.aprobada %}
+                            <span class="badge" style="background:#d4edda; color:#276339;"><i class="fas fa-check-circle" style="margin-right:3px;"></i>Aprobada</span>
+                        {% else %}
+                            <span class="badge" style="background:#fef9e7; color:#9a6e00;"><i class="fas fa-clock" style="margin-right:3px;"></i>Pendiente</span>
+                        {% endif %}
+                    </td>
+                    <td style="color:var(--verde-medio);">
+                        {{ tarjeta.fecha_creacion.strftime('%d/%m/%Y') if tarjeta.fecha_creacion else 'N/A' }}
+                    </td>
+                </tr>
+                {% else %}
+                <tr class="empty-row">
+                    <td colspan="7">
+                        <i class="fas fa-credit-card" style="font-size:2.5rem; display:block; margin-bottom:0.75rem; opacity:0.3;"></i>
+                        No hay tarjetas registradas
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
-{% if tarjetas|length == 0 %}
-    <div class="bg-white rounded-2xl shadow-lg p-12 text-center">
-        <i class="fas fa-credit-card text-8xl text-gray-300 mb-6"></i>
-        <h2 class="text-3xl font-bold text-gray-800 mb-4">No tienes tarjetas</h2>
-        <p class="text-gray-600 text-lg mb-6">Comienza creando tu primera tarjeta de crédito</p>
-        {% if banco.aprobado %}
-            <a href="{{ url_for('banco_nueva_tarjeta') }}" class="inline-block bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg transition shadow-lg font-semibold">
-                <i class="fas fa-plus mr-2"></i>Crear Primera Tarjeta
-            </a>
-        {% else %}
-            <p class="text-yellow-600 font-semibold">
-                <i class="fas fa-clock mr-2"></i>Disponible una vez aprobado tu banco
-            </p>
-        {% endif %}
-    </div>
-{% else %}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {% for tarjeta in tarjetas %}
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-1">
-            <!-- Header con Estado -->
-            <div class="{% if tarjeta.aprobada %}bg-gradient-to-r from-green-500 to-green-700{% else %}bg-gradient-to-r from-yellow-500 to-yellow-700{% endif %} text-white p-4">
-                <div class="flex items-center justify-between">
-                    <span class="font-semibold">
-                        <i class="fas fa-{% if tarjeta.aprobada %}check-circle{% else %}clock{% endif %} mr-2"></i>
-                        {% if tarjeta.aprobada %}Aprobada{% else %}Pendiente{% endif %}
-                    </span>
-                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">
-                        {{ tarjeta.tipo|capitalize }}
-                    </span>
-                </div>
-            </div>
+<div class="summary-bar">
+    <div><span class="sb-num">{{ tarjetas|length }}</span> <span style="color:var(--verde-medio);">Total tarjetas</span></div>
+    <div style="color:var(--verde-salvia);"><span class="sb-num" style="color:var(--verde-salvia);">{{ tarjetas|selectattr('aprobada','equalto',True)|list|length }}</span> Aprobadas</div>
+    <div style="color:#e67e22;"><span class="sb-num" style="color:#e67e22;">{{ tarjetas|selectattr('aprobada','equalto',False)|list|length }}</span> Pendientes</div>
+</div>
 
-            <!-- Contenido -->
-            <div class="p-6">
-                <h3 class="text-2xl font-bold text-gray-800 mb-4">{{ tarjeta.nombre }}</h3>
-                
-                <div class="space-y-3 mb-6">
-                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
-                        <span class="text-gray-600"><i class="fas fa-percentage mr-2"></i>CAT:</span>
-                        <span class="font-bold text-gray-800">{{ tarjeta.cat }}%</span>
-                    </div>
-                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
-                        <span class="text-gray-600"><i class="fas fa-dollar-sign mr-2"></i>Anualidad:</span>
-                        <span class="font-bold text-gray-800">${{ tarjeta.anualidad }}</span>
-                    </div>
-                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
-                        <span class="text-gray-600"><i class="fas fa-user mr-2"></i>Edad Mínima:</span>
-                        <span class="font-bold text-gray-800">{{ tarjeta.edad_minima }} años</span>
-                    </div>
-                </div>
-
-                {% if tarjeta.beneficios %}
-                    <div class="mb-6 p-3 bg-blue-50 rounded-lg">
-                        <p class="text-sm text-gray-700"><strong class="text-blue-700">Beneficios:</strong></p>
-                        <p class="text-sm text-gray-600 mt-1">{{ tarjeta.beneficios[:100] }}{% if tarjeta.beneficios|length > 100 %}...{% endif %}</p>
-                    </div>
-                {% endif %}
-
-                <div class="flex gap-2">
-                    <a href="{{ url_for('banco_editar_tarjeta', id=tarjeta.id) }}" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition text-center">
-                        <i class="fas fa-edit mr-1"></i>Editar
-                    </a>
-                    <form method="POST" action="{{ url_for('banco_eliminar_tarjeta', id=tarjeta.id) }}" onsubmit="return confirm('¿Eliminar esta tarjeta?')" class="flex-1">
-                        <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg transition">
-                            <i class="fas fa-trash mr-1"></i>Eliminar
-                        </button>
-                    </form>
-                </div>
-
-                <div class="mt-3 text-xs text-gray-500 text-center">
-                    <i class="fas fa-calendar-alt mr-1"></i>
-                    Creada: {{ tarjeta.fecha_creacion.strftime('%d/%m/%Y') }}
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-{% endif %}
+<script>
+function filtrar() {
+    const estado = document.getElementById('f-estado').value;
+    const tipo   = document.getElementById('f-tipo').value;
+    const banco  = document.getElementById('f-banco').value.toLowerCase();
+    document.querySelectorAll('#tablaT tbody tr:not(.empty-row)').forEach(r => {
+        let show = true;
+        if (estado && r.dataset.estado !== estado) show = false;
+        if (tipo   && r.dataset.tipo   !== tipo)   show = false;
+        if (banco  && !r.dataset.banco.includes(banco)) show = false;
+        r.style.display = show ? '' : 'none';
+    });
+}
+function limpiar() {
+    document.getElementById('f-estado').value = '';
+    document.getElementById('f-tipo').value = '';
+    document.getElementById('f-banco').value = '';
+    document.querySelectorAll('#tablaT tbody tr').forEach(r => r.style.display = '');
+}
+</script>
 {% endblock %}

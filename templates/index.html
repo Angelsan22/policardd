@@ -1,55 +1,299 @@
 {% extends 'base.html' %}
+{% block title %}PoliCard — Inicio{% endblock %}
+
+{% block extra_styles %}
+<style>
+.hero {
+    background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+    border-radius: var(--radio-lg);
+    padding: 4rem 3rem;
+    color: var(--blanco);
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: rgba(186,200,177,0.12);
+}
+.hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 40%;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(186,200,177,0.08);
+}
+.hero-content { position: relative; z-index: 1; max-width: 600px; }
+.hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(186,200,177,0.2);
+    border: 1px solid rgba(186,200,177,0.3);
+    color: var(--verde-claro);
+    padding: 0.3rem 0.9rem;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3rem;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    color: var(--blanco);
+}
+.hero p {
+    font-size: 1.05rem;
+    color: var(--verde-claro);
+    margin-bottom: 2rem;
+    line-height: 1.65;
+}
+.hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+.btn-hero-primary {
+    background: var(--blanco);
+    color: var(--verde-oscuro);
+    font-weight: 700;
+    padding: 0.85rem 2rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.95rem;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+.btn-hero-primary:hover { background: var(--verde-claro); }
+.btn-hero-outline {
+    border: 2px solid rgba(255,255,255,0.35);
+    color: var(--blanco);
+    padding: 0.85rem 2rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.95rem;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+}
+.btn-hero-outline:hover { border-color: var(--blanco); background: rgba(255,255,255,0.08); }
+
+/* Stats */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+/* ── Cómo funciona ── */
+.como-section { margin-bottom: 3.5rem; }
+.como-section .section-title { margin-bottom: 0.4rem; }
+.como-section .section-subtitle { margin-bottom: 2.5rem; }
+
+.pasos-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items: start;
+    gap: 0;
+}
+.paso {
+    background: var(--blanco);
+    border-radius: var(--radio-lg);
+    padding: 2rem 1.75rem;
+    box-shadow: var(--sombra);
+    border: 1px solid rgba(0,0,0,0.06);
+    text-align: center;
+    position: relative;
+    transition: box-shadow 0.25s, transform 0.25s;
+}
+.paso:hover { box-shadow: var(--sombra-lg); transform: translateY(-3px); }
+
+.paso-numero {
+    position: absolute;
+    top: -14px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--verde-oscuro);
+    color: var(--blanco);
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 8px rgba(64,78,59,0.3);
+}
+.paso-icono {
+    width: 72px; height: 72px;
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.7rem;
+    margin: 0.75rem auto 1.25rem;
+}
+.paso h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    color: var(--verde-oscuro);
+    margin-bottom: 0.5rem;
+}
+.paso p {
+    font-size: 0.87rem;
+    color: var(--verde-medio);
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+}
+.paso .paso-link {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    color: var(--verde-oscuro);
+    transition: gap 0.2s;
+}
+.paso .paso-link:hover { gap: 8px; }
+
+/* Flecha entre pasos */
+.paso-flecha {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.5rem;
+    margin-top: 3.5rem;
+    color: var(--verde-claro);
+    font-size: 1.4rem;
+}
+
+/* Detalle sub-items dentro del paso */
+.paso-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    text-align: left;
+    margin-top: 0.25rem;
+}
+.paso-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.83rem;
+    color: var(--texto-medio);
+    background: var(--fondo);
+    border-radius: 8px;
+    padding: 0.4rem 0.7rem;
+}
+.paso-item i { color: var(--verde-salvia); font-size: 0.75rem; flex-shrink: 0; }
+
+@media (max-width: 900px) {
+    .pasos-grid {
+        grid-template-columns: 1fr;
+    }
+    .paso-flecha { transform: rotate(90deg); margin: 0 auto; padding: 0.25rem 0; }
+    .stats-row { grid-template-columns: repeat(2,1fr); }
+    .hero { padding: 2.5rem 1.75rem; }
+    .hero h1 { font-size: 2.1rem; }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="text-center mb-12">
-<h1 class="text-5xl font-bold text-blue-600 mb-4 flex items-center justify-center">
-    Bienvenido a PoliCard 
-    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="PoliCard Logo" class="h-24 ml-3">
-</h1>
-    <p class="text-xl text-gray-600">Tu guía completa para entender el mundo de las tarjetas de crédito</p>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge"><i class="fas fa-leaf"></i> Finanzas para jóvenes</div>
+        <h1>Encuentra la tarjeta de crédito ideal para ti</h1>
+        <p>Compara, aprende y decide con confianza. PoliCard te guía en el mundo de las tarjetas de crédito con información clara y sin letra pequeña.</p>
+        <div class="hero-ctas">
+            <a href="/buscar" class="btn-hero-primary"><i class="fas fa-search"></i> Buscar mi tarjeta</a>
+            <a href="/educacion" class="btn-hero-outline"><i class="fas fa-graduation-cap"></i> Aprender finanzas</a>
+        </div>
+    </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-row">
+    <div class="stat-box"><span class="stat-label">Tarjetas</span><span class="stat-value">12+</span></div>
+    <div class="stat-box"><span class="stat-label">Bancos</span><span class="stat-value">6</span></div>
+    <div class="stat-box"><span class="stat-label">CAT mínimo</span><span class="stat-value">35%</span></div>
+    <div class="stat-box"><span class="stat-label">Sin anualidad</span><span class="stat-value">50%</span></div>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
-        <div class="text-center mb-4"><i class="fas fa-credit-card text-6xl text-blue-600"></i></div>
-        <h3 class="text-xl font-bold mb-2 text-center">Explora Tarjetas</h3>
-        <p class="text-gray-600 mb-4 text-center">Conoce las mejores tarjetas para jóvenes</p>
-        <a href="/tarjetas" class="block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Ver tarjetas</a>
-    </div>
+<!-- CÓMO FUNCIONA -->
+<div class="como-section">
+    <h2 class="section-title">¿Cómo funciona PoliCard?</h2>
+    <p class="section-subtitle">En tres pasos encuentras la tarjeta que más te conviene</p>
 
-    <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
-        <div class="text-center mb-4"><i class="fas fa-search text-6xl text-green-600"></i></div>
-        <h3 class="text-xl font-bold mb-2 text-center">Busca tu Tarjeta</h3>
-        <p class="text-gray-600 mb-4 text-center">Encuentra la tarjeta perfecta para ti</p>
-        <a href="/buscar" class="block text-center bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Buscar</a>
-    </div>
+    <div class="pasos-grid">
 
-    <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
-        <div class="text-center mb-4"><i class="fas fa-graduation-cap text-6xl text-purple-600"></i></div>
-        <h3 class="text-xl font-bold mb-2 text-center">Aprende</h3>
-        <p class="text-gray-600 mb-4 text-center">Educación financiera básica</p>
-        <a href="/educacion" class="block text-center bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Aprender</a>
-    </div>
+        <!-- PASO 1 -->
+        <div class="paso">
+            <div class="paso-numero">1</div>
+            <div class="paso-icono" style="background:#e8f0e9; color:var(--verde-oscuro);">
+                <i class="fas fa-search"></i>
+            </div>
+            <h3>Busca</h3>
+            <p>Dinos qué necesitas: tipo de tarjeta, anualidad máxima, CAT o edad.</p>
+            <div class="paso-items">
+                <div class="paso-item"><i class="fas fa-check-circle"></i> Estudiante, joven o clásica</div>
+                <div class="paso-item"><i class="fas fa-check-circle"></i> Con o sin anualidad</div>
+                <div class="paso-item"><i class="fas fa-check-circle"></i> Desde 18 años</div>
+            </div>
+            <br>
+            <a href="/buscar" class="paso-link">Ir a buscar <i class="fas fa-arrow-right"></i></a>
+        </div>
 
-    <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
-        <div class="text-center mb-4"><i class="fas fa-calculator text-6xl text-orange-600"></i></div>
-        <h3 class="text-xl font-bold mb-2 text-center">Calcula</h3>
-        <p class="text-gray-600 mb-4 text-center">Calculadora de intereses</p>
-        <a href="/calculadora" class="block text-center bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">Calcular</a>
-    </div>
+        <div class="paso-flecha"><i class="fas fa-chevron-right"></i></div>
 
-    <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
-        <div class="text-center mb-4"><i class="fas fa-chart-line text-6xl text-red-600"></i></div>
-        <h3 class="text-xl font-bold mb-2 text-center">Compara</h3>
-        <p class="text-gray-600 mb-4 text-center">Compara diferentes tarjetas</p>
-        <a href="/tarjetas" class="block text-center bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Comparar</a>
-    </div>
+        <!-- PASO 2 -->
+        <div class="paso">
+            <div class="paso-numero">2</div>
+            <div class="paso-icono" style="background:#d4edda; color:#276339;">
+                <i class="fas fa-balance-scale"></i>
+            </div>
+            <h3>Compara</h3>
+            <p>Revisa CAT, anualidad, beneficios y requisitos de cada opción lado a lado.</p>
+            <div class="paso-items">
+                <div class="paso-item"><i class="fas fa-check-circle"></i> CAT real sin letra pequeña</div>
+                <div class="paso-item"><i class="fas fa-check-circle"></i> Beneficios detallados</div>
+                <div class="paso-item"><i class="fas fa-check-circle"></i> Requisitos de edad</div>
+            </div>
+            <br>
+            <a href="/tarjetas" class="paso-link">Ver tarjetas <i class="fas fa-arrow-right"></i></a>
+        </div>
 
-    <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
-        <div class="text-center mb-4"><i class="fas fa-info-circle text-6xl text-indigo-600"></i></div>
-        <h3 class="text-xl font-bold mb-2 text-center">Información</h3>
-        <p class="text-gray-600 mb-4 text-center">Términos importantes</p>
-        <a href="/educacion" class="block text-center bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Ver más</a>
+        <div class="paso-flecha"><i class="fas fa-chevron-right"></i></div>
+
+        <!-- PASO 3 -->
+        <div class="paso">
+            <div class="paso-numero">3</div>
+            <div class="paso-icono" style="background:var(--beige); color:#7a5c3a;">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+            <h3>Decide</h3>
+            <p>Usa nuestra calculadora y guías para elegir con seguridad y sin sorpresas.</p>
+            <div class="paso-items">
+                <div class="paso-item"><i class="fas fa-check-circle"></i> Calculadora de intereses</div>
+                <div class="paso-item"><i class="fas fa-check-circle"></i> Glosario financiero</div>
+                <div class="paso-item"><i class="fas fa-check-circle"></i> Consejos para jóvenes</div>
+            </div>
+            <br>
+            <a href="/calculadora" class="paso-link">Calcular <i class="fas fa-arrow-right"></i></a>
+        </div>
+
     </div>
 </div>
+
+<!-- CTA Banco -->
+{% if not session.get('usuario_id') %}
+<div style="background:linear-gradient(135deg,var(--verde-oscuro),var(--verde-medio)); border-radius:var(--radio-lg); padding:2.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
+    <div>
+        <h3 style="font-family:'DM Serif Display',serif; color:#fff; font-size:1.5rem; margin-bottom:0.4rem;">¿Representas a un banco?</h3>
+        <p style="color:var(--verde-claro); font-size:0.95rem;">Registra tu institución y gestiona tus tarjetas en nuestra plataforma.</p>
+    </div>
+    <a href="/registro_banco" class="btn btn-secondary btn-lg"><i class="fas fa-building"></i> Registrar banco</a>
+</div>
+{% endif %}
+
 {% endblock %}
