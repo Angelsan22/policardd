@@ -55,6 +55,78 @@
     width: 40%; height: 1px;
     background: var(--gris-claro);
 }
+
+/* ── Face ID modal ── */
+.face-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+}
+.face-modal-overlay.active { display: flex; }
+.face-modal {
+    background: var(--blanco);
+    border-radius: var(--radio-lg);
+    padding: 2rem;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: var(--sombra-lg);
+}
+.face-modal h2 {
+    font-family: 'DM Serif Display', serif;
+    color: var(--verde-oscuro);
+    margin-bottom: 0.4rem;
+    font-size: 1.4rem;
+}
+.face-modal p { color: var(--verde-medio); font-size: 0.88rem; margin-bottom: 1.25rem; }
+#face-video {
+    width: 100%;
+    border-radius: var(--radio);
+    border: 3px solid var(--verde-claro);
+    background: #000;
+    transform: scaleX(-1);
+}
+#face-canvas { display: none; }
+.face-status {
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    min-height: 22px;
+    color: var(--verde-medio);
+}
+.face-status.error  { color: #c62828; }
+.face-status.ok     { color: #276339; }
+.face-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+.face-actions .btn { flex: 1; justify-content: center; }
+
+/* pulse ring while scanning */
+.scanning-ring {
+    display: none;
+    width: 100%;
+    border-radius: var(--radio);
+    position: relative;
+}
+.scanning-ring.active { display: block; }
+.scanning-ring::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: calc(var(--radio) + 4px);
+    border: 3px solid var(--verde-salvia);
+    animation: pulse-ring 1.2s ease-out infinite;
+}
+@keyframes pulse-ring {
+    0%   { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.05); }
+}
 </style>
 {% endblock %}
 
@@ -80,11 +152,16 @@
                 <input type="password" name="password" class="form-control"
                        placeholder="Tu contraseña" required>
             </div>
-
             <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top: 0.5rem;">
                 <i class="fas fa-sign-in-alt"></i> Ingresar
             </button>
         </form>
+
+        <div class="login-divider">o</div>
+
+        <button class="btn btn-secondary btn-full btn-lg" id="btn-face-login">
+            <i class="fas fa-camera"></i> Iniciar sesión con Face ID
+        </button>
 
         <div class="login-divider">o</div>
 
@@ -103,4 +180,107 @@
         </div>
     </div>
 </div>
+
+<!-- ── MODAL FACE ID ── -->
+<div class="face-modal-overlay" id="face-modal-overlay">
+    <div class="face-modal">
+        <h2><i class="fas fa-camera" style="color:var(--verde-salvia);"></i> Face ID</h2>
+        <p>Mira directamente a la cámara para identificarte</p>
+
+        <div class="scanning-ring" id="scanning-ring">
+            <video id="face-video" autoplay playsinline></video>
+        </div>
+        <canvas id="face-canvas"></canvas>
+
+        <div class="face-status" id="face-status">Iniciando cámara…</div>
+
+        <div class="face-actions">
+            <button class="btn btn-primary" id="btn-scan">
+                <i class="fas fa-user-check"></i> Verificar
+            </button>
+            <button class="btn btn-light" id="btn-close-face">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+    const overlay    = document.getElementById('face-modal-overlay');
+    const video      = document.getElementById('face-video');
+    const canvas     = document.getElementById('face-canvas');
+    const status     = document.getElementById('face-status');
+    const btnOpen    = document.getElementById('btn-face-login');
+    const btnScan    = document.getElementById('btn-scan');
+    const btnClose   = document.getElementById('btn-close-face');
+    const ring       = document.getElementById('scanning-ring');
+    let stream       = null;
+
+    function setStatus(msg, type) {
+        status.textContent = msg;
+        status.className   = 'face-status' + (type ? ' ' + type : '');
+    }
+
+    async function openCamera() {
+        overlay.classList.add('active');
+        ring.classList.add('active');
+        setStatus('Iniciando cámara…');
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+            video.srcObject = stream;
+            setStatus('Listo. Presiona "Verificar" cuando estés frente a la cámara.');
+        } catch (err) {
+            setStatus('No se pudo acceder a la cámara. Revisa los permisos.', 'error');
+        }
+    }
+
+    function stopCamera() {
+        if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+        overlay.classList.remove('active');
+        ring.classList.remove('active');
+    }
+
+    async function scanFace() {
+        setStatus('Analizando rostro…');
+        btnScan.disabled = true;
+
+        canvas.width  = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, 0, 0);
+
+        const imageData = canvas.toDataURL('image/jpeg', 0.85);
+
+        try {
+            const res  = await fetch('/login/face', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ image: imageData })
+            });
+            const data = await res.json();
+
+            if (data.ok) {
+                setStatus('¡Bienvenido ' + data.nombre + '! Redirigiendo…', 'ok');
+                stopCamera();
+                setTimeout(() => { window.location.href = data.redirect; }, 800);
+            } else {
+                setStatus(data.msg || 'No reconocido. Intenta de nuevo.', 'error');
+                btnScan.disabled = false;
+            }
+        } catch (err) {
+            setStatus('Error de conexión. Intenta de nuevo.', 'error');
+            btnScan.disabled = false;
+        }
+    }
+
+    btnOpen.addEventListener('click', openCamera);
+    btnScan.addEventListener('click', scanFace);
+    btnClose.addEventListener('click', stopCamera);
+})();
+</script>
 {% endblock %}

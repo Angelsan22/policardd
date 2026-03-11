@@ -2,205 +2,342 @@
 
 {% block title %}Panel de Banco - {{ banco.nombre_banco }}{% endblock %}
 
+{% block extra_styles %}
+<style>
+.dash-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.dash-header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    color: var(--verde-oscuro);
+    margin-bottom: 0.25rem;
+}
+.dash-header p { color: var(--verde-medio); font-size: 0.95rem; }
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+@media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 500px) { .stats-grid { grid-template-columns: 1fr; } }
+
+.stat-card {
+    background: var(--blanco);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra);
+    padding: 1.5rem;
+    border: 1px solid rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: box-shadow 0.25s, transform 0.25s;
+}
+.stat-card:hover { box-shadow: var(--sombra-lg); transform: translateY(-2px); }
+.stat-card .stat-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+}
+.stat-card .stat-label { font-size: 0.78rem; color: var(--verde-medio); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.stat-card .stat-value { font-size: 2rem; font-weight: 700; color: var(--verde-oscuro); line-height: 1; }
+
+.icon-blue   { background: #e8f0fe; color: #1a73e8; }
+.icon-green  { background: #d4edda; color: #276339; }
+.icon-yellow { background: #fff8e1; color: #f59e0b; }
+.icon-purple { background: #f3e8ff; color: #7c3aed; }
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+@media (max-width: 600px) { .actions-grid { grid-template-columns: 1fr; } }
+
+.action-card {
+    border-radius: var(--radio-lg);
+    padding: 2rem;
+    color: var(--blanco);
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: var(--sombra);
+}
+.action-card:hover { transform: translateY(-3px); box-shadow: var(--sombra-lg); color: var(--blanco); }
+.action-card.disabled { opacity: 0.5; pointer-events: none; }
+.action-card-blue  { background: linear-gradient(135deg, #1a73e8, #0d47a1); }
+.action-card-green { background: linear-gradient(135deg, var(--verde-salvia), var(--verde-oscuro)); }
+.action-card .ac-top { display: flex; align-items: center; justify-content: space-between; }
+.action-card .ac-icon {
+    width: 56px; height: 56px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+}
+.action-card h3 { font-size: 1.25rem; font-weight: 700; margin: 0; }
+.action-card p  { font-size: 0.88rem; opacity: 0.85; margin: 0; }
+.action-card .ac-count { font-size: 1.6rem; font-weight: 700; margin-top: 0.25rem; }
+.action-card .ac-lock {
+    font-size: 0.78rem;
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 0.4rem 0.75rem;
+    margin-top: 0.25rem;
+    display: inline-block;
+}
+
+.faceid-banner {
+    background: var(--blanco);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra);
+    border: 1px solid rgba(0,0,0,0.06);
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+.faceid-banner .fi-left { display: flex; align-items: center; gap: 1rem; }
+.faceid-banner .fi-icon {
+    width: 50px; height: 50px;
+    background: #d4edda;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    color: #276339;
+    flex-shrink: 0;
+}
+.faceid-banner h3 { font-size: 1rem; font-weight: 700; color: var(--verde-oscuro); margin-bottom: 0.2rem; }
+.faceid-banner p  { font-size: 0.83rem; color: var(--verde-medio); margin: 0; }
+
+.info-card {
+    background: var(--blanco);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra);
+    border: 1px solid rgba(0,0,0,0.06);
+    padding: 2rem;
+}
+.info-card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    color: var(--verde-oscuro);
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.5rem;
+}
+.info-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 2rem; }
+@media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } }
+
+.info-section h4 {
+    font-size: 0.78rem; font-weight: 700;
+    color: var(--verde-medio);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+}
+.info-row {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--gris-claro);
+    font-size: 0.9rem; color: var(--texto-oscuro);
+}
+.info-row:last-child { border-bottom: none; }
+.info-row i { color: var(--verde-salvia); width: 18px; text-align: center; }
+.info-row a { color: var(--verde-salvia); text-decoration: none; }
+.info-row a:hover { color: var(--verde-oscuro); }
+
+.info-status-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--gris-claro);
+    font-size: 0.9rem;
+}
+.info-status-row:last-child { border-bottom: none; }
+.info-status-row span:first-child { color: var(--verde-medio); }
+
+.desc-box {
+    margin-top: 1.5rem; padding-top: 1.5rem;
+    border-top: 1px solid var(--gris-claro);
+}
+.desc-box h4 {
+    font-size: 0.78rem; font-weight: 700;
+    color: var(--verde-medio);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+.desc-box p { font-size: 0.9rem; color: var(--texto-oscuro); line-height: 1.6; }
+
+.alert-pending {
+    background: #fff8e1;
+    border-left: 4px solid #f59e0b;
+    border-radius: var(--radio);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    display: flex; gap: 1rem; align-items: flex-start;
+}
+.alert-pending i { color: #f59e0b; font-size: 1.3rem; margin-top: 2px; flex-shrink: 0; }
+.alert-pending h3 { font-size: 0.95rem; font-weight: 700; color: #92400e; margin-bottom: 0.3rem; }
+.alert-pending p  { font-size: 0.85rem; color: #92400e; margin: 0; line-height: 1.5; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="max-w-7xl mx-auto">
-    <!-- Header -->
-    <div class="mb-8">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-4xl font-bold text-gray-800 mb-2">
-                    <i class="fas fa-building text-green-600 mr-2"></i>{{ banco.nombre_banco }}
-                </h1>
-                <p class="text-gray-600">Bienvenido, {{ session.user_name }}</p>
-            </div>
-            {% if banco.aprobado %}
-                <span class="bg-green-100 text-green-800 px-4 py-2 rounded-full font-semibold">
-                    <i class="fas fa-check-circle mr-1"></i>Banco Aprobado
-                </span>
-            {% else %}
-                <span class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full font-semibold">
-                    <i class="fas fa-clock mr-1"></i>Pendiente de Aprobación
-                </span>
-            {% endif %}
-        </div>
-    </div>
 
-    <!-- Alert si no está aprobado -->
-    {% if not banco.aprobado %}
-    <div class="mb-8 bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg shadow-lg animate-slide-in">
-        <div class="flex items-start">
-            <i class="fas fa-exclamation-triangle text-yellow-600 text-2xl mr-4 mt-1"></i>
-            <div>
-                <h3 class="font-bold text-yellow-800 text-lg mb-2">Tu banco está pendiente de aprobación</h3>
-                <p class="text-yellow-700 mb-2">
-                    Un administrador revisará tu solicitud pronto. Una vez aprobado, podrás crear y publicar tarjetas de crédito.
-                </p>
-                <p class="text-sm text-yellow-600">
-                    <i class="fas fa-info-circle mr-1"></i>
-                    Mientras tanto, puedes explorar las funcionalidades del panel.
-                </p>
-            </div>
-        </div>
+<!-- Header -->
+<div class="dash-header">
+    <div>
+        <h1><i class="fas fa-building" style="color:var(--verde-salvia); margin-right:0.5rem;"></i>{{ banco.nombre_banco }}</h1>
+        <p>Bienvenido, {{ session.get('nombre') }}</p>
     </div>
+    {% if banco.aprobado %}
+        <span class="badge" style="background:#d4edda; color:#276339; font-size:0.85rem; padding:0.5rem 1.1rem;">
+            <i class="fas fa-check-circle"></i> Banco Aprobado
+        </span>
+    {% else %}
+        <span class="badge" style="background:#fff8e1; color:#92400e; font-size:0.85rem; padding:0.5rem 1.1rem;">
+            <i class="fas fa-clock"></i> Pendiente de Aprobación
+        </span>
     {% endif %}
+</div>
 
-    <!-- Estadísticas -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <!-- Total Tarjetas -->
-        <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
-            <div class="flex items-center justify-between mb-4">
-                <div class="bg-blue-100 p-3 rounded-full">
-                    <i class="fas fa-credit-card text-blue-600 text-2xl"></i>
-                </div>
-            </div>
-            <h3 class="text-gray-600 text-sm mb-1">Total Tarjetas</h3>
-            <p class="text-3xl font-bold text-gray-800">{{ stats.tarjetas_count }}</p>
-        </div>
-
-        <!-- Tarjetas Aprobadas -->
-        <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
-            <div class="flex items-center justify-between mb-4">
-                <div class="bg-green-100 p-3 rounded-full">
-                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
-                </div>
-            </div>
-            <h3 class="text-gray-600 text-sm mb-1">Aprobadas</h3>
-            <p class="text-3xl font-bold text-green-600">{{ stats.tarjetas_aprobadas }}</p>
-        </div>
-
-        <!-- Pendientes -->
-        <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
-            <div class="flex items-center justify-between mb-4">
-                <div class="bg-yellow-100 p-3 rounded-full">
-                    <i class="fas fa-clock text-yellow-600 text-2xl"></i>
-                </div>
-            </div>
-            <h3 class="text-gray-600 text-sm mb-1">Pendientes</h3>
-            <p class="text-3xl font-bold text-yellow-600">{{ stats.tarjetas_count - stats.tarjetas_aprobadas }}</p>
-        </div>
-
-        <!-- Solicitudes -->
-        <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
-            <div class="flex items-center justify-between mb-4">
-                <div class="bg-purple-100 p-3 rounded-full">
-                    <i class="fas fa-bell text-purple-600 text-2xl"></i>
-                </div>
-            </div>
-            <h3 class="text-gray-600 text-sm mb-1">Solicitudes</h3>
-            <p class="text-3xl font-bold text-purple-600">{{ stats.solicitudes_pendientes }}</p>
-        </div>
-    </div>
-
-    <!-- Acciones Rápidas -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <!-- Gestionar Tarjetas -->
-        <a href="/banco/tarjetas" class="bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-lg shadow-lg p-8 card-hover">
-            <div class="flex items-center justify-between mb-4">
-                <div class="bg-white bg-opacity-20 p-4 rounded-full">
-                    <i class="fas fa-credit-card text-4xl"></i>
-                </div>
-                <i class="fas fa-arrow-right text-3xl"></i>
-            </div>
-            <h3 class="text-2xl font-bold mb-2">Gestionar Tarjetas</h3>
-            <p class="text-blue-100">Ver, editar y eliminar tus tarjetas</p>
-            <div class="mt-4 text-3xl font-bold">{{ stats.tarjetas_count }} Tarjeta{% if stats.tarjetas_count != 1 %}s{% endif %}</div>
-        </a>
-
-        <!-- Crear Nueva Tarjeta -->
-        <a href="/banco/tarjeta/nueva" class="bg-gradient-to-br from-green-500 to-green-700 text-white rounded-lg shadow-lg p-8 card-hover {% if not banco.aprobado %}opacity-50 cursor-not-allowed{% endif %}" {% if not banco.aprobado %}onclick="return false;"{% endif %}>
-            <div class="flex items-center justify-between mb-4">
-                <div class="bg-white bg-opacity-20 p-4 rounded-full">
-                    <i class="fas fa-plus-circle text-4xl"></i>
-                </div>
-                <i class="fas fa-arrow-right text-3xl"></i>
-            </div>
-            <h3 class="text-2xl font-bold mb-2">Nueva Tarjeta</h3>
-            <p class="text-green-100">
-                {% if banco.aprobado %}
-                    Crear y publicar una nueva tarjeta
-                {% else %}
-                    Disponible después de aprobación
-                {% endif %}
-            </p>
-            {% if not banco.aprobado %}
-            <div class="mt-4 text-sm bg-white bg-opacity-20 rounded p-2">
-                <i class="fas fa-lock mr-1"></i>Requiere aprobación del banco
-            </div>
-            {% endif %}
-        </a>
-    </div>
-
-    <!-- Información del Banco -->
-    <div class="bg-white rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-            <i class="fas fa-info-circle text-blue-600 mr-2"></i>
-            Información del Banco
-        </h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <h3 class="text-sm font-semibold text-gray-600 mb-3">Datos de Contacto</h3>
-                <div class="space-y-3">
-                    <div class="flex items-center">
-                        <i class="fas fa-user text-gray-400 w-6"></i>
-                        <span class="text-gray-700">{{ banco.usuario.nombre }}</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-envelope text-gray-400 w-6"></i>
-                        <span class="text-gray-700">{{ banco.usuario.email }}</span>
-                    </div>
-                    {% if banco.telefono %}
-                    <div class="flex items-center">
-                        <i class="fas fa-phone text-gray-400 w-6"></i>
-                        <span class="text-gray-700">{{ banco.telefono }}</span>
-                    </div>
-                    {% endif %}
-                    {% if banco.sitio_web %}
-                    <div class="flex items-center">
-                        <i class="fas fa-globe text-gray-400 w-6"></i>
-                        <a href="{{ banco.sitio_web }}" target="_blank" class="text-blue-600 hover:text-blue-800">
-                            Visitar sitio web <i class="fas fa-external-link-alt text-xs"></i>
-                        </a>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div>
-                <h3 class="text-sm font-semibold text-gray-600 mb-3">Estado y Fechas</h3>
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-gray-700">Estado:</span>
-                        {% if banco.aprobado %}
-                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
-                                <i class="fas fa-check-circle"></i> Aprobado
-                            </span>
-                        {% else %}
-                            <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">
-                                <i class="fas fa-clock"></i> Pendiente
-                            </span>
-                        {% endif %}
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-gray-700">Registro:</span>
-                        <span class="font-semibold">{{ banco.usuario.fecha_registro.strftime('%d/%m/%Y') }}</span>
-                    </div>
-                    {% if banco.aprobado and banco.fecha_aprobacion %}
-                    <div class="flex items-center justify-between">
-                        <span class="text-gray-700">Aprobación:</span>
-                        <span class="font-semibold">{{ banco.fecha_aprobacion.strftime('%d/%m/%Y') }}</span>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        {% if banco.descripcion %}
-        <div class="mt-6 pt-6 border-t">
-            <h3 class="text-sm font-semibold text-gray-600 mb-2">Descripción</h3>
-            <p class="text-gray-700">{{ banco.descripcion }}</p>
-        </div>
-        {% endif %}
+<!-- Alert pendiente -->
+{% if not banco.aprobado %}
+<div class="alert-pending">
+    <i class="fas fa-exclamation-triangle"></i>
+    <div>
+        <h3>Tu banco está pendiente de aprobación</h3>
+        <p>Un administrador revisará tu solicitud pronto. Una vez aprobado podrás crear y publicar tarjetas de crédito.<br>
+        <i class="fas fa-info-circle"></i> Mientras tanto puedes explorar las funcionalidades del panel.</p>
     </div>
 </div>
+{% endif %}
+
+<!-- Stats -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon icon-blue"><i class="fas fa-credit-card"></i></div>
+        <div class="stat-label">Total Tarjetas</div>
+        <div class="stat-value">{{ stats.tarjetas_count }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon icon-green"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-label">Aprobadas</div>
+        <div class="stat-value" style="color:#276339;">{{ stats.tarjetas_aprobadas }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon icon-yellow"><i class="fas fa-clock"></i></div>
+        <div class="stat-label">Pendientes</div>
+        <div class="stat-value" style="color:#f59e0b;">{{ stats.tarjetas_count - stats.tarjetas_aprobadas }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon icon-purple"><i class="fas fa-bell"></i></div>
+        <div class="stat-label">Solicitudes</div>
+        <div class="stat-value" style="color:#7c3aed;">{{ stats.solicitudes_pendientes }}</div>
+    </div>
+</div>
+
+<!-- Acciones rápidas -->
+<div class="actions-grid">
+    <a href="/banco/tarjetas" class="action-card action-card-blue">
+        <div class="ac-top">
+            <div class="ac-icon"><i class="fas fa-credit-card"></i></div>
+            <i class="fas fa-arrow-right" style="font-size:1.3rem; opacity:0.7;"></i>
+        </div>
+        <h3>Gestionar Tarjetas</h3>
+        <p>Ver, editar y eliminar tus tarjetas</p>
+        <div class="ac-count">{{ stats.tarjetas_count }} Tarjeta{% if stats.tarjetas_count != 1 %}s{% endif %}</div>
+    </a>
+
+    <a href="/banco/tarjeta/nueva"
+       class="action-card action-card-green {% if not banco.aprobado %}disabled{% endif %}"
+       {% if not banco.aprobado %}onclick="return false;"{% endif %}>
+        <div class="ac-top">
+            <div class="ac-icon"><i class="fas fa-plus-circle"></i></div>
+            <i class="fas fa-arrow-right" style="font-size:1.3rem; opacity:0.7;"></i>
+        </div>
+        <h3>Nueva Tarjeta</h3>
+        <p>{% if banco.aprobado %}Crear y publicar una nueva tarjeta{% else %}Disponible después de aprobación{% endif %}</p>
+        {% if not banco.aprobado %}
+        <div class="ac-lock"><i class="fas fa-lock"></i> Requiere aprobación del banco</div>
+        {% endif %}
+    </a>
+</div>
+
+<!-- Face ID banner -->
+<div class="faceid-banner">
+    <div class="fi-left">
+        <div class="fi-icon"><i class="fas fa-camera"></i></div>
+        <div>
+            <h3>Inicio de sesión con Face ID</h3>
+            <p>Registra tu rostro para acceder sin contraseña la próxima vez</p>
+        </div>
+    </div>
+    <a href="/perfil" class="btn btn-secondary">
+        <i class="fas fa-user-circle"></i> Configurar Face ID
+    </a>
+</div>
+
+<!-- Información del banco -->
+<div class="info-card">
+    <h2><i class="fas fa-info-circle" style="color:var(--verde-salvia);"></i> Información del Banco</h2>
+
+    <div class="info-grid">
+        <div class="info-section">
+            <h4>Datos de Contacto</h4>
+            <div class="info-row"><i class="fas fa-user"></i> {{ banco.usuario.nombre }}</div>
+            <div class="info-row"><i class="fas fa-envelope"></i> {{ banco.usuario.email }}</div>
+            {% if banco.telefono %}
+            <div class="info-row"><i class="fas fa-phone"></i> {{ banco.telefono }}</div>
+            {% endif %}
+            {% if banco.sitio_web %}
+            <div class="info-row">
+                <i class="fas fa-globe"></i>
+                <a href="{{ banco.sitio_web }}" target="_blank">Visitar sitio web <i class="fas fa-external-link-alt" style="font-size:0.7rem;"></i></a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="info-section">
+            <h4>Estado y Fechas</h4>
+            <div class="info-status-row">
+                <span>Estado:</span>
+                {% if banco.aprobado %}
+                    <span class="badge" style="background:#d4edda; color:#276339;"><i class="fas fa-check-circle"></i> Aprobado</span>
+                {% else %}
+                    <span class="badge" style="background:#fff8e1; color:#92400e;"><i class="fas fa-clock"></i> Pendiente</span>
+                {% endif %}
+            </div>
+            <div class="info-status-row">
+                <span>Registro:</span>
+                <span style="font-weight:600;">{{ banco.usuario.fecha_registro.strftime('%d/%m/%Y') }}</span>
+            </div>
+            {% if banco.aprobado and banco.fecha_aprobacion %}
+            <div class="info-status-row">
+                <span>Aprobación:</span>
+                <span style="font-weight:600;">{{ banco.fecha_aprobacion.strftime('%d/%m/%Y') }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if banco.descripcion %}
+    <div class="desc-box">
+        <h4>Descripción</h4>
+        <p>{{ banco.descripcion }}</p>
+    </div>
+    {% endif %}
+</div>
+
 {% endblock %}

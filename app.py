@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect, url_for, session
+from flask import Flask, render_template, request, flash, redirect, url_for, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect, generate_csrf
@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired, NumberRange, Email, Length, EqualTo
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from datetime import datetime
+from face_utils import extract_encoding_from_b64, encoding_to_str, str_to_encoding, compare_encodings
 import os
 import logging
 
@@ -40,6 +41,7 @@ class Usuario(db.Model):
     tipo = db.Column(db.String(20), nullable=False)
     activo = db.Column(db.Boolean, default=True)
     fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
+    face_encoding = db.Column(db.Text, nullable=True)
     banco = db.relationship('Banco', backref='usuario', uselist=False, cascade='all, delete-orphan')
 
 class Banco(db.Model):
@@ -218,6 +220,64 @@ def login():
 
     return render_template('login.html', form=form)
 
+
+@app.route('/login/face', methods=['POST'])
+@csrf.exempt
+def login_face():
+    """
+    Recibe un frame en base64 desde el navegador,
+    extrae el encoding facial y lo compara contra todos los usuarios registrados.
+    Retorna JSON con resultado.
+    """
+    data = request.get_json(silent=True)
+    if not data or 'image' not in data:
+        return jsonify({'ok': False, 'msg': 'No se recibió imagen'}), 400
+
+    candidate = extract_encoding_from_b64(data['image'])
+    if candidate is None:
+        return jsonify({'ok': False, 'msg': 'No se detectó ningún rostro. Asegúrate de estar frente a la cámara.'}), 200
+
+    usuarios = Usuario.query.filter(Usuario.face_encoding.isnot(None)).all()
+    for usuario in usuarios:
+        known = str_to_encoding(usuario.face_encoding)
+        if compare_encodings(known, candidate):
+            session['usuario_id'] = usuario.id
+            session['tipo']       = usuario.tipo
+            session['nombre']     = usuario.nombre
+            redirect_url = url_for('admin_dashboard') if usuario.tipo == 'admin' else url_for('banco_dashboard')
+            return jsonify({'ok': True, 'redirect': redirect_url, 'nombre': usuario.nombre})
+
+    return jsonify({'ok': False, 'msg': 'Rostro no reconocido. Usa tu email y contraseña.'}), 200
+
+
+@app.route('/perfil/registrar-face', methods=['POST'])
+@csrf.exempt
+@login_required
+def registrar_face():
+    """
+    Permite a un usuario autenticado registrar su rostro.
+    Recibe un frame en base64 y guarda el encoding en la BD.
+    """
+    data = request.get_json(silent=True)
+    if not data or 'image' not in data:
+        return jsonify({'ok': False, 'msg': 'No se recibió imagen'}), 400
+
+    encoding = extract_encoding_from_b64(data['image'])
+    if encoding is None:
+        return jsonify({'ok': False, 'msg': 'No se detectó ningún rostro. Intenta de nuevo.'}), 200
+
+    usuario = Usuario.query.get(session['usuario_id'])
+    usuario.face_encoding = encoding_to_str(encoding)
+    db.session.commit()
+    return jsonify({'ok': True, 'msg': '¡Rostro registrado exitosamente!'})
+
+@app.route('/perfil')                  
+@login_required
+def perfil():
+    usuario = Usuario.query.get(session['usuario_id'])
+    tiene_face = usuario.face_encoding is not None
+    return render_template('perfil.html', tiene_face=tiene_face)
+
 @app.route('/registro_banco', methods=['GET', 'POST'])
 def registro_banco():
     form = RegistroBancoForm()
@@ -267,6 +327,8 @@ def logout():
     session.clear()
     flash('Sesión cerrada correctamente', 'info')
     return redirect(url_for('index'))
+
+    
 
 # ==================== DASHBOARD ====================
 @app.route('/dashboard')
@@ -323,7 +385,7 @@ def aprobar_solicitud(id):
                 tarjeta.aprobada = True
                 tarjeta.fecha_aprobacion = datetime.utcnow()
         db.session.commit()
-        flash('✅ Solicitud aprobada correctamente', 'success')
+        flash('Solicitud aprobada correctamente', 'success')
     except Exception as e:
         db.session.rollback()
         flash('Error al aprobar la solicitud', 'danger')
@@ -376,7 +438,7 @@ def banco_dashboard():
             'solicitudes_pendientes': Solicitud.query.filter_by(banco_id=banco.id, estado='pendiente').count(),
             'banco_aprobado':         banco.aprobado
         }
-        return render_template('banco/dashboard.html', banco=banco, stats=stats)
+        return render_template('banco/bancodashboard.html', banco=banco, stats=stats)
     except Exception as e:
         flash('Error al cargar el dashboard', 'danger')
         return redirect(url_for('index'))
@@ -505,7 +567,6 @@ def init_db():
                 print("✅ Admin creado: admin@policard.com / AdminPoliCard2025!")
 
             if Tarjeta.query.count() == 0:
-                print("🔄 Creando datos de ejemplo...")
                 bancos_data = [
                     {'email': 'bbva@banco.com',      'nombre': 'Rep. BBVA',      'banco': 'BBVA México'},
                     {'email': 'santander@banco.com', 'nombre': 'Rep. Santander', 'banco': 'Santander'},
@@ -566,11 +627,10 @@ def init_db():
                         db.session.add(t)
 
                 db.session.commit()
-                print(f"✅ {Tarjeta.query.count()} tarjetas creadas")
 
         except Exception as e:
             db.session.rollback()
-            print(f"❌ Error inicializando BD: {e}")
+            print(f" Error inicializando BD: {e}")
 
 init_db()
 

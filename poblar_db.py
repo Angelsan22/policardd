@@ -86,7 +86,7 @@ def poblar_base_datos():
 
         db.session.commit()
 
-        print("✅ Base de datos poblada exitosamente")
+        print(" Base de datos poblada exitosamente")
         print(f"   Usuarios : {Usuario.query.count()}")
         print(f"   Bancos   : {Banco.query.count()}")
         print(f"   Tarjetas : {Tarjeta.query.count()}")
