@@ -267,6 +267,88 @@
         .text-success { color: #276339; }
         .fw-bold { font-weight: 700; }
         .text-sm { font-size: 0.85rem; }
+
+                /* ─── FOOTER PRO ─── */
+        .footer {
+            background: var(--verde-oscuro);
+            color: var(--verde-claro);
+            padding: 1.2rem 2rem;
+            font-size: 0.85rem;
+        }
+
+        /* CONTENEDOR */
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* IZQUIERDA */
+        .footer-left h2 {
+            font-family: 'DM Serif Display', serif;
+            color: var(--blanco);
+            font-size: 1.2rem;
+        }
+
+        /* CENTRO */
+        .footer-center {
+            text-align: center;
+            flex: 1;
+        }
+
+        /* DERECHA (REDES) */
+        .footer-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* BOTONES */
+        .footer-right a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            transition: all 0.25s ease;
+        }
+
+        /* ICONOS */
+        .footer-right img {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* HOVER */
+        .footer-right a:hover {
+            background: var(--verde-salvia);
+            transform: translateY(-2px);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .footer-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-center {
+                order: 3;
+            }
+
+            .footer-right {
+                order: 2;
+            }
+
+            .footer-left {
+                order: 1;
+            }
+        }
     </style>
     {% block extra_styles %}{% endblock %}
 </head>
@@ -314,11 +396,38 @@
     {% block content %}{% endblock %}
 </main>
 
-<footer>
-    <p>© 2025 <strong>PoliCard</strong> · Tu guía de tarjetas de crédito ·
-        <a href="/educacion">Educación Financiera</a> ·
-        <a href="/buscar">Buscar Tarjeta</a>
-    </p>
+
+
+<footer class="footer">
+    <div class="footer-container">
+
+        <!-- Logo -->
+        <div class="footer-left">
+            <h2>PoliCard</h2>
+        </div>
+
+        <!-- Texto -->
+        <div class="footer-center">
+            <p>
+                © 2026 PoliCard · Plataforma de ayuda a los jóvenes en el ambito financiero · 
+                Todos los derechos reservados.
+            </p>
+        </div>
+
+        <!-- Redes -->
+        <div class="footer-right">
+            <a href="https://facebook.com" target="_blank">
+                <img src="https://cdn.simpleicons.org/facebook/white" alt="Facebook">
+            </a>
+            <a href="https://instagram.com" target="_blank">
+                <img src="https://cdn.simpleicons.org/instagram/white" alt="Instagram">
+            </a>
+            <a href="https://twitter.com" target="_blank">
+                <img src="https://cdn.simpleicons.org/x/white" alt="X">
+            </a>
+        </div>
+
+    </div>
 </footer>
 
 {% block extra_scripts %}{% endblock %}
