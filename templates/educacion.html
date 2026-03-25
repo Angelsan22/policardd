@@ -3,98 +3,668 @@
 
 {% block extra_styles %}
 <style>
-.edu-hero {
-    background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));
-    border-radius: var(--radio-lg); padding: 2.5rem 3rem; color: var(--blanco);
-    margin-bottom: 2rem; display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
-    position: relative; overflow: hidden;
-}
-.edu-hero::before { content:''; position:absolute; top:-60px; right:-40px; width:220px; height:220px; border-radius:50%; background:rgba(186,200,177,0.1); }
-.edu-hero-icon { font-size: 3.5rem; opacity: 0.9; position:relative; z-index:1; }
-.edu-hero-text { position:relative; z-index:1; }
-.edu-hero h2 { font-family: 'DM Serif Display', serif; font-size: 1.9rem; margin-bottom: 0.4rem; }
-.edu-hero p  { color: var(--verde-claro); font-size: 0.95rem; line-height: 1.6; max-width: 520px; }
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap');
 
-.tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
-.tab-btn {
-    padding: 0.5rem 1.25rem; border-radius: 99px;
-    border: 2px solid var(--gris-claro); background: var(--blanco);
-    color: var(--verde-medio); font-size: 0.85rem; font-weight: 600;
-    cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif;
-    display: inline-flex; align-items: center; gap: 6px;
+/* ── Palette ── */
+:root {
+    --sage:       #6B8F5E;
+    --sage-light: #8FAF7E;
+    --sage-pale:  #EAF2E4;
+    --forest:     #1A2E1A;
+    --forest-mid: #2E4A2E;
+    --moss:       #5A7A6A;
+    --cream:      #F7F9F5;
+    --parchment:  #F0EDE5;
+    --gold:       #C8952A;
+    --gold-pale:  #FDF3DC;
+    --coral:      #C0392B;
+    --coral-pale: #FDECEA;
+    --amber:      #9a6e00;
+    --amber-pale: #FFF8E1;
+    --ink:        #1A2E1A;
+    --muted:      #5A7A6A;
 }
-.tab-btn:hover, .tab-btn.active { background: var(--verde-oscuro); border-color: var(--verde-oscuro); color: var(--blanco); }
+
+/* ── Hero ── */
+.edu-hero {
+    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 55%, #3d6b45 100%);
+    border-radius: 28px;
+    padding: 2.8rem 3rem;
+    color: #fff;
+    margin-bottom: 2.2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(26,46,26,0.22);
+}
+.edu-hero::before {
+    content: '';
+    position: absolute;
+    top: -70px; right: -50px;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    background: rgba(107,143,94,0.15);
+    pointer-events: none;
+}
+.edu-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 30%;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(200,149,42,0.08);
+    pointer-events: none;
+}
+.edu-hero-icon {
+    font-size: 3.8rem;
+    opacity: 0.92;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+}
+.edu-hero-text { position: relative; z-index: 1; }
+.edu-hero h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    margin-bottom: 0.45rem;
+    letter-spacing: -0.01em;
+}
+.edu-hero p {
+    color: rgba(255,255,255,0.72);
+    font-size: 0.95rem;
+    line-height: 1.65;
+    max-width: 520px;
+    font-family: 'Outfit', sans-serif;
+}
+
+/* ── Tabs ── */
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+.tab-btn {
+    padding: 0.55rem 1.3rem;
+    border-radius: 99px;
+    border: 1.5px solid rgba(107,143,94,0.3);
+    background: #fff;
+    color: var(--moss);
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.22s;
+    font-family: 'Outfit', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.tab-btn:hover {
+    background: var(--sage-pale);
+    border-color: var(--sage);
+    color: var(--forest);
+}
+.tab-btn.active {
+    background: var(--forest);
+    border-color: var(--forest);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(26,46,26,0.22);
+}
 .tab-section { display: none; }
 .tab-section.active { display: block; animation: fadeIn 0.3s ease; }
-@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);} }
 
-/* Concept cards */
-.concept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px,1fr)); gap: 1.25rem; }
-.concept-card { background: var(--blanco); border-radius: var(--radio-lg); padding: 1.5rem; box-shadow: var(--sombra); border-top: 4px solid var(--verde-salvia); transition: all 0.2s; }
-.concept-card:hover { box-shadow: var(--sombra-lg); transform: translateY(-2px); }
-.concept-icon { width:44px; height:44px; border-radius:12px; background:var(--beige); display:flex; align-items:center; justify-content:center; font-size:1.2rem; margin-bottom:1rem; color:var(--verde-oscuro); }
-.concept-card h4 { font-family:'DM Serif Display',serif; font-size:1.05rem; color:var(--verde-oscuro); margin-bottom:0.6rem; }
-.concept-card p  { font-size:0.87rem; color:var(--texto-medio); line-height:1.6; }
+/* ── Concept cards ── */
+.concept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.3rem;
+}
+.concept-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 1.6rem;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.05), 0 8px 28px rgba(0,0,0,0.07);
+    border: 1px solid rgba(107,143,94,0.12);
+    transition: transform 0.22s, box-shadow 0.22s;
+    position: relative;
+    overflow: hidden;
+}
+.concept-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--sage), var(--sage-light));
+    border-radius: 20px 20px 0 0;
+}
+.concept-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 0 rgba(0,0,0,0.06), 0 20px 48px rgba(0,0,0,0.11);
+}
+.concept-icon {
+    width: 46px; height: 46px;
+    border-radius: 13px;
+    background: var(--sage-pale);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.25rem;
+    margin-bottom: 1.1rem;
+    color: var(--forest);
+    box-shadow: 0 2px 8px rgba(107,143,94,0.2);
+}
+.concept-card h4 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.08rem;
+    color: var(--forest);
+    margin-bottom: 0.6rem;
+}
+.concept-card p {
+    font-size: 0.87rem;
+    color: var(--muted);
+    line-height: 1.65;
+    font-family: 'Outfit', sans-serif;
+}
 
-/* Infografía barras CAT */
-.cat-infographic { background: var(--blanco); border-radius: var(--radio-lg); padding: 2rem; box-shadow: var(--sombra); margin-bottom: 1.5rem; }
-.cat-infographic h3 { font-family:'DM Serif Display',serif; color:var(--verde-oscuro); font-size:1.2rem; margin-bottom:0.5rem; display:flex; align-items:center; gap:8px; }
-.cat-bar-row { display:flex; align-items:center; gap:1rem; margin-bottom:0.85rem; }
-.cat-bar-label { width:140px; flex-shrink:0; font-size:0.82rem; font-weight:600; color:var(--texto-medio); }
-.cat-bar-wrap  { flex:1; height:32px; background:var(--gris-claro); border-radius:8px; overflow:hidden; }
-.cat-bar-fill  { height:100%; border-radius:8px; display:flex; align-items:center; padding-left:10px; font-size:0.78rem; font-weight:700; color:var(--blanco); }
-.cat-bar-pct   { margin-left:0.75rem; font-weight:700; font-size:0.88rem; color:var(--verde-oscuro); width:40px; }
-.cat-legend    { display:flex; gap:1.5rem; flex-wrap:wrap; margin-top:1rem; font-size:0.78rem; }
-.cat-legend-item { display:flex; align-items:center; gap:6px; color:var(--texto-medio); }
-.cat-legend-dot { width:12px; height:12px; border-radius:3px; flex-shrink:0; }
+/* ── Section card wrapper ── */
+.info-card {
+    background: #fff;
+    border-radius: 22px;
+    padding: 2rem 2.2rem;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.05), 0 8px 32px rgba(0,0,0,0.07);
+    border: 1px solid rgba(107,143,94,0.1);
+    margin-bottom: 1.6rem;
+}
+.info-card-title {
+    font-family: 'DM Serif Display', serif;
+    color: var(--forest);
+    font-size: 1.2rem;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.info-card-title i { color: var(--sage); }
+.info-card-sub {
+    font-size: 0.84rem;
+    color: var(--muted);
+    margin-bottom: 1.6rem;
+    font-family: 'Outfit', sans-serif;
+}
 
-/* Ciclo */
-.cycle-infographic { background: var(--blanco); border-radius: var(--radio-lg); padding: 2rem; box-shadow: var(--sombra); margin-bottom: 1.5rem; }
-.cycle-infographic h3 { font-family:'DM Serif Display',serif; color:var(--verde-oscuro); font-size:1.2rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:8px; }
-.cycle-steps { display:grid; grid-template-columns: repeat(4,1fr); gap:0; position:relative; }
-@media(max-width:640px){ .cycle-steps { grid-template-columns:1fr 1fr; } }
-.cycle-step { text-align:center; padding:1rem 0.5rem; position:relative; }
-.cycle-step::after { content:'→'; position:absolute; right:-10px; top:22px; font-size:1.2rem; color:var(--verde-claro); font-weight:700; }
-.cycle-step:last-child::after { display:none; }
-.cycle-num { width:48px; height:48px; border-radius:50%; margin:0 auto 0.75rem; background:var(--verde-oscuro); color:var(--blanco); display:flex; align-items:center; justify-content:center; font-family:'DM Serif Display',serif; font-size:1.1rem; font-weight:700; }
-.cycle-step h4 { font-size:0.82rem; font-weight:700; color:var(--verde-oscuro); margin-bottom:0.3rem; }
-.cycle-step p  { font-size:0.75rem; color:var(--verde-medio); line-height:1.45; }
+/* ── CAT bar chart ── */
+.cat-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+}
+.cat-bar-label {
+    width: 148px;
+    flex-shrink: 0;
+    font-size: 0.81rem;
+    font-weight: 600;
+    color: var(--ink);
+    font-family: 'Outfit', sans-serif;
+}
+.cat-bar-wrap {
+    flex: 1;
+    height: 34px;
+    background: var(--cream);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(107,143,94,0.1);
+}
+.cat-bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 0.02em;
+}
+.cat-bar-pct {
+    margin-left: 0.75rem;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--forest);
+    width: 42px;
+    font-family: 'Outfit', sans-serif;
+}
+.cat-legend {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 1.2rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid rgba(107,143,94,0.12);
+    font-size: 0.78rem;
+    font-family: 'Outfit', sans-serif;
+}
+.cat-legend-item { display: flex; align-items: center; gap: 7px; color: var(--muted); }
+.cat-legend-dot  { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
 
-/* Comparación pagos */
-.payment-compare { background: var(--blanco); border-radius: var(--radio-lg); padding: 2rem; box-shadow: var(--sombra); margin-bottom: 1.5rem; }
-.payment-compare h3 { font-family:'DM Serif Display',serif; color:var(--verde-oscuro); font-size:1.2rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:8px; }
-.pay-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
-@media(max-width:560px){ .pay-grid { grid-template-columns:1fr; } }
-.pay-card { border-radius:var(--radio); padding:1.5rem; }
-.pay-card.bad  { background:#fdecea; border:2px solid #f5c6cb; }
-.pay-card.good { background:#d4edda; border:2px solid #c3e6cb; }
-.pay-card .pc-icon { font-size:2rem; margin-bottom:0.75rem; }
-.pay-card h4 { font-size:0.9rem; font-weight:700; margin-bottom:0.75rem; }
-.pay-card.bad  h4 { color:#c0392b; }
-.pay-card.good h4 { color:#276339; }
-.pay-row { display:flex; justify-content:space-between; font-size:0.82rem; padding:0.35rem 0; border-bottom:1px solid rgba(0,0,0,0.06); }
-.pay-row:last-child { border-bottom:none; }
-.pay-row .pr-label { color:var(--texto-medio); }
-.pay-row .pr-val   { font-weight:700; }
-.pay-card.bad  .pr-val { color:#c0392b; }
-.pay-card.good .pr-val { color:#276339; }
+/* ── Cycle steps ── */
+.cycle-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative;
+    margin-bottom: 1.4rem;
+}
+@media(max-width:640px) { .cycle-steps { grid-template-columns: 1fr 1fr; } }
+.cycle-step {
+    text-align: center;
+    padding: 1rem 0.6rem;
+    position: relative;
+}
+.cycle-step::after {
+    content: '→';
+    position: absolute;
+    right: -10px; top: 20px;
+    font-size: 1.1rem;
+    color: var(--sage-light);
+    font-weight: 700;
+}
+.cycle-step:last-child::after { display: none; }
+.cycle-num {
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    margin: 0 auto 0.8rem;
+    background: linear-gradient(135deg, var(--forest), var(--forest-mid));
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(26,46,26,0.22);
+}
+.cycle-step h4 {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--forest);
+    margin-bottom: 0.3rem;
+    font-family: 'Outfit', sans-serif;
+}
+.cycle-step p {
+    font-size: 0.75rem;
+    color: var(--muted);
+    line-height: 1.48;
+    font-family: 'Outfit', sans-serif;
+}
 
-/* Tips */
-.tips-list { display:flex; flex-direction:column; gap:1rem; }
-.tip-item { background:var(--blanco); border-radius:var(--radio); padding:1.25rem 1.5rem; box-shadow:var(--sombra); display:flex; gap:1rem; align-items:flex-start; }
-.tip-num { width:36px; height:36px; background:var(--verde-oscuro); color:var(--blanco); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.9rem; flex-shrink:0; }
-.tip-item h4 { font-weight:700; color:var(--verde-oscuro); margin-bottom:0.3rem; font-size:0.95rem; }
-.tip-item p  { font-size:0.85rem; color:var(--texto-medio); line-height:1.55; }
+/* ── Tip box ── */
+.tip-box {
+    background: linear-gradient(135deg, var(--sage-pale), #f0f5ec);
+    border: 1px solid rgba(107,143,94,0.22);
+    border-radius: 14px;
+    padding: 1rem 1.3rem;
+    font-size: 0.85rem;
+    color: var(--forest);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    font-family: 'Outfit', sans-serif;
+}
+.tip-box i { color: var(--sage); font-size: 1.15rem; flex-shrink: 0; margin-top: 1px; }
 
-/* Glosario */
-.glosario-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1rem; }
-.termino-card { background:var(--blanco); border-radius:var(--radio); padding:1.25rem; box-shadow:var(--sombra); border-left:3px solid var(--verde-salvia); }
-.termino-card .term { font-weight:700; color:var(--verde-oscuro); font-size:0.95rem; margin-bottom:0.4rem; }
-.termino-card .def  { font-size:0.82rem; color:var(--texto-medio); line-height:1.5; }
+/* ── Tips list ── */
+.tips-list { display: flex; flex-direction: column; gap: 1rem; }
+.tip-item {
+    background: #fff;
+    border-radius: 18px;
+    padding: 1.3rem 1.5rem;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.04), 0 6px 22px rgba(0,0,0,0.07);
+    border: 1px solid rgba(107,143,94,0.1);
+    display: flex;
+    gap: 1.1rem;
+    align-items: flex-start;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.tip-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.06), 0 12px 36px rgba(0,0,0,0.1);
+}
+.tip-num {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--forest), var(--forest-mid));
+    color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.9rem;
+    flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(26,46,26,0.2);
+    font-family: 'Outfit', sans-serif;
+}
+.tip-item h4 {
+    font-weight: 700;
+    color: var(--forest);
+    margin-bottom: 0.3rem;
+    font-size: 0.96rem;
+    font-family: 'Outfit', sans-serif;
+}
+.tip-item p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.58;
+    font-family: 'Outfit', sans-serif;
+}
+
+/* ── Glosario ── */
+.glosario-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Category filter pills */
+.glos-cats {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.4rem;
+}
+.glos-cat-btn {
+    padding: 0.38rem 1rem;
+    border-radius: 99px;
+    border: 1.5px solid rgba(107,143,94,0.25);
+    background: #fff;
+    color: var(--moss);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.18s;
+}
+.glos-cat-btn:hover { background: var(--sage-pale); border-color: var(--sage); color: var(--forest); }
+.glos-cat-btn.active { background: var(--forest); border-color: var(--forest); color: #fff; }
+
+/* Rich term card */
+.termino-card {
+    background: #fff;
+    border-radius: 20px;
+    border: 1px solid rgba(107,143,94,0.12);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.03), 0 6px 22px rgba(0,0,0,0.06);
+    overflow: hidden;
+    transition: transform 0.22s, box-shadow 0.22s;
+    position: relative;
+}
+.termino-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 0 rgba(0,0,0,0.05), 0 16px 40px rgba(0,0,0,0.1);
+}
+.termino-card.hidden { display: none; }
+.termino-card.highlighted {
+    border-color: rgba(107,143,94,0.4);
+    box-shadow: 0 2px 0 rgba(107,143,94,0.08), 0 10px 30px rgba(107,143,94,0.14);
+}
+
+/* Card header band */
+.tc-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 1.5rem 1rem;
+    border-bottom: 1px solid rgba(107,143,94,0.1);
+    position: relative;
+}
+.tc-icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+.tc-title-group { flex: 1; }
+.tc-term {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.12rem;
+    color: var(--forest);
+    line-height: 1.2;
+    margin-bottom: 3px;
+}
+.tc-term mark {
+    background: var(--sage-pale);
+    color: var(--forest);
+    border-radius: 3px;
+    padding: 0 2px;
+}
+.tc-category {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 2px 9px;
+    border-radius: 99px;
+}
+
+/* Card body */
+.tc-body {
+    padding: 1rem 1.5rem 1.2rem;
+}
+.tc-def {
+    font-size: 0.88rem;
+    color: #3a5a4a;
+    line-height: 1.7;
+    font-family: 'Outfit', sans-serif;
+    margin-bottom: 1rem;
+}
+.tc-def mark {
+    background: var(--sage-pale);
+    color: var(--forest);
+    border-radius: 3px;
+    padding: 0 2px;
+}
+.tc-def strong { color: var(--forest); font-weight: 700; }
+
+/* Example / tip row */
+.tc-example {
+    background: var(--cream);
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-family: 'Outfit', sans-serif;
+    line-height: 1.55;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-bottom: 0.85rem;
+    border-left: 3px solid var(--sage-light);
+}
+.tc-example i { color: var(--sage); flex-shrink: 0; margin-top: 1px; font-size: 0.75rem; }
+
+/* Key/value chips */
+.tc-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.tc-chip {
+    background: var(--sage-pale);
+    border: 1px solid rgba(107,143,94,0.2);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 0.74rem;
+    font-family: 'Outfit', sans-serif;
+    color: var(--forest);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.tc-chip i { color: var(--sage); font-size: 0.68rem; }
+.tc-chip.bad  { background: #FDF0EE; border-color: rgba(192,57,43,0.18); color: #8B2318; }
+.tc-chip.bad i { color: #C0392B; }
+.tc-chip.good { background: #EFF8F0; border-color: rgba(46,125,50,0.18); color: #1e5e30; }
+.tc-chip.good i { color: #3B7A46; }
+.tc-chip.warn { background: var(--gold-pale); border-color: rgba(200,149,42,0.2); color: #7A5200; }
+.tc-chip.warn i { color: var(--gold); }
+
+/* Color themes per category */
+.cat-costo   .tc-icon { background: #EAF2E4; color: var(--forest); }
+.cat-tiempo  .tc-icon { background: #EEF4FB; color: #1a3a5c; }
+.cat-pago    .tc-icon { background: #FDF3DC; color: #7A5200; }
+.cat-credito .tc-icon { background: #F0EDE5; color: #4a3a20; }
+.cat-bene    .tc-icon { background: #F5EFF9; color: #5a2d82; }
+
+.cat-costo   .tc-category { background: rgba(107,143,94,0.12); color: var(--forest); }
+.cat-tiempo  .tc-category { background: rgba(26,90,160,0.1); color: #1a3a5c; }
+.cat-pago    .tc-category { background: rgba(200,149,42,0.12); color: #7A5200; }
+.cat-credito .tc-category { background: rgba(90,60,20,0.1); color: #4a3a20; }
+.cat-bene    .tc-category { background: rgba(90,45,130,0.1); color: #5a2d82; }
+
+.cat-costo   .tc-header { border-bottom-color: rgba(107,143,94,0.12); }
+.cat-tiempo  .tc-header { border-bottom-color: rgba(26,90,160,0.1); }
+.cat-pago    .tc-header { border-bottom-color: rgba(200,149,42,0.12); }
+.cat-credito .tc-header { border-bottom-color: rgba(90,60,20,0.08); }
+.cat-bene    .tc-header { border-bottom-color: rgba(90,45,130,0.08); }
+
+/* ── Glosario Search ── */
+.glosario-search-wrap {
+    position: relative;
+    margin-bottom: 1.8rem;
+}
+.glosario-search-box {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1.5px solid rgba(107,143,94,0.3);
+    border-radius: 16px;
+    padding: 6px 6px 6px 16px;
+    gap: 8px;
+    box-shadow: 0 4px 20px rgba(26,46,26,0.08);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.glosario-search-box:focus-within {
+    border-color: var(--sage);
+    box-shadow: 0 4px 24px rgba(107,143,94,0.18);
+}
+.gsb-icon { color: var(--sage); font-size: 0.95rem; flex-shrink: 0; }
+.gsb-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    font-family: 'Outfit', sans-serif;
+    color: var(--forest);
+    background: transparent;
+    padding: 6px 0;
+}
+.gsb-input::placeholder { color: #9cb89c; }
+.gsb-clear {
+    background: rgba(107,143,94,0.1);
+    color: var(--moss);
+    border: none;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: none;
+}
+.gsb-clear:hover { background: rgba(107,143,94,0.2); color: var(--forest); }
+
+/* ── Search status bar ── */
+.gsb-status {
+    margin-top: 10px;
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-family: 'Outfit', sans-serif;
+    display: none;
+    align-items: center;
+    gap: 8px;
+}
+.gsb-status-count {
+    background: var(--sage-pale);
+    color: var(--forest);
+    border-radius: 99px;
+    padding: 2px 10px;
+    font-weight: 700;
+    font-size: 0.78rem;
+}
+.gsb-no-results {
+    display: none;
+    background: #fff;
+    border: 1px solid rgba(107,143,94,0.15);
+    border-radius: 16px;
+    padding: 20px 22px;
+    margin-top: 10px;
+    font-family: 'Outfit', sans-serif;
+}
+.gsb-no-results-title {
+    font-weight: 700;
+    color: var(--forest);
+    font-size: 0.94rem;
+    margin-bottom: 6px;
+}
+.gsb-no-results-sub {
+    font-size: 0.83rem;
+    color: var(--muted);
+    line-height: 1.55;
+}
+.gsb-similar-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--sage);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 12px 0 8px;
+    font-family: 'Outfit', sans-serif;
+}
+.gsb-similar-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.gsb-pill {
+    background: var(--sage-pale);
+    color: var(--forest);
+    border: 1px solid rgba(107,143,94,0.25);
+    border-radius: 99px;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+.gsb-pill:hover {
+    background: var(--forest);
+    color: #fff;
+    border-color: var(--forest);
+}
+
+/* ── Section title for similar results ── */
+.gsb-section-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--sage);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-family: 'Outfit', sans-serif;
+    margin-bottom: 0.8rem;
+    display: none;
+}
 </style>
 {% endblock %}
 
 {% block content %}
+
+<!-- HERO -->
 <div class="edu-hero">
     <div class="edu-hero-icon"><i class="fas fa-graduation-cap"></i></div>
     <div class="edu-hero-text">
@@ -103,6 +673,7 @@
     </div>
 </div>
 
+<!-- TABS -->
 <div class="tabs">
     <button class="tab-btn active" onclick="showTab('conceptos',this)"><i class="fas fa-book"></i> Conceptos clave</button>
     <button class="tab-btn" onclick="showTab('infografias',this)"><i class="fas fa-chart-bar"></i> Infografías</button>
@@ -110,7 +681,7 @@
     <button class="tab-btn" onclick="showTab('glosario',this)"><i class="fas fa-list"></i> Glosario</button>
 </div>
 
-<!-- CONCEPTOS -->
+<!-- ══ CONCEPTOS ══ -->
 <div class="tab-section active" id="tab-conceptos">
     <div class="concept-grid">
         <div class="concept-card">
@@ -131,7 +702,7 @@
         <div class="concept-card">
             <div class="concept-icon"><i class="fas fa-sync"></i></div>
             <h4>Meses sin intereses</h4>
-            <p>Los MSI te permiten diferir compras en pagos iguales <strong>sin pagar intereses</strong>. Son útiles si no acumulas varias compras en MSI simultáneamente ni excedes tu capacidad de pago.</p>
+            <p>Los MSI te permiten diferir compras en pagos iguales <strong>sin pagar intereses</strong>. Son útiles si no acumulas varias compras simultáneamente ni excedes tu capacidad de pago.</p>
         </div>
         <div class="concept-card">
             <div class="concept-icon"><i class="fas fa-coins"></i></div>
@@ -146,52 +717,54 @@
     </div>
 </div>
 
-<!-- INFOGRAFÍAS -->
+<!-- ══ INFOGRAFÍAS ══ -->
 <div class="tab-section" id="tab-infografias">
 
-    <div class="cat-infographic">
-        <h3><i class="fas fa-chart-bar" style="color:var(--verde-salvia);"></i> Comparación de CAT por tarjeta</h3>
-        <p style="font-size:0.85rem; color:var(--verde-medio); margin-bottom:1.5rem;">Entre más corta la barra, menos pagas de intereses</p>
+    <!-- CAT comparison -->
+    <div class="info-card">
+        <div class="info-card-title"><i class="fas fa-chart-bar"></i> Comparación de CAT por tarjeta</div>
+        <div class="info-card-sub">Entre más corta la barra, menos pagas de intereses</div>
         <div class="cat-bar-row">
             <span class="cat-bar-label">Nu Ultravioleta</span>
-            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:35%; background:linear-gradient(90deg,var(--verde-salvia),#5d7a4a);">35%</div></div>
+            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:35%;background:linear-gradient(90deg,#5a8f4a,#7ab060);">35%</div></div>
             <span class="cat-bar-pct">35%</span>
         </div>
         <div class="cat-bar-row">
             <span class="cat-bar-label">Banamex Tec</span>
-            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:38.5%; background:linear-gradient(90deg,var(--verde-salvia),#5d7a4a);">38.5%</div></div>
+            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:38.5%;background:linear-gradient(90deg,#5a8f4a,#7ab060);">38.5%</div></div>
             <span class="cat-bar-pct">38.5%</span>
         </div>
         <div class="cat-bar-row">
             <span class="cat-bar-label">Santander Like U</span>
-            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:42%; background:linear-gradient(90deg,var(--verde-medio),var(--verde-oscuro));">42%</div></div>
+            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:42%;background:linear-gradient(90deg,#3d6b45,#5a8a52);">42%</div></div>
             <span class="cat-bar-pct">42%</span>
         </div>
         <div class="cat-bar-row">
             <span class="cat-bar-label">BBVA Azul</span>
-            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:45.5%; background:linear-gradient(90deg,#c8a84b,#a07a20);">45.5%</div></div>
+            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:45.5%;background:linear-gradient(90deg,#c8952a,#e0aa40);">45.5%</div></div>
             <span class="cat-bar-pct">45.5%</span>
         </div>
         <div class="cat-bar-row">
             <span class="cat-bar-label">HSBC Zero</span>
-            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:50%; background:linear-gradient(90deg,#d4735a,#b85d3a);">50%</div></div>
+            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:50%;background:linear-gradient(90deg,#c87a3a,#d98a4a);">50%</div></div>
             <span class="cat-bar-pct">50%</span>
         </div>
         <div class="cat-bar-row">
             <span class="cat-bar-label">Banorte Clásica</span>
-            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:55%; background:linear-gradient(90deg,#c0392b,#922b21);">55%</div></div>
+            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:55%;background:linear-gradient(90deg,#b83228,#d44038);">55%</div></div>
             <span class="cat-bar-pct">55%</span>
         </div>
         <div class="cat-legend">
-            <div class="cat-legend-item"><div class="cat-legend-dot" style="background:var(--verde-salvia);"></div> Excelente (&lt;40%)</div>
-            <div class="cat-legend-item"><div class="cat-legend-dot" style="background:var(--verde-medio);"></div> Bueno (40–46%)</div>
-            <div class="cat-legend-item"><div class="cat-legend-dot" style="background:#c8a84b;"></div> Regular (46–50%)</div>
-            <div class="cat-legend-item"><div class="cat-legend-dot" style="background:#c0392b;"></div> Alto (&gt;50%)</div>
+            <div class="cat-legend-item"><div class="cat-legend-dot" style="background:#5a8f4a;"></div> Excelente (&lt;40%)</div>
+            <div class="cat-legend-item"><div class="cat-legend-dot" style="background:#3d6b45;"></div> Bueno (40–46%)</div>
+            <div class="cat-legend-item"><div class="cat-legend-dot" style="background:#c8952a;"></div> Regular (46–50%)</div>
+            <div class="cat-legend-item"><div class="cat-legend-dot" style="background:#b83228;"></div> Alto (&gt;50%)</div>
         </div>
     </div>
 
-    <div class="cycle-infographic">
-        <h3><i class="fas fa-sync-alt" style="color:var(--verde-salvia);"></i> Ciclo de facturación mensual</h3>
+    <!-- Billing cycle -->
+    <div class="info-card">
+        <div class="info-card-title"><i class="fas fa-sync-alt"></i> Ciclo de facturación mensual</div>
         <div class="cycle-steps">
             <div class="cycle-step">
                 <div class="cycle-num">1</div>
@@ -214,62 +787,88 @@
                 <p>Paga el total = $0 intereses. Solo mínimo = intereses</p>
             </div>
         </div>
-        <div style="background:var(--beige); border-radius:10px; padding:1rem 1.25rem; margin-top:1.25rem; font-size:0.85rem; color:var(--texto-medio); display:flex; align-items:center; gap:0.75rem;">
-            <i class="fas fa-lightbulb" style="color:var(--verde-salvia); font-size:1.2rem; flex-shrink:0;"></i>
-            <span><strong style="color:var(--verde-oscuro);">Tip clave:</strong> Si pagas el 100% antes de la fecha límite, nunca pagas intereses. Así es como debes usar tu tarjeta.</span>
+        <div class="tip-box">
+            <i class="fas fa-lightbulb"></i>
+            <span><strong>Tip clave:</strong> Si pagas el 100% antes de la fecha límite, nunca pagas intereses. Así es como debes usar tu tarjeta.</span>
         </div>
     </div>
 
-    <div class="payment-compare">
-        <h3><i class="fas fa-balance-scale" style="color:var(--verde-salvia);"></i> Pago mínimo vs pago total — deuda de $5,000 al 45% CAT</h3>
-        <div class="pay-grid">
-            <div class="pay-card bad">
-                <div class="pc-icon">😰</div>
-                <h4>Pagando solo el mínimo (~$250/mes)</h4>
-                <div class="pay-row"><span class="pr-label">Tiempo para liquidar</span><span class="pr-val">~3.5 años</span></div>
-                <div class="pay-row"><span class="pr-label">Total pagado</span><span class="pr-val">~$10,500</span></div>
-                <div class="pay-row"><span class="pr-label">Intereses generados</span><span class="pr-val">~$5,500</span></div>
-                <div class="pay-row"><span class="pr-label">Pagas de más</span><span class="pr-val">110% extra</span></div>
+    <!-- Payment comparison -->
+    <div class="info-card" style="padding:0;overflow:hidden;">
+        <div class="info-card-title" style="padding:20px 24px 0;">
+            <i class="fas fa-balance-scale"></i> Pago mínimo vs pago total — deuda de $5,000 al 45% CAT
+        </div>
+        <div style="padding:16px 20px 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <!-- BAD -->
+            <div style="border-radius:18px;overflow:hidden;border:1px solid rgba(192,57,43,0.15);">
+                <div style="background:#FDF0EE;padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(192,57,43,0.1);">
+                    <span style="font-size:20px;line-height:1;"></span>
+                    <span style="font-size:0.83rem;font-weight:700;color:#8B2318;font-family:'Outfit',sans-serif;">Pagando solo el mínimo (~$250/mes)</span>
+                </div>
+                <div style="background:#FFFAF9;padding:4px 16px 12px;">
+                    <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.05);font-size:0.81rem;font-family:'Outfit',sans-serif;"><span style="color:#5A7A6A;">Tiempo para liquidar</span><span style="font-weight:700;color:#8B2318;">~3.5 años</span></div>
+                    <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.05);font-size:0.81rem;font-family:'Outfit',sans-serif;"><span style="color:#5A7A6A;">Total pagado</span><span style="font-weight:700;color:#8B2318;">~$10,500</span></div>
+                    <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.05);font-size:0.81rem;font-family:'Outfit',sans-serif;"><span style="color:#5A7A6A;">Intereses generados</span><span style="font-weight:700;color:#8B2318;">~$5,500</span></div>
+                    <div style="display:flex;justify-content:space-between;padding:9px 0;font-size:0.81rem;font-family:'Outfit',sans-serif;"><span style="color:#5A7A6A;">Pagas de más</span><span style="font-weight:700;color:#8B2318;">110% extra</span></div>
+                </div>
             </div>
-            <div class="pay-card good">
-                <div class="pc-icon">😊</div>
-                <h4>Pagando el total cada mes</h4>
-                <div class="pay-row"><span class="pr-label">Tiempo para liquidar</span><span class="pr-val">1 mes</span></div>
-                <div class="pay-row"><span class="pr-label">Total pagado</span><span class="pr-val">$5,000</span></div>
-                <div class="pay-row"><span class="pr-label">Intereses generados</span><span class="pr-val">$0</span></div>
-                <div class="pay-row"><span class="pr-label">Ahorro vs mínimo</span><span class="pr-val">~$5,500</span></div>
+            <!-- GOOD -->
+            <div style="border-radius:18px;overflow:hidden;border:1px solid rgba(46,125,50,0.15);">
+                <div style="background:#EAF5ED;padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(46,125,50,0.1);">
+                    <span style="font-size:20px;line-height:1;"></span>
+                    <span style="font-size:0.83rem;font-weight:700;color:#1e5e30;font-family:'Outfit',sans-serif;">Pagando el total cada mes</span>
+                </div>
+                <div style="background:#F5FBF6;padding:4px 16px 12px;">
+                    <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.05);font-size:0.81rem;font-family:'Outfit',sans-serif;"><span style="color:#5A7A6A;">Tiempo para liquidar</span><span style="font-weight:700;color:#1e5e30;">1 mes</span></div>
+                    <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.05);font-size:0.81rem;font-family:'Outfit',sans-serif;"><span style="color:#5A7A6A;">Total pagado</span><span style="font-weight:700;color:#1e5e30;">$5,000</span></div>
+                    <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.05);font-size:0.81rem;font-family:'Outfit',sans-serif;"><span style="color:#5A7A6A;">Intereses generados</span><span style="font-weight:700;color:#1e5e30;">$0</span></div>
+                    <div style="display:flex;justify-content:space-between;padding:9px 0;font-size:0.81rem;font-family:'Outfit',sans-serif;"><span style="color:#5A7A6A;">Ahorro vs mínimo</span><span style="font-weight:700;color:#1e5e30;">~$5,500</span></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div style="background:var(--blanco); border-radius:var(--radio-lg); padding:2rem; box-shadow:var(--sombra);">
-        <h3 style="font-family:'DM Serif Display',serif; color:var(--verde-oscuro); font-size:1.2rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:8px;">
-            <i class="fas fa-tachometer-alt" style="color:var(--verde-salvia);"></i> La regla del 30% — ¿Cuánto de tu límite usar?
-        </h3>
-        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem;">
-            <div style="background:#d4edda; border-radius:var(--radio); padding:1.25rem; text-align:center; border:2px solid #c3e6cb;">
-                <div style="font-size:2rem; font-weight:800; color:#276339; margin-bottom:0.4rem;">0–30%</div>
-                <div style="font-size:0.85rem; font-weight:700; color:#276339; margin-bottom:0.4rem;">✅ Zona ideal</div>
-                <div style="font-size:0.78rem; color:#276339;">Buen score, margen de emergencia, perfil sano</div>
+    <!-- 30% rule -->
+    <div class="info-card">
+        <div class="info-card-title"><i class="fas fa-tachometer-alt"></i> La regla del 30% — ¿Cuánto de tu límite usar?</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;">
+            <!-- Ideal -->
+            <div style="background:#EFF8F0;border:1px solid rgba(46,125,50,0.18);border-radius:18px;padding:20px 14px;text-align:center;position:relative;overflow:hidden;">
+                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#3B7A46,#6BAF7A);border-radius:3px 3px 0 0;"></div>
+                <div style="font-family:'DM Serif Display',serif;font-size:1.85rem;font-weight:700;letter-spacing:-0.02em;color:#1e5e30;margin-bottom:6px;">0–30%</div>
+                <div style="display:inline-flex;align-items:center;gap:5px;font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:99px;background:rgba(46,125,50,0.12);color:#1e5e30;margin-bottom:10px;font-family:'Outfit',sans-serif;">
+                    <span style="width:7px;height:7px;border-radius:50%;background:#3B7A46;display:inline-block;"></span> Zona ideal
+                </div>
+                <div style="font-size:0.76rem;color:#5A7A6A;line-height:1.45;font-family:'Outfit',sans-serif;">Buen score, margen de emergencia y perfil sano</div>
             </div>
-            <div style="background:#fff3cd; border-radius:var(--radio); padding:1.25rem; text-align:center; border:2px solid #ffeaa7;">
-                <div style="font-size:2rem; font-weight:800; color:#9a6e00; margin-bottom:0.4rem;">31–60%</div>
-                <div style="font-size:0.85rem; font-weight:700; color:#9a6e00; margin-bottom:0.4rem;">⚠️ Zona de alerta</div>
-                <div style="font-size:0.78rem; color:#9a6e00;">Score comienza a bajar, riesgo de sobre-endeudamiento</div>
+            <!-- Warn -->
+            <div style="background:#FBF6E9;border:1px solid rgba(184,131,10,0.22);border-radius:18px;padding:20px 14px;text-align:center;position:relative;overflow:hidden;">
+                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#9A7000,#C8A830);border-radius:3px 3px 0 0;"></div>
+                <div style="font-family:'DM Serif Display',serif;font-size:1.85rem;font-weight:700;letter-spacing:-0.02em;color:#7A5200;margin-bottom:6px;">31–60%</div>
+                <div style="display:inline-flex;align-items:center;gap:5px;font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:99px;background:rgba(184,131,10,0.12);color:#7A5200;margin-bottom:10px;font-family:'Outfit',sans-serif;">
+                    <span style="width:7px;height:7px;border-radius:50%;background:#9A7000;display:inline-block;"></span> Zona de alerta
+                </div>
+                <div style="font-size:0.76rem;color:#5A7A6A;line-height:1.45;font-family:'Outfit',sans-serif;">Score comienza a bajar, riesgo de sobre-endeudamiento</div>
             </div>
-            <div style="background:#fdecea; border-radius:var(--radio); padding:1.25rem; text-align:center; border:2px solid #f5c6cb;">
-                <div style="font-size:2rem; font-weight:800; color:#c0392b; margin-bottom:0.4rem;">61–100%</div>
-                <div style="font-size:0.85rem; font-weight:700; color:#c0392b; margin-bottom:0.4rem;">🔴 Zona de riesgo</div>
-                <div style="font-size:0.78rem; color:#c0392b;">Score muy afectado, difícil acceder a crédito futuro</div>
+            <!-- Danger -->
+            <div style="background:#FBF0EE;border:1px solid rgba(178,46,36,0.18);border-radius:18px;padding:20px 14px;text-align:center;position:relative;overflow:hidden;">
+                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#8B2318,#C0392B);border-radius:3px 3px 0 0;"></div>
+                <div style="font-family:'DM Serif Display',serif;font-size:1.85rem;font-weight:700;letter-spacing:-0.02em;color:#8B2318;margin-bottom:6px;">61–100%</div>
+                <div style="display:inline-flex;align-items:center;gap:5px;font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:99px;background:rgba(178,46,36,0.12);color:#8B2318;margin-bottom:10px;font-family:'Outfit',sans-serif;">
+                    <span style="width:7px;height:7px;border-radius:50%;background:#8B2318;display:inline-block;"></span> Zona de riesgo
+                </div>
+                <div style="font-size:0.76rem;color:#5A7A6A;line-height:1.45;font-family:'Outfit',sans-serif;">Score muy afectado, difícil acceder a crédito futuro</div>
             </div>
         </div>
-        <div style="margin-top:1.25rem; background:var(--beige); border-radius:10px; padding:1rem 1.25rem; font-size:0.85rem; color:var(--texto-medio);">
-            <strong style="color:var(--verde-oscuro);">Ejemplo:</strong> Si tu límite es $10,000, usa máximo $3,000 al mes para mantener un perfil crediticio saludable.
+        <div class="tip-box">
+            <i class="fas fa-lightbulb"></i>
+            <span><strong>Ejemplo:</strong> Si tu límite es $10,000, usa máximo $3,000 al mes para mantener un perfil crediticio saludable.</span>
         </div>
     </div>
+
 </div>
 
-<!-- TIPS -->
+<!-- ══ TIPS ══ -->
 <div class="tab-section" id="tab-tips">
     <div class="tips-list">
         <div class="tip-item"><div class="tip-num">1</div><div><h4>Paga el total antes de la fecha límite</h4><p>Si liquidas el 100% antes de la fecha límite, no pagarás ningún interés. Esta es la regla de oro de las tarjetas de crédito.</p></div></div>
@@ -281,38 +880,650 @@
     </div>
 </div>
 
-<!-- GLOSARIO -->
+<!-- ══ GLOSARIO ══ -->
 <div class="tab-section" id="tab-glosario">
-    <div class="glosario-grid">
-        {% set terminos = [
-            ('CAT','Costo Anual Total. Porcentaje real del costo del crédito incluyendo todos los cargos y comisiones.'),
-            ('Tasa de interés','Porcentaje que el banco cobra por prestarte dinero, aplicado sobre el saldo pendiente.'),
-            ('Anualidad','Comisión anual por el uso de la tarjeta. Puede ser $0 o varios cientos de pesos.'),
-            ('Saldo','El monto total que debes al banco en un momento determinado.'),
-            ('Fecha de corte','Día en que el banco cierra el periodo y genera tu estado de cuenta mensual.'),
-            ('Fecha límite','Último día para pagar sin generar intereses ni cargos por mora.'),
-            ('Pago mínimo','Monto más bajo que puedes pagar sin caer en mora. No es recomendable pagar solo esto.'),
-            ('MSI','Meses Sin Intereses. Diferir compras en pagos iguales sin costo adicional de interés.'),
-            ('Cashback','Devolución de un porcentaje de tus compras como saldo a favor o efectivo.'),
-            ('Buró de crédito','Institución que registra tu historial de pagos. Buen historial = mejores condiciones de crédito.'),
-            ('Límite de crédito','Máximo que puedes gastar con tu tarjeta según la autorización del banco.'),
-            ('Disposición de efectivo','Retirar dinero con tu tarjeta. Genera intereses desde el primer día. Evítala siempre.'),
-        ] %}
-        {% for term, def in terminos %}
-        <div class="termino-card">
-            <div class="term">{{ term }}</div>
-            <div class="def">{{ def }}</div>
+
+    <!-- Search bar -->
+    <div class="glosario-search-wrap">
+        <div class="glosario-search-box">
+            <div class="gsb-icon"><i class="fas fa-search"></i></div>
+            <input
+                type="text"
+                id="glosarioInput"
+                class="gsb-input"
+                placeholder="Buscar término… ej: CAT, interés, anualidad, buró"
+                autocomplete="off"
+                oninput="onGlosarioInput(this.value)"
+            >
+            <button class="gsb-clear" id="gsb-clear" onclick="clearSearch()">
+                <i class="fas fa-times"></i> Limpiar
+            </button>
         </div>
-        {% endfor %}
+        <div class="gsb-status" id="gsb-status"><span id="gsb-status-text"></span></div>
+        <div class="gsb-no-results" id="gsb-no-results">
+            <div class="gsb-no-results-title">Sin resultados exactos para "<span id="gsb-query-echo"></span>"</div>
+            <div class="gsb-no-results-sub">No encontramos ese término, pero quizás buscabas:</div>
+            <div class="gsb-similar-label">Términos similares</div>
+            <div class="gsb-similar-pills" id="gsb-similar-pills"></div>
+        </div>
+    </div>
+
+    <!-- Category filters -->
+    <div class="glos-cats">
+        <button class="glos-cat-btn active" onclick="filterCat('all',this)">Todos</button>
+        <button class="glos-cat-btn" onclick="filterCat('costo',this)"><i class="fas fa-percentage" style="margin-right:4px;"></i>Costos y tasas</button>
+        <button class="glos-cat-btn" onclick="filterCat('tiempo',this)"><i class="fas fa-calendar" style="margin-right:4px;"></i>Fechas y ciclos</button>
+        <button class="glos-cat-btn" onclick="filterCat('pago',this)"><i class="fas fa-money-bill-wave" style="margin-right:4px;"></i>Pagos</button>
+        <button class="glos-cat-btn" onclick="filterCat('credito',this)"><i class="fas fa-credit-card" style="margin-right:4px;"></i>Crédito e historial</button>
+        <button class="glos-cat-btn" onclick="filterCat('bene',this)"><i class="fas fa-gift" style="margin-right:4px;"></i>Beneficios</button>
+    </div>
+
+    <!-- Section label -->
+    <div class="gsb-section-label" id="gsb-section-label"></div>
+
+    <!-- Rich glossary list -->
+    <div class="glosario-grid" id="glosario-grid">
+
+        <!-- CAT -->
+        <div class="termino-card cat-costo" data-cat="costo"
+             data-term="cat" data-def="costo anual total porcentaje real del costo del credito incluyendo todos los cargos comisiones seguros intereses">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-percentage"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">CAT — Costo Anual Total</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Costos y tasas</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    El <strong>CAT (Costo Anual Total)</strong> es el indicador más importante para comparar créditos. Expresa en un solo porcentaje anual <strong>todo lo que pagarás</strong> por tener y usar la tarjeta: tasa de interés nominal, comisiones, anualidad, seguros obligatorios y cualquier otro cargo.
+                    A diferencia de la tasa de interés simple, el CAT incorpora el efecto del tiempo y la frecuencia de los cargos, por lo que <strong>siempre es mayor que la tasa nominal</strong>.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Ejemplo: Una tarjeta con tasa del 28% pero con anualidad alta puede tener un CAT del 45%. Otra con tasa del 32% sin anualidad puede tener un CAT del 38%. La segunda es más barata aunque su tasa sea mayor.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip good"><i class="fas fa-check"></i> Menos CAT = crédito más barato</div>
+                    <div class="tc-chip warn"><i class="fas fa-exclamation"></i> Siempre compara CAT, no solo tasa</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasa de interés -->
+        <div class="termino-card cat-costo" data-cat="costo"
+             data-term="tasa de interes" data-def="porcentaje banco cobra prestarte dinero saldo pendiente mensual anual ordinaria moratoria">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Tasa de interés</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Costos y tasas</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    Es el <strong>porcentaje que el banco cobra por prestarte dinero</strong>, calculado sobre el saldo que no has pagado al cierre del periodo. Existen dos tipos principales: la <strong>tasa ordinaria</strong>, que aplica cuando pagas menos del total adeudado, y la <strong>tasa moratoria</strong> (hasta 1.5× la ordinaria), que aplica cuando no realizas ni el pago mínimo. En México, las tasas de tarjetas de crédito oscilan entre el 20% y el 70% anual.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Si debes $10,000 y tu tasa mensual es del 3.5%, en un mes generarás $350 de intereses aunque no hayas hecho ninguna compra nueva.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Se aplica sobre saldo no pagado</div>
+                    <div class="tc-chip warn"><i class="fas fa-exclamation"></i> La moratoria es aún más alta</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Anualidad -->
+        <div class="termino-card cat-costo" data-cat="costo"
+             data-term="anualidad" data-def="comision anual cargo fijo tarjeta condonacion compras membresía">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-receipt"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Anualidad</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Costos y tasas</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    La <strong>anualidad</strong> es una comisión fija que el banco cobra una vez al año simplemente por mantenerte como titular de la tarjeta, independientemente de cuánto la uses. Su costo varía desde <strong>$0 (tarjetas sin anualidad)</strong> hasta más de $3,000 anuales en tarjetas premium. Muchos bancos la <strong>condonan automáticamente</strong> si realizas un número mínimo de compras al mes (generalmente 3 a 5 compras). Esta condición debe estar especificada en el contrato.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Una tarjeta con anualidad de $1,200 que ofrece 2% de cashback requiere que gastes al menos $60,000 al año solo para recuperar lo que pagaste de membresía.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip good"><i class="fas fa-check"></i> Muchas tarjetas la condonan</div>
+                    <div class="tc-chip warn"><i class="fas fa-exclamation"></i> Verifica las condiciones exactas</div>
+                    <div class="tc-chip"><i class="fas fa-info"></i> Se cobra aunque no uses la tarjeta</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fecha de corte -->
+        <div class="termino-card cat-tiempo" data-cat="tiempo"
+             data-term="fecha de corte" data-def="dia banco cierra periodo estado de cuenta mensual ciclo facturacion">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-calendar-times"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Fecha de corte</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Fechas y ciclos</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    Es el <strong>día del mes en que el banco cierra tu periodo de facturación</strong> y genera tu estado de cuenta. Todas las compras realizadas entre una fecha de corte y la siguiente quedan registradas en el mismo periodo. Esta fecha es fija cada mes (ej: siempre el día 15). Las compras realizadas <strong>después de la fecha de corte</strong> quedarán en el siguiente estado de cuenta y tendrán hasta ~50 días para pagarse sin intereses.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Estrategia: Si tu fecha de corte es el día 15 y haces una compra grande el día 16, tendrás casi dos meses completos para pagarla sin intereses antes de que venza.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip"><i class="fas fa-calendar"></i> Fecha fija cada mes</div>
+                    <div class="tc-chip good"><i class="fas fa-check"></i> Compras post-corte = más tiempo</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fecha límite -->
+        <div class="termino-card cat-tiempo" data-cat="tiempo"
+             data-term="fecha limite de pago" data-def="ultimo dia pagar sin intereses vencimiento estado cuenta mora">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-calendar-check"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Fecha límite de pago</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Fechas y ciclos</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    Es la <strong>fecha máxima para realizar tu pago sin que se generen intereses</strong>. Generalmente cae entre 20 y 25 días después de la fecha de corte. Si pagas el <strong>saldo total</strong> antes de este día, no pagarás ni un peso de intereses. Si pagas solo el mínimo o un monto parcial, el banco calculará intereses sobre el saldo restante desde la fecha de corte. Si no pagas nada, además de intereses ordinarios se generará una <strong>comisión por mora</strong>.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Configura un pago automático del saldo total 2 días antes de la fecha límite. Así nunca olvidarás pagar y mantendrás tu historial crediticio impecable.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip good"><i class="fas fa-check"></i> Pago total = $0 intereses</div>
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Pago parcial = intereses sobre saldo</div>
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Sin pago = mora + intereses</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Periodo de gracia -->
+        <div class="termino-card cat-tiempo" data-cat="tiempo"
+             data-term="periodo de gracia" data-def="dias corte fecha limite sin intereses ventana pago">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-hourglass-half"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Periodo de gracia</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Fechas y ciclos</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    Es la <strong>ventana de tiempo entre la fecha de corte y la fecha límite de pago</strong> durante la cual puedes liquidar tu saldo sin pagar intereses. En México esta ventana suele ser de <strong>20 a 25 días</strong>. Es importante saber que el periodo de gracia <strong>solo aplica si liquidaste el saldo total del mes anterior</strong>. Si traes saldo de meses previos, los intereses se calculan desde el día de cada compra, sin periodo de gracia.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>El periodo de gracia es tu mejor aliado: úsalo siempre pagando el total. Si un mes no puedes pagar todo, pierdes el beneficio hasta que vuelvas a liquidar al 100%.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip"><i class="fas fa-clock"></i> 20–25 días promedio en México</div>
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Se pierde si no pagas el total</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pago mínimo -->
+        <div class="termino-card cat-pago" data-cat="pago"
+             data-term="pago minimo" data-def="monto minimo mora intereses deuda larga pago parcial riesgo">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Pago mínimo</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Pagos</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    Es el <strong>importe más bajo que puedes pagar sin caer en mora</strong>, calculado generalmente como un porcentaje del saldo total (entre 1.5% y 2%) o un monto fijo mínimo (ej. $200), el que resulte mayor. Aunque pagar el mínimo evita cargos por mora, <strong>es la peor forma de manejar tu deuda</strong>: la mayor parte del pago se destina a cubrir intereses y muy poco al capital, por lo que la deuda puede tardar años en liquidarse y terminas pagando el doble o triple del precio original.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Una deuda de $10,000 pagando solo el mínimo mensual (~$200–$250) puede tardar más de 4 años en liquidarse y costar hasta $22,000 en total.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Evita pagarlo si puedes pagar más</div>
+                    <div class="tc-chip warn"><i class="fas fa-exclamation"></i> Solo cubre principalmente intereses</div>
+                    <div class="tc-chip good"><i class="fas fa-check"></i> Úsalo solo en emergencias reales</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MSI -->
+        <div class="termino-card cat-pago" data-cat="pago"
+             data-term="msi meses sin intereses" data-def="diferir compras pagos iguales sin interes plazo cuotas mensualidades">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-sync-alt"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">MSI — Meses Sin Intereses</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Pagos</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    Los <strong>Meses Sin Intereses (MSI)</strong> te permiten dividir el costo de una compra en pagos mensuales iguales <strong>sin ningún costo adicional de intereses</strong>, siempre que el comercio participe en la promoción y pagues puntualmente cada cuota. El banco aplica los MSI de tu límite de crédito disponible. El riesgo principal es <strong>comprometer demasiado tu límite</strong>: si tienes varias compras en MSI simultáneas, tu margen disponible se reduce y puedes quedarte sin crédito para emergencias.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Una laptop de $18,000 a 12 MSI = $1,500/mes. Si tu límite es $25,000 y ya tienes $12,000 en otras compras normales, solo te quedan $13,000 disponibles.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip good"><i class="fas fa-check"></i> Sin intereses si pagas a tiempo</div>
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Acumular varios MSI reduce tu límite</div>
+                    <div class="tc-chip warn"><i class="fas fa-exclamation"></i> No aplican en todas las tiendas</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disposición de efectivo -->
+        <div class="termino-card cat-pago" data-cat="pago"
+             data-term="disposicion de efectivo retiro cajero" data-def="retirar dinero tarjeta credito cajero atm intereses inmediatos comision cara">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-ban"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Disposición de efectivo</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Pagos</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    Es la operación de <strong>retirar dinero en efectivo usando tu tarjeta de crédito</strong> en un cajero automático o ventanilla bancaria. A diferencia de las compras normales, la disposición de efectivo <strong>genera intereses desde el primer día</strong>, sin periodo de gracia, a una tasa que puede ser hasta 1.5× la tasa ordinaria. Además, casi siempre implica una <strong>comisión fija inmediata</strong> de entre $50 y $200 por la operación. Es considerada la forma más cara de obtener dinero.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Retirar $5,000 en efectivo puede costar: $150 de comisión + intereses desde el día 1 al 45% CAT anual ≈ $185 adicionales en el primer mes. Total real: $5,335 pagados por recibir $5,000.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Intereses desde el día 1, sin gracia</div>
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Comisión fija inmediata</div>
+                    <div class="tc-chip warn"><i class="fas fa-exclamation"></i> Evítala siempre que sea posible</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buró de crédito -->
+        <div class="termino-card cat-credito" data-cat="credito"
+             data-term="buro de credito historial crediticio" data-def="registro pagos historial score calificacion banco credito futuro condusef reporte">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-file-alt"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Buró de crédito</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Crédito e historial</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    El <strong>Buró de Crédito</strong> (formalmente "Sociedad de Información Crediticia") es la institución privada que recopila y almacena tu <strong>historial completo de pagos</strong>: tarjetas de crédito, préstamos personales, créditos hipotecarios, servicios de telefonía, entre otros. Los bancos consultan tu buró antes de otorgarte cualquier producto financiero. Tener un historial <strong>positivo</strong> te facilita acceso a mejores tasas y más límite de crédito; uno <strong>negativo</strong> puede cerrarte puertas por años. Puedes consultar tu reporte gratis una vez al año en buro.gob.mx.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Estar en buró no es malo en sí mismo: todo adulto que haya tenido algún crédito aparece. Lo que importa es si tus pagos aparecen en verde (pagado) o en rojo (incumplido).</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip good"><i class="fas fa-check"></i> Historial sano = mejores condiciones</div>
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Mora persiste 6 años en el registro</div>
+                    <div class="tc-chip"><i class="fas fa-info"></i> Consulta gratis en buro.gob.mx</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Score crediticio -->
+        <div class="termino-card cat-credito" data-cat="credito"
+             data-term="score crediticio puntaje" data-def="numero calificacion comportamiento pago 400 850 utilización credito consultas">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-tachometer-alt"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Score crediticio</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Crédito e historial</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    Es un <strong>puntaje numérico (generalmente de 400 a 850)</strong> que resume tu comportamiento financiero histórico en un solo número. Lo calculan empresas como Buró de Crédito o Círculo de Crédito usando factores como: historial de pago puntual, porcentaje de utilización de tu límite, antigüedad de tus cuentas, número de créditos activos, y consultas recientes. Un score <strong>alto (700+)</strong> te da acceso a tasas preferenciales, mayor límite y aprobaciones más rápidas.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>El factor más impactante en tu score es el historial de pago puntual (35–40% del total). Nunca vale la pena sacrificar un pago para obtener otro beneficio menor.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip good"><i class="fas fa-check"></i> 700+ = perfil excelente</div>
+                    <div class="tc-chip warn"><i class="fas fa-exclamation"></i> 550–699 = perfil regular</div>
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Menos de 550 = riesgo alto</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Límite de crédito -->
+        <div class="termino-card cat-credito" data-cat="credito"
+             data-term="limite de credito" data-def="maximo gastar tarjeta banco autorizacion incremento utilizacion 30 porciento">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-wallet"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Límite de crédito</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Crédito e historial</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    Es el <strong>monto máximo que el banco te autoriza para gastar</strong> con tu tarjeta en cualquier momento. Este límite lo define el banco al abrir la cuenta considerando tu ingreso, historial crediticio y capacidad de pago. Conforme demuestras buen manejo, el banco puede <strong>incrementarlo automáticamente</strong>. La clave está en la <strong>utilización</strong>: los expertos recomiendan no usar más del 30% de tu límite para mantener un buen score y siempre tener margen para imprevistos.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Con un límite de $20,000, lo ideal es mantener tu saldo mensual por debajo de $6,000. Si necesitas más, es mejor tener dos tarjetas con $10,000 cada una que una al 100% de su límite.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip good"><i class="fas fa-check"></i> Usar &lt;30% mejora tu score</div>
+                    <div class="tc-chip warn"><i class="fas fa-exclamation"></i> Usar &gt;70% lo daña significativamente</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Utilización del crédito -->
+        <div class="termino-card cat-credito" data-cat="credito"
+             data-term="utilizacion del credito" data-def="porcentaje limite usando saldo score impacto 30 porciento regla">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-battery-half"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Utilización del crédito</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Crédito e historial</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    Es el <strong>porcentaje de tu límite de crédito que estás usando actualmente</strong>. Se calcula dividiendo tu saldo actual entre tu límite total. Este indicador es uno de los factores más influyentes en tu score crediticio. Los modelos de scoring penalizan fuertemente la alta utilización porque indica dependencia del crédito. La regla general es mantenerla <strong>por debajo del 30%</strong> para un perfil saludable; por debajo del 10% para un perfil excelente.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Saldo actual $4,500 ÷ Límite $15,000 = 30% de utilización. Si pagas $1,500 extras, bajas al 20% y mejoras tu score sin necesitar ningún crédito nuevo.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip good"><i class="fas fa-check"></i> Ideal: menos del 10–30%</div>
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Riesgo: más del 60%</div>
+                    <div class="tc-chip"><i class="fas fa-info"></i> Afecta ~30% de tu score</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cashback -->
+        <div class="termino-card cat-bene" data-cat="bene"
+             data-term="cashback reembolso" data-def="devolucion porcentaje compras saldo favor efectivo reembolso beneficio porcentaje">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-hand-holding-usd"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Cashback</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Beneficios</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    El <strong>cashback</strong> es un beneficio que devuelve un porcentaje de tus compras como <strong>saldo a favor en tu cuenta o depósito en efectivo</strong>. Por ejemplo, un 2% de cashback en una compra de $1,000 regresa $20 automáticamente. Las tarjetas pueden ofrecer cashback plano (el mismo % en todo), o categorizado (más % en gasolina, supermercado, restaurantes, etc.). Para que el cashback sea un beneficio real, <strong>la devolución debe superar el costo de la anualidad</strong> y nunca debe motivarte a gastar más de lo planeado.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Con 3% de cashback y gastos mensuales de $8,000, recibirás ~$2,880 al año. Si la anualidad es $1,500, el beneficio neto real es de $1,380 anuales.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip good"><i class="fas fa-check"></i> Beneficio real si pagas el total</div>
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Sin valor si acumulas intereses</div>
+                    <div class="tc-chip warn"><i class="fas fa-exclamation"></i> Compara vs costo de anualidad</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comisión por mora -->
+        <div class="termino-card cat-costo" data-cat="costo"
+             data-term="comision por mora" data-def="cargo adicional no pagar minimo vencimiento penalizacion multa retraso">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-gavel"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Comisión por mora</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Costos y tasas</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    Es un <strong>cargo fijo adicional que el banco aplica cuando no realizas ni siquiera el pago mínimo</strong> antes de la fecha límite. Su monto varía por institución pero suele ser de <strong>$300 a $600 pesos</strong>. Además de esta comisión, el banco también aplica la tasa moratoria (más alta que la ordinaria) sobre todo el saldo. La mora también <strong>se reporta negativamente</strong> al Buró de Crédito, dañando tu historial. Un solo mes de mora puede afectar tu score por años.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>No pagar un mes con saldo de $8,000: comisión por mora ($450) + interés moratório al mes ($340) + daño en buró. Costo total por un descuido: casi $800 más historial dañado.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Daña tu historial en buró</div>
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Activa tasa moratoria (más alta)</div>
+                    <div class="tc-chip good"><i class="fas fa-check"></i> Evitable pagando al menos el mínimo</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Saldo -->
+        <div class="termino-card cat-pago" data-cat="pago"
+             data-term="saldo" data-def="monto total debes banco momento deuda pendiente acumulado">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-balance-scale"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Saldo</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Pagos</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    El <strong>saldo</strong> es el monto total que debes al banco en un momento determinado. Existen varios tipos: <strong>saldo al corte</strong> (lo que debías cuando se generó tu estado de cuenta), <strong>saldo actual</strong> (lo que debes hoy, incluyendo compras posteriores al corte) y <strong>saldo mínimo a pagar</strong> (el mínimo requerido para no caer en mora). Cuando pagas menos del saldo al corte, el saldo restante <strong>genera intereses de inmediato</strong>. Es importante no confundir el saldo disponible (lo que aún puedes gastar) con el saldo que debes.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Saldo al corte: $6,000. Pagas $4,000. Saldo restante con intereses al siguiente mes: $2,000 + intereses ≈ $2,070. Ya no tienes periodo de gracia hasta liquidar todo.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip"><i class="fas fa-info"></i> Saldo al corte vs saldo actual</div>
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Saldo pendiente genera intereses</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Puntos y recompensas -->
+        <div class="termino-card cat-bene" data-cat="bene"
+             data-term="puntos recompensas programa lealtad" data-def="acumular puntos canjear productos vuelos hoteles saldo recompensas miles">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-star"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Puntos y recompensas</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Beneficios</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    Los <strong>programas de puntos</strong> otorgan puntos por cada peso gastado con tu tarjeta, que posteriormente puedes <strong>canjear por productos, viajes, saldo a favor, descuentos o transferencias a millas aéreas</strong>. El valor real de cada punto varía enormemente según el programa (entre $0.10 y $1.00 por punto) y la forma de canje. Los canjes en efectivo o transferencias suelen dar menos valor que los viajes. Al igual que el cashback, solo representan un beneficio real si <strong>no incurres en intereses</strong> y si los usas efectivamente antes de que venzan.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>5 puntos por cada $10 gastados, puntos valen $0.20 c/u. Con $50,000 de gasto anual acumulas 25,000 puntos = $5,000 en recompensas, equivalente a 10% de retorno efectivo.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip warn"><i class="fas fa-exclamation"></i> Verifica fecha de vencimiento</div>
+                    <div class="tc-chip good"><i class="fas fa-check"></i> Viajes suelen dar más valor</div>
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> No gasten de más por acumular</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
 <script>
+/* ── Tab switcher ── */
 function showTab(id, btn) {
     document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('tab-' + id).classList.add('active');
     btn.classList.add('active');
+}
+
+/* ── Category filter ── */
+let activeCat = 'all';
+function filterCat(cat, btn) {
+    activeCat = cat;
+    document.querySelectorAll('.glos-cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // Re-run current search with new cat filter
+    onGlosarioInput(document.getElementById('glosarioInput').value);
+}
+
+/* ── Normalizar texto (quita tildes, minúsculas) ── */
+function norm(str) {
+    return str.toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim();
+}
+
+/* ── Levenshtein para similitud fuzzy ── */
+function levenshtein(a, b) {
+    const m = a.length, n = b.length;
+    if (m === 0) return n;
+    if (n === 0) return m;
+    const dp = Array.from({length: m + 1}, (_, i) => {
+        const row = new Array(n + 1).fill(0);
+        row[0] = i;
+        return row;
+    });
+    for (let j = 0; j <= n; j++) dp[0][j] = j;
+    for (let i = 1; i <= m; i++)
+        for (let j = 1; j <= n; j++)
+            dp[i][j] = a[i-1] === b[j-1]
+                ? dp[i-1][j-1]
+                : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+    return dp[m][n];
+}
+
+/* ── Highlight coincidencias ── */
+function highlight(text, query) {
+    if (!query) return text;
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`(${escaped})`, 'gi');
+    return text.replace(re, '<mark>$1</mark>');
+}
+
+/* ── Guardar originales al cargar ── */
+document.querySelectorAll('#glosario-grid .termino-card').forEach(card => {
+    card.dataset.termOrig = card.querySelector('.tc-term').innerHTML;
+    card.dataset.defOrig  = card.querySelector('.tc-def').innerHTML;
+});
+
+/* ── Restaurar cards ── */
+function restoreCards() {
+    document.querySelectorAll('#glosario-grid .termino-card').forEach(card => {
+        card.querySelector('.tc-term').innerHTML = card.dataset.termOrig;
+        card.querySelector('.tc-def').innerHTML  = card.dataset.defOrig;
+        const catMatch = activeCat === 'all' || card.dataset.cat === activeCat;
+        card.classList.toggle('hidden', !catMatch);
+        card.classList.remove('highlighted');
+    });
+}
+
+/* ── Lógica principal de búsqueda ── */
+function onGlosarioInput(val) {
+    const q        = norm(val);
+    const status   = document.getElementById('gsb-status');
+    const noRes    = document.getElementById('gsb-no-results');
+    const label    = document.getElementById('gsb-section-label');
+    const clearBtn = document.getElementById('gsb-clear');
+
+    if (!q || q.length < 1) {
+        restoreCards();
+        status.style.display   = 'none';
+        noRes.style.display    = 'none';
+        label.style.display    = 'none';
+        clearBtn.style.display = 'none';
+        return;
+    }
+
+    clearBtn.style.display = 'inline-flex';
+
+    const cards = Array.from(document.querySelectorAll('#glosario-grid .termino-card'));
+    let exactCount  = 0;
+    let fuzzyMatches = [];
+
+    cards.forEach(card => {
+        const catMatch = activeCat === 'all' || card.dataset.cat === activeCat;
+        const termN   = card.dataset.term;
+        const defN    = card.dataset.def;
+        const inTerm  = termN.includes(q);
+        const inDef   = defN.includes(q);
+
+        if ((inTerm || inDef) && catMatch) {
+            card.classList.remove('hidden');
+            card.classList.add('highlighted');
+            card.querySelector('.tc-term').innerHTML = highlight(card.dataset.termOrig, val.trim());
+            card.querySelector('.tc-def').innerHTML  = highlight(card.dataset.defOrig,  val.trim());
+            exactCount++;
+        } else {
+            card.classList.add('hidden');
+            card.classList.remove('highlighted');
+            card.querySelector('.tc-term').innerHTML = card.dataset.termOrig;
+            card.querySelector('.tc-def').innerHTML  = card.dataset.defOrig;
+            if (catMatch) {
+                const score = levenshtein(q, termN.substring(0, Math.max(q.length, termN.length)));
+                fuzzyMatches.push({ card, score });
+            }
+        }
+    });
+
+    fuzzyMatches.sort((a, b) => a.score - b.score);
+
+    if (exactCount > 0) {
+        const plural = exactCount === 1 ? 'resultado' : 'resultados';
+        status.innerHTML     = `<span class="gsb-status-count">${exactCount} ${plural}</span> para "<strong>${val.trim()}</strong>"`;
+        status.style.display = 'flex';
+        noRes.style.display  = 'none';
+        label.style.display  = 'none';
+    } else {
+        status.style.display = 'none';
+        noRes.style.display  = 'block';
+        label.style.display  = 'none';
+        document.getElementById('gsb-query-echo').textContent = val.trim();
+
+        const pills = document.getElementById('gsb-similar-pills');
+        pills.innerHTML = '';
+        const top4 = fuzzyMatches.slice(0, 4);
+
+        if (top4.length === 0) {
+            pills.innerHTML = '<span style="font-size:0.8rem;color:var(--muted);font-family:\'Outfit\',sans-serif;">No hay términos similares disponibles.</span>';
+        } else {
+            top4.forEach(({ card }) => {
+                const tmpDiv = document.createElement('div');
+                tmpDiv.innerHTML = card.dataset.termOrig;
+                const pill = document.createElement('button');
+                pill.className   = 'gsb-pill';
+                pill.textContent = tmpDiv.textContent;
+                pill.onclick = () => {
+                    document.getElementById('glosarioInput').value = tmpDiv.textContent;
+                    onGlosarioInput(tmpDiv.textContent);
+                };
+                pills.appendChild(pill);
+            });
+        }
+    }
+}
+
+/* ── Limpiar búsqueda ── */
+function clearSearch() {
+    document.getElementById('glosarioInput').value = '';
+    onGlosarioInput('');
 }
 </script>
 {% endblock %}
