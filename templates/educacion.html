@@ -315,47 +315,264 @@
 }
 .tip-box i { color: var(--sage); font-size: 1.15rem; flex-shrink: 0; margin-top: 1px; }
 
-/* ── Tips list ── */
-.tips-list { display: flex; flex-direction: column; gap: 1rem; }
-.tip-item {
-    background: #fff;
-    border-radius: 18px;
-    padding: 1.3rem 1.5rem;
-    box-shadow: 0 2px 0 rgba(0,0,0,0.04), 0 6px 22px rgba(0,0,0,0.07);
-    border: 1px solid rgba(107,143,94,0.1);
+/* ══ TIPS — Professional redesign ══ */
+
+/* Header summary bar */
+.tips-header {
+    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 60%, #3a6840 100%);
+    border-radius: 22px;
+    padding: 1.6rem 2rem;
+    margin-bottom: 1.8rem;
     display: flex;
-    gap: 1.1rem;
-    align-items: flex-start;
-    transition: transform 0.2s, box-shadow 0.2s;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    box-shadow: 0 6px 32px rgba(26,46,26,0.18);
+    position: relative;
+    overflow: hidden;
 }
-.tip-item:hover {
-    transform: translateX(4px);
-    box-shadow: 0 2px 0 rgba(0,0,0,0.06), 0 12px 36px rgba(0,0,0,0.1);
-}
-.tip-num {
-    width: 38px; height: 38px;
-    background: linear-gradient(135deg, var(--forest), var(--forest-mid));
-    color: #fff;
+.tips-header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -40px;
+    width: 200px; height: 200px;
     border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 0.9rem;
+    background: rgba(107,143,94,0.12);
+    pointer-events: none;
+}
+.tips-header-stat {
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+    position: relative;
+    z-index: 1;
+}
+.tips-header-stat + .tips-header-stat {
+    border-left: 1px solid rgba(255,255,255,0.12);
+}
+.tips-header-stat .stat-val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.9rem;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
+}
+.tips-header-stat .stat-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.6);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* Category filter row */
+.tips-cats {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.6rem;
+}
+.tips-cat-btn {
+    padding: 0.4rem 1.1rem;
+    border-radius: 99px;
+    border: 1.5px solid rgba(107,143,94,0.25);
+    background: #fff;
+    color: var(--moss);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.18s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.tips-cat-btn:hover { background: var(--sage-pale); border-color: var(--sage); color: var(--forest); }
+.tips-cat-btn.active { background: var(--forest); border-color: var(--forest); color: #fff; }
+
+/* Tips grid — two columns on wide, one on mobile */
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 1.2rem;
+}
+@media(max-width: 500px) { .tips-grid { grid-template-columns: 1fr; } }
+
+/* Individual tip card */
+.tip-card {
+    background: #fff;
+    border-radius: 22px;
+    border: 1px solid rgba(107,143,94,0.1);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.03), 0 8px 26px rgba(0,0,0,0.06);
+    overflow: hidden;
+    transition: transform 0.22s, box-shadow 0.22s;
+    display: flex;
+    flex-direction: column;
+}
+.tip-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 0 rgba(0,0,0,0.05), 0 20px 48px rgba(0,0,0,0.1);
+}
+.tip-card.tip-featured {
+    grid-column: 1 / -1;
+    flex-direction: row;
+}
+@media(max-width:700px) { .tip-card.tip-featured { flex-direction: column; } }
+
+/* Card accent top stripe */
+.tip-card-stripe {
+    height: 4px;
+    width: 100%;
     flex-shrink: 0;
-    box-shadow: 0 3px 10px rgba(26,46,26,0.2);
+}
+.tip-card.tip-featured .tip-card-stripe { height: 100%; width: 5px; }
+@media(max-width:700px) { .tip-card.tip-featured .tip-card-stripe { height: 4px; width: 100%; } }
+
+/* Card header */
+.tip-card-header {
+    padding: 1.3rem 1.5rem 0.8rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+.tip-card-icon {
+    width: 46px; height: 46px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+.tip-card-meta { flex: 1; }
+.tip-card-priority {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 2px 9px;
+    border-radius: 99px;
+    margin-bottom: 5px;
     font-family: 'Outfit', sans-serif;
 }
-.tip-item h4 {
+.tip-card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.05rem;
+    color: var(--forest);
+    line-height: 1.25;
+}
+
+/* Card body */
+.tip-card-body {
+    padding: 0 1.5rem 1.2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+.tip-card-desc {
+    font-size: 0.87rem;
+    color: #3a5a4a;
+    line-height: 1.68;
+    font-family: 'Outfit', sans-serif;
+}
+.tip-card-desc strong { color: var(--forest); font-weight: 700; }
+
+/* Impact metric row */
+.tip-impact {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    background: var(--cream);
+    border-radius: 12px;
+    padding: 0.65rem 1rem;
+    border-left: 3px solid var(--sage);
+}
+.tip-impact-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--moss);
+    font-family: 'Outfit', sans-serif;
+    white-space: nowrap;
+}
+.tip-impact-val {
+    font-size: 0.82rem;
+    color: var(--forest);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* Steps list inside card */
+.tip-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.tip-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.82rem;
+    font-family: 'Outfit', sans-serif;
+    color: var(--muted);
+    line-height: 1.5;
+}
+.tip-step-dot {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--sage-pale);
+    border: 1.5px solid rgba(107,143,94,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem;
     font-weight: 700;
     color: var(--forest);
-    margin-bottom: 0.3rem;
-    font-size: 0.96rem;
+    flex-shrink: 0;
+    margin-top: 1px;
     font-family: 'Outfit', sans-serif;
 }
-.tip-item p {
-    font-size: 0.85rem;
-    color: var(--muted);
-    line-height: 1.58;
+
+/* Warning / do-not block */
+.tip-donotdo {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    background: #FDF0EE;
+    border-radius: 10px;
+    padding: 0.6rem 0.9rem;
+    border-left: 3px solid #C0392B;
+    font-size: 0.8rem;
+    color: #8B2318;
     font-family: 'Outfit', sans-serif;
+    line-height: 1.5;
 }
+.tip-donotdo i { font-size: 0.85rem; flex-shrink: 0; margin-top: 1px; }
+
+/* Priority color themes */
+.priority-critica .tip-card-icon   { background: #FFF0EE; color: #C0392B; }
+.priority-critica .tip-card-stripe { background: linear-gradient(90deg, #C0392B, #e85a4a); }
+.priority-critica .tip-card-priority { background: rgba(192,57,43,0.1); color: #8B2318; }
+.priority-critica .tip-impact      { border-left-color: #C0392B; }
+
+.priority-alta .tip-card-icon   { background: #FDF3DC; color: #9a6e00; }
+.priority-alta .tip-card-stripe { background: linear-gradient(90deg, #C8952A, #e0b040); }
+.priority-alta .tip-card-priority { background: rgba(200,149,42,0.12); color: #7A5200; }
+.priority-alta .tip-impact      { border-left-color: #C8952A; }
+
+.priority-media .tip-card-icon   { background: var(--sage-pale); color: var(--forest); }
+.priority-media .tip-card-stripe { background: linear-gradient(90deg, var(--sage), var(--sage-light)); }
+.priority-media .tip-card-priority { background: rgba(107,143,94,0.12); color: var(--forest); }
+.priority-media .tip-impact      { border-left-color: var(--sage); }
+
+.priority-pro .tip-card-icon   { background: #EEF2FD; color: #2c4da0; }
+.priority-pro .tip-card-stripe { background: linear-gradient(90deg, #3a5fc8, #5a7ee0); }
+.priority-pro .tip-card-priority { background: rgba(58,95,200,0.1); color: #2c4da0; }
+.priority-pro .tip-impact      { border-left-color: #3a5fc8; }
 
 /* ── Glosario ── */
 .glosario-grid {
@@ -870,13 +1087,262 @@
 
 <!-- ══ TIPS ══ -->
 <div class="tab-section" id="tab-tips">
-    <div class="tips-list">
-        <div class="tip-item"><div class="tip-num">1</div><div><h4>Paga el total antes de la fecha límite</h4><p>Si liquidas el 100% antes de la fecha límite, no pagarás ningún interés. Esta es la regla de oro de las tarjetas de crédito.</p></div></div>
-        <div class="tip-item"><div class="tip-num">2</div><div><h4>Nunca pagues solo el mínimo</h4><p>El pago mínimo apenas cubre los intereses. Si solo pagas el mínimo, tu deuda puede durar años y pagarás el doble del precio original.</p></div></div>
-        <div class="tip-item"><div class="tip-num">3</div><div><h4>Usa máximo el 30% de tu límite</h4><p>Mantener tu utilización crediticia por debajo del 30% mejora tu score y refleja buen manejo ante los bancos.</p></div></div>
-        <div class="tip-item"><div class="tip-num">4</div><div><h4>Revisa tu estado de cuenta mensualmente</h4><p>Detecta cargos no reconocidos o cobros indebidos. Tienes hasta 90 días para disputar un cargo ante el banco.</p></div></div>
-        <div class="tip-item"><div class="tip-num">5</div><div><h4>Aprovecha los beneficios reales</h4><p>Usa el cashback, puntos o seguros incluidos. No compres cosas que no necesitas solo por acumular puntos.</p></div></div>
-        <div class="tip-item"><div class="tip-num">6</div><div><h4>Empieza con una tarjeta sin anualidad</h4><p>Para construir historial crediticio, una tarjeta sin anualidad y CAT bajo es ideal. Úsala para gastos pequeños que ya tendrías.</p></div></div>
+
+    <!-- Summary bar -->
+    <div class="tips-header">
+        <div class="tips-header-stat">
+            <div class="stat-val">9</div>
+            <div class="stat-label">Consejos clave</div>
+        </div>
+        <div class="tips-header-stat">
+            <div class="stat-val">$0</div>
+            <div class="stat-label">Intereses si los sigues</div>
+        </div>
+        <div class="tips-header-stat">
+            <div class="stat-val">700+</div>
+            <div class="stat-label">Score alcanzable</div>
+        </div>
+        <div class="tips-header-stat">
+            <div class="stat-val">100%</div>
+            <div class="stat-label">Aplicables desde hoy</div>
+        </div>
+    </div>
+
+    <!-- Category filters -->
+    <div class="tips-cats">
+        <button class="tips-cat-btn active" onclick="filterTips('all',this)">Todos</button>
+        <button class="tips-cat-btn" onclick="filterTips('pago',this)"><i class="fas fa-money-bill-wave"></i> Pagos</button>
+        <button class="tips-cat-btn" onclick="filterTips('credito',this)"><i class="fas fa-chart-line"></i> Historial</button>
+        <button class="tips-cat-btn" onclick="filterTips('habitos',this)"><i class="fas fa-brain"></i> Hábitos</button>
+        <button class="tips-cat-btn" onclick="filterTips('pro',this)"><i class="fas fa-star"></i> Nivel pro</button>
+    </div>
+
+    <!-- Tips grid -->
+    <div class="tips-grid" id="tips-grid">
+
+        <!-- TIP 1 — Featured / crítica -->
+        <div class="tip-card tip-featured priority-critica" data-tipcat="pago">
+            <div class="tip-card-stripe"></div>
+            <div style="flex:1;display:flex;flex-direction:column;">
+                <div class="tip-card-header">
+                    <div class="tip-card-icon"><i class="fas fa-crown"></i></div>
+                    <div class="tip-card-meta">
+                        <div class="tip-card-priority"><i class="fas fa-fire"></i> Regla de oro — Prioridad crítica</div>
+                        <div class="tip-card-title">Paga el saldo total antes de la fecha límite, siempre</div>
+                    </div>
+                </div>
+                <div class="tip-card-body">
+                    <div class="tip-card-desc">
+                        Esta es la regla más importante del uso inteligente de tarjetas de crédito. Si liquidas el <strong>100% de tu saldo</strong> antes de la fecha límite de pago, el banco no puede cobrarte ningún interés, independientemente de tu tasa o CAT. La tarjeta se convierte en una herramienta de conveniencia gratuita con beneficios incluidos.
+                        El periodo de gracia (20–25 días tras el corte) es tu ventana de oro: úsala siempre.
+                    </div>
+                    <div class="tip-impact">
+                        <span class="tip-impact-label">💰 Ahorro real</span>
+                        <span class="tip-impact-val">Con saldo promedio de $8,000 y CAT del 45%, pagar el total te ahorra ~$3,600 al año en intereses que de otra forma pagarías sin obtener nada a cambio.</span>
+                    </div>
+                    <div class="tip-donotdo">
+                        <i class="fas fa-times-circle"></i>
+                        <span>No racionalices el pago parcial con frases como "pago lo que puedo". Cada peso que no liquidas genera intereses inmediatos y rompe tu periodo de gracia para el siguiente mes.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIP 2 -->
+        <div class="tip-card priority-critica" data-tipcat="pago">
+            <div class="tip-card-stripe"></div>
+            <div class="tip-card-header">
+                <div class="tip-card-icon"><i class="fas fa-ban"></i></div>
+                <div class="tip-card-meta">
+                    <div class="tip-card-priority"><i class="fas fa-exclamation-triangle"></i> Prioridad crítica</div>
+                    <div class="tip-card-title">Nunca pagues solo el mínimo</div>
+                </div>
+            </div>
+            <div class="tip-card-body">
+                <div class="tip-card-desc">
+                    El pago mínimo (~1.5–2% del saldo) apenas cubre intereses y una fracción mínima del capital. <strong>Es el mecanismo que más beneficia al banco y más daña al usuario.</strong> Una deuda de $10,000 pagando solo el mínimo puede tardar más de 4 años en liquidarse y costar $22,000+ en total.
+                </div>
+                <div class="tip-impact">
+                    <span class="tip-impact-label">📊 Dato clave</span>
+                    <span class="tip-impact-val">$10,000 a 45% CAT pagando mínimo = $22,000+ al final. Pagando $2,500/mes = liquidado en 5 meses y solo $1,200 en intereses.</span>
+                </div>
+                <div class="tip-donotdo">
+                    <i class="fas fa-times-circle"></i>
+                    <span>Si no puedes pagar el total, paga el máximo posible. Cualquier monto adicional sobre el mínimo reduce el capital y acorta tu deuda.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIP 3 -->
+        <div class="tip-card priority-alta" data-tipcat="credito">
+            <div class="tip-card-stripe"></div>
+            <div class="tip-card-header">
+                <div class="tip-card-icon"><i class="fas fa-tachometer-alt"></i></div>
+                <div class="tip-card-meta">
+                    <div class="tip-card-priority"><i class="fas fa-arrow-up"></i> Alta prioridad</div>
+                    <div class="tip-card-title">Mantén tu utilización por debajo del 30%</div>
+                </div>
+            </div>
+            <div class="tip-card-body">
+                <div class="tip-card-desc">
+                    La <strong>tasa de utilización crediticia</strong> (saldo usado ÷ límite total) es el segundo factor más importante en tu score, representando ~30% de tu calificación. Usarla por encima del 60% daña tu perfil incluso si pagas puntualmente. Mantenerla por debajo del 10% la optimiza al máximo.
+                </div>
+                <div class="tip-impact">
+                    <span class="tip-impact-label">📈 Impacto en score</span>
+                    <span class="tip-impact-val">Bajar de 80% a 28% de utilización puede aumentar tu score entre 40 y 80 puntos en un solo ciclo de reporte.</span>
+                </div>
+                <div class="tip-steps">
+                    <div class="tip-step"><div class="tip-step-dot">1</div>Divide gastos grandes entre dos tarjetas para no saturar una sola</div>
+                    <div class="tip-step"><div class="tip-step-dot">2</div>Haz un pago parcial antes de la fecha de corte para reducir el saldo reportado</div>
+                    <div class="tip-step"><div class="tip-step-dot">3</div>Solicita incremento de límite sin aumentar el gasto</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIP 4 -->
+        <div class="tip-card priority-alta" data-tipcat="habitos">
+            <div class="tip-card-stripe"></div>
+            <div class="tip-card-header">
+                <div class="tip-card-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                <div class="tip-card-meta">
+                    <div class="tip-card-priority"><i class="fas fa-arrow-up"></i> Alta prioridad</div>
+                    <div class="tip-card-title">Revisa tu estado de cuenta cada mes sin falta</div>
+                </div>
+            </div>
+            <div class="tip-card-body">
+                <div class="tip-card-desc">
+                    Tu estado de cuenta mensual es la radiografía financiera de tu tarjeta. Revisarlo te permite detectar <strong>cargos no reconocidos, cobros duplicados, comisiones indebidas y suscripciones olvidadas</strong>. En México tienes hasta <strong>90 días hábiles</strong> desde la fecha del cargo para presentar un contracargo ante el banco sin costo.
+                </div>
+                <div class="tip-impact">
+                    <span class="tip-impact-label">🔍 Por qué importa</span>
+                    <span class="tip-impact-val">El fraude con tarjetas en México creció un 34% en 2023. La mayoría se detecta tarde porque los usuarios no revisan sus estados de cuenta.</span>
+                </div>
+                <div class="tip-steps">
+                    <div class="tip-step"><div class="tip-step-dot">1</div>Activa notificaciones SMS o push por cada cargo realizado</div>
+                    <div class="tip-step"><div class="tip-step-dot">2</div>Revisa el estado completo dentro de los 5 días después del corte</div>
+                    <div class="tip-step"><div class="tip-step-dot">3</div>Ante un cargo desconocido, llama de inmediato y solicita aclaración</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIP 5 -->
+        <div class="tip-card priority-media" data-tipcat="habitos">
+            <div class="tip-card-stripe"></div>
+            <div class="tip-card-header">
+                <div class="tip-card-icon"><i class="fas fa-robot"></i></div>
+                <div class="tip-card-meta">
+                    <div class="tip-card-priority"><i class="fas fa-check"></i> Buena práctica</div>
+                    <div class="tip-card-title">Configura pagos automáticos del total</div>
+                </div>
+            </div>
+            <div class="tip-card-body">
+                <div class="tip-card-desc">
+                    El olvido es la principal causa de generación de intereses y mora. Configurar un <strong>débito automático por el total del saldo</strong> al corte elimina este riesgo. Asegúrate de que tu cuenta de débito siempre tenga fondos suficientes 2–3 días antes de la fecha límite. Esto además construye historial de pago puntual de forma automática.
+                </div>
+                <div class="tip-impact">
+                    <span class="tip-impact-label">⚙️ Cómo hacerlo</span>
+                    <span class="tip-impact-val">Ve a la app de tu banco → Tarjetas → Pago automático → Selecciona "Saldo total" (no mínimo). Tarda menos de 2 minutos y protege tu historial para siempre.</span>
+                </div>
+                <div class="tip-donotdo">
+                    <i class="fas fa-times-circle"></i>
+                    <span>No configures pago automático del mínimo: te da falsa seguridad mientras acumulas intereses mes a mes.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIP 6 -->
+        <div class="tip-card priority-media" data-tipcat="habitos">
+            <div class="tip-card-stripe"></div>
+            <div class="tip-card-header">
+                <div class="tip-card-icon"><i class="fas fa-shield-alt"></i></div>
+                <div class="tip-card-meta">
+                    <div class="tip-card-priority"><i class="fas fa-check"></i> Buena práctica</div>
+                    <div class="tip-card-title">Aprovecha los beneficios sin gastar de más</div>
+                </div>
+            </div>
+            <div class="tip-card-body">
+                <div class="tip-card-desc">
+                    Las tarjetas bien elegidas incluyen beneficios genuinamente valiosos: <strong>cashback, seguros de compra, acceso a salas de aeropuerto, seguro de viaje, extensión de garantía y protección contra fraude</strong>. El truco es usarlos en gastos que ya ibas a hacer, no generar gasto adicional para obtenerlos. Un peso gastado innecesariamente para ganar 5 centavos de cashback es una mala inversión.
+                </div>
+                <div class="tip-impact">
+                    <span class="tip-impact-label">🎁 Beneficios más valiosos</span>
+                    <span class="tip-impact-val">Seguro de viaje ($500–$2,000 USD de valor), sala VIP aeropuerto ($30–$80 USD por visita), seguro de compra (30–90 días cobertura). Casi nadie los usa y están incluidos.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIP 7 -->
+        <div class="tip-card priority-media" data-tipcat="credito">
+            <div class="tip-card-stripe"></div>
+            <div class="tip-card-header">
+                <div class="tip-card-icon"><i class="fas fa-seedling"></i></div>
+                <div class="tip-card-meta">
+                    <div class="tip-card-priority"><i class="fas fa-check"></i> Buena práctica</div>
+                    <div class="tip-card-title">Empieza con una tarjeta sin anualidad y CAT bajo</div>
+                </div>
+            </div>
+            <div class="tip-card-body">
+                <div class="tip-card-desc">
+                    Si estás construyendo tu historial crediticio, la primera tarjeta debe tener <strong>anualidad $0, CAT menor al 40% y límite modesto</strong>. Úsala únicamente para gastos que ya hacías en efectivo (gasolina, supermercado, suscripciones) y paga el total cada mes. En 6–12 meses tendrás historial suficiente para acceder a productos mejores.
+                </div>
+                <div class="tip-impact">
+                    <span class="tip-impact-label">📅 Línea de tiempo</span>
+                    <span class="tip-impact-val">Mes 1–6: construyes historial básico. Mes 6–12: score supera 650. Año 2: accedes a tarjetas con mejores beneficios, mayor límite y tasas preferenciales.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIP 8 — Pro -->
+        <div class="tip-card priority-pro" data-tipcat="pro">
+            <div class="tip-card-stripe"></div>
+            <div class="tip-card-header">
+                <div class="tip-card-icon"><i class="fas fa-chess-knight"></i></div>
+                <div class="tip-card-meta">
+                    <div class="tip-card-priority"><i class="fas fa-star"></i> Nivel pro</div>
+                    <div class="tip-card-title">Compra estratégicamente después de la fecha de corte</div>
+                </div>
+            </div>
+            <div class="tip-card-body">
+                <div class="tip-card-desc">
+                    Las compras realizadas <strong>un día después de tu fecha de corte</strong> quedan en el siguiente estado de cuenta, dándote hasta ~50 días para pagarlas sin intereses. Para compras grandes planeadas, identificar este día y ejecutar la compra estratégicamente maximiza tu liquidez sin costo adicional.
+                </div>
+                <div class="tip-impact">
+                    <span class="tip-impact-label">📆 Ejemplo práctico</span>
+                    <span class="tip-impact-val">Fecha de corte día 10. Compra de $15,000 el día 11: fecha límite de pago ≈ día 5 del mes siguiente = 55 días sin intereses para organizarte.</span>
+                </div>
+                <div class="tip-steps">
+                    <div class="tip-step"><div class="tip-step-dot">1</div>Identifica tu fecha de corte exacta en el estado de cuenta o app</div>
+                    <div class="tip-step"><div class="tip-step-dot">2</div>Para compras grandes, espera al día siguiente del corte</div>
+                    <div class="tip-step"><div class="tip-step-dot">3</div>Marca en tu calendario la fecha límite del mes siguiente</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIP 9 — Pro -->
+        <div class="tip-card priority-pro" data-tipcat="pro">
+            <div class="tip-card-stripe"></div>
+            <div class="tip-card-header">
+                <div class="tip-card-icon"><i class="fas fa-layer-group"></i></div>
+                <div class="tip-card-meta">
+                    <div class="tip-card-priority"><i class="fas fa-star"></i> Nivel pro</div>
+                    <div class="tip-card-title">Usa MSI solo cuando sea un reemplazo real del efectivo</div>
+                </div>
+            </div>
+            <div class="tip-card-body">
+                <div class="tip-card-desc">
+                    Los Meses Sin Intereses son una herramienta poderosa si se usan con disciplina. El error común es acumular múltiples compras en MSI hasta <strong>comprometer el 80–100% del límite</strong>, quedándose sin margen para emergencias. La regla es: solo usa MSI si podrías pagar la compra de contado pero prefieres preservar liquidez con costo $0.
+                </div>
+                <div class="tip-impact">
+                    <span class="tip-impact-label">⚠️ Riesgo a evitar</span>
+                    <span class="tip-impact-val">3 compras simultáneas en 12 MSI con límite de $25,000 pueden comprometer $18,000–$22,000 del límite durante un año entero, eliminando tu colchón financiero.</span>
+                </div>
+                <div class="tip-donotdo">
+                    <i class="fas fa-times-circle"></i>
+                    <span>No uses MSI para compras que no necesitas o que no podrías costear de ninguna otra forma. Los MSI no cambian el precio, solo cambian el momento del pago.</span>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -1365,6 +1831,21 @@
 </div>
 
 <script>
+/* ── Tips category filter ── */
+function filterTips(cat, btn) {
+    document.querySelectorAll('.tips-cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#tips-grid .tip-card').forEach(card => {
+        const match = cat === 'all' || card.dataset.tipcat === cat;
+        card.style.display = match ? '' : 'none';
+    });
+    /* Featured card spans full width only if visible */
+    const featured = document.querySelector('.tip-card.tip-featured');
+    if (featured) {
+        featured.style.gridColumn = featured.style.display === 'none' ? '' : '1 / -1';
+    }
+}
+
 /* ── Tab switcher ── */
 function showTab(id, btn) {
     document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
