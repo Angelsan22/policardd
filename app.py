@@ -575,6 +575,20 @@ def banco_eliminar_tarjeta(id):
         flash('Error al eliminar la tarjeta', 'danger')
     return redirect(url_for('banco_tarjetas'))
 
+@app.route('/admin/tarjeta/<int:id>/aprobar', methods=['POST'])
+@admin_required
+def admin_aprobar_tarjeta(id):
+    try:
+        tarjeta = Tarjeta.query.get_or_404(id)
+        tarjeta.aprobada = True
+        tarjeta.fecha_aprobacion = datetime.utcnow()
+        db.session.commit()
+        flash(f'Tarjeta "{tarjeta.nombre}" aprobada correctamente', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('Error al aprobar la tarjeta', 'danger')
+    return redirect(url_for('admin_tarjetas'))
+
 # ==================== REGISTRO Y SOLICITUD CLIENTE ====================
 @app.route('/registro', methods=['GET', 'POST'])
 def registro_usuario():

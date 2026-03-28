@@ -72,6 +72,7 @@ td { padding:0.9rem 1rem; font-size:0.875rem; color:var(--texto-oscuro); vertica
                     <th>Anualidad</th>
                     <th>Estado</th>
                     <th>Fecha</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -110,6 +111,21 @@ td { padding:0.9rem 1rem; font-size:0.875rem; color:var(--texto-oscuro); vertica
                     </td>
                     <td style="color:var(--verde-medio);">
                         {{ tarjeta.fecha_creacion.strftime('%d/%m/%Y') if tarjeta.fecha_creacion else 'N/A' }}
+                    </td>
+                    <td>
+                        {% if not tarjeta.aprobada %}
+                            <form method="POST" action="{{ url_for('admin_aprobar_tarjeta', id=tarjeta.id) }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                <button type="submit" class="btn btn-secondary btn-sm"
+                                        onclick="return confirm('¿Aprobar esta tarjeta?')">
+                                    <i class="fas fa-check"></i> Aprobar
+                                </button>
+                            </form>
+                        {% else %}
+                            <span style="color:var(--verde-salvia); font-size:0.82rem;">
+                                <i class="fas fa-check-circle"></i> Ya aprobada
+                            </span>
+                        {% endif %}
                     </td>
                 </tr>
                 {% else %}

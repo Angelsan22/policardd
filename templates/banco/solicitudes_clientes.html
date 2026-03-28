@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block title %}Solicitudes de Clientes — PoliCard{% endblock %}
+
+{% block extra_styles %}
+<style>
+.page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;
+}
+.sol-card {
+    background: var(--blanco);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+}
+.sol-card:hover { box-shadow: var(--sombra-lg); }
+.sol-header {
+    background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));
+    padding: 1rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+.sol-header h3 { color: var(--blanco); font-family: 'DM Serif Display', serif; font-size: 1.1rem; }
+.sol-header .sh-sub { color: rgba(255,255,255,0.8); font-size: 0.82rem; }
+.badge-estado {
+    padding: 0.25rem 0.85rem; border-radius: 99px;
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+}
+.badge-pendiente { background: #fef9e7; color: #9a6e00; border: 1px solid #f9d978; }
+.badge-aprobada  { background: #d4edda; color: #276339; border: 1px solid #b2dfcb; }
+.badge-rechazada { background: #fdecea; color: #c0392b; border: 1px solid #f5b7b1; }
+.sol-body {
+    padding: 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem;
+}
+.sol-info { display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.88rem; }
+.sol-info .si-row { display: flex; gap: 0.5rem; }
+.sol-info .si-label { color: var(--verde-medio); font-weight: 600; min-width: 100px; }
+.sol-actions { display: flex; gap: 0.75rem; }
+.empty-state {
+    background: var(--blanco); border-radius: var(--radio-lg);
+    padding: 4rem; text-align: center; box-shadow: var(--sombra);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="section-title">
+            <i class="fas fa-users" style="color:var(--verde-salvia); margin-right:0.5rem;"></i>
+            Solicitudes de Clientes
+        </h1>
+        <p class="section-subtitle">Clientes que han solicitado tus tarjetas</p>
+    </div>
+    <a href="/banco/dashboard" class="btn btn-outline btn-sm">
+        <i class="fas fa-arrow-left"></i> Volver
+    </a>
+</div>
+
+{% if solicitudes %}
+    {% for sol in solicitudes %}
+    <div class="sol-card">
+        <div class="sol-header">
+            <div>
+                <h3><i class="fas fa-credit-card" style="margin-right:6px;"></i>{{ sol.tarjeta.nombre }}</h3>
+                <div class="sh-sub">Solicitada el {{ sol.fecha_solicitud.strftime('%d/%m/%Y %H:%M') }}</div>
+            </div>
+            <span class="badge-estado badge-{{ sol.estado }}">{{ sol.estado|capitalize }}</span>
+        </div>
+        <div class="sol-body">
+            <div class="sol-info">
+                <div class="si-row">
+                    <span class="si-label"><i class="fas fa-user"></i> Cliente</span>
+                    <span>{{ sol.usuario.nombre }}</span>
+                </div>
+                <div class="si-row">
+                    <span class="si-label"><i class="fas fa-envelope"></i> Email</span>
+                    <span>{{ sol.usuario.email }}</span>
+                </div>
+                {% if sol.usuario.cliente %}
+                <div class="si-row">
+                    <span class="si-label"><i class="fas fa-phone"></i> Teléfono</span>
+                    <span>{{ sol.usuario.cliente.telefono or 'N/A' }}</span>
+                </div>
+                <div class="si-row">
+                    <span class="si-label"><i class="fas fa-map-marker-alt"></i> Dirección</span>
+                    <span>{{ sol.usuario.cliente.direccion or 'N/A' }}</span>
+                </div>
+                <div class="si-row">
+                    <span class="si-label"><i class="fas fa-birthday-cake"></i> Nacimiento</span>
+                    <span>{{ sol.usuario.cliente.fecha_nacimiento.strftime('%d/%m/%Y') if sol.usuario.cliente.fecha_nacimiento else 'N/A' }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% if sol.estado == 'pendiente' %}
+            <div class="sol-actions">
+                <form method="POST" action="{{ url_for('aprobar_solicitud_cliente', id=sol.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <button type="submit" class="btn btn-secondary">
+                        <i class="fas fa-check"></i> Aprobar
+                    </button>
+                </form>
+                <form method="POST" action="{{ url_for('rechazar_solicitud_cliente', id=sol.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-times"></i> Rechazar
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-inbox" style="font-size:3rem; color:var(--verde-salvia); display:block; margin-bottom:1rem;"></i>
+    <h3 style="font-family:'DM Serif Display',serif; color:var(--verde-oscuro);">Sin solicitudes aún</h3>
+    <p style="color:var(--verde-medio);">Cuando un cliente solicite una de tus tarjetas aparecerá aquí.</p>
+    <a href="/banco/dashboard" class="btn btn-primary mt-3">Volver al panel</a>
+</div>
+{% endif %}
+{% endblock %}
