@@ -356,10 +356,11 @@
 
 <nav>
     <div class="nav-inner">
-        <a href="/" class="nav-brand">
-            <div class="brand-icon"><i class="fas fa-credit-card"></i></div>
-            <span>PoliCard</span>
-        </a>
+       <a href="/" class="nav-brand">
+    <img src="{{ url_for('static', filename='img/logo.png') }}" 
+         alt="PoliCard" height="110">
+    <span>PoliCard</span>
+</a>
         <ul class="nav-links">
             <li><a href="/tarjetas"><i class="fas fa-credit-card"></i><span>Tarjetas</span></a></li>
             <li><a href="/buscar"><i class="fas fa-search"></i><span>Buscar</span></a></li>
