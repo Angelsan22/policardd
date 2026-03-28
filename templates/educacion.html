@@ -118,55 +118,134 @@
 .tab-section.active { display: block; animation: fadeIn 0.3s ease; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);} }
 
-/* ── Concept cards ── */
-.concept-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.3rem;
-}
-.concept-card {
-    background: #fff;
-    border-radius: 20px;
-    padding: 1.6rem;
-    box-shadow: 0 2px 0 rgba(0,0,0,0.05), 0 8px 28px rgba(0,0,0,0.07);
-    border: 1px solid rgba(107,143,94,0.12);
-    transition: transform 0.22s, box-shadow 0.22s;
+/* ══ CARRUSEL INFINITO ══ */
+.carousel-outer {
     position: relative;
     overflow: hidden;
+    margin: 0 -4px;
+    padding: 0.5rem 4px 1rem;
+    /* fade edges */
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 80px, black calc(100% - 80px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black 80px, black calc(100% - 80px), transparent 100%);
 }
-.concept-card::before {
+.carousel-outer:hover .carousel-track-infinite {
+    animation-play-state: paused;
+}
+.carousel-track-infinite {
+    display: flex;
+    gap: 1.4rem;
+    width: max-content;
+    animation: infiniteScroll 28s linear infinite;
+}
+@keyframes infiniteScroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+.concept-slide {
+    flex: 0 0 340px;
+    background: #fff;
+    border-radius: 24px;
+    padding: 2rem 1.8rem;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.04), 0 10px 34px rgba(0,0,0,0.08);
+    border: 1px solid rgba(107,143,94,0.13);
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-height: 230px;
+    display: flex;
+    flex-direction: column;
+}
+.concept-slide::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
     background: linear-gradient(90deg, var(--sage), var(--sage-light));
-    border-radius: 20px 20px 0 0;
+    border-radius: 24px 24px 0 0;
 }
-.concept-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 0 rgba(0,0,0,0.06), 0 20px 48px rgba(0,0,0,0.11);
+.concept-slide:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 0 rgba(0,0,0,0.06), 0 28px 56px rgba(26,46,26,0.14);
 }
-.concept-icon {
-    width: 46px; height: 46px;
-    border-radius: 13px;
+.slide-icon {
+    width: 52px; height: 52px;
+    border-radius: 15px;
     background: var(--sage-pale);
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.25rem;
-    margin-bottom: 1.1rem;
+    font-size: 1.35rem;
+    margin-bottom: 1.2rem;
     color: var(--forest);
-    box-shadow: 0 2px 8px rgba(107,143,94,0.2);
+    box-shadow: 0 2px 10px rgba(107,143,94,0.2);
+    flex-shrink: 0;
 }
-.concept-card h4 {
+.slide-title {
     font-family: 'DM Serif Display', serif;
-    font-size: 1.08rem;
+    font-size: 1.2rem;
     color: var(--forest);
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.7rem;
+    line-height: 1.25;
 }
-.concept-card p {
-    font-size: 0.87rem;
+.slide-desc {
+    font-size: 0.875rem;
     color: var(--muted);
-    line-height: 1.65;
+    line-height: 1.7;
     font-family: 'Outfit', sans-serif;
+    flex: 1;
+}
+.slide-desc strong { color: var(--forest); font-weight: 600; }
+
+/* Controles del carrusel */
+.carousel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.4rem;
+}
+.carousel-ctrl-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(107,143,94,0.3);
+    background: #fff;
+    color: var(--moss);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.carousel-ctrl-btn:hover {
+    background: var(--forest);
+    border-color: var(--forest);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(26,46,26,0.2);
+}
+.carousel-pause-btn {
+    padding: 0 1.1rem;
+    height: 40px;
+    border-radius: 99px;
+    border: 1.5px solid rgba(107,143,94,0.3);
+    background: #fff;
+    color: var(--moss);
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.carousel-pause-btn:hover {
+    background: var(--sage-pale);
+    border-color: var(--sage);
+    color: var(--forest);
+}
+.carousel-pause-btn.paused {
+    background: var(--forest);
+    border-color: var(--forest);
+    color: #fff;
 }
 
 /* ── Section card wrapper ── */
@@ -315,9 +394,7 @@
 }
 .tip-box i { color: var(--sage); font-size: 1.15rem; flex-shrink: 0; margin-top: 1px; }
 
-/* ══ TIPS — Professional redesign ══ */
-
-/* Header summary bar */
+/* ══ TIPS ══ */
 .tips-header {
     background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 60%, #3a6840 100%);
     border-radius: 22px;
@@ -366,8 +443,6 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
 }
-
-/* Category filter row */
 .tips-cats {
     display: flex;
     gap: 0.5rem;
@@ -391,16 +466,12 @@
 }
 .tips-cat-btn:hover { background: var(--sage-pale); border-color: var(--sage); color: var(--forest); }
 .tips-cat-btn.active { background: var(--forest); border-color: var(--forest); color: #fff; }
-
-/* Tips grid — two columns on wide, one on mobile */
 .tips-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
     gap: 1.2rem;
 }
 @media(max-width: 500px) { .tips-grid { grid-template-columns: 1fr; } }
-
-/* Individual tip card */
 .tip-card {
     background: #fff;
     border-radius: 22px;
@@ -420,8 +491,6 @@
     flex-direction: row;
 }
 @media(max-width:700px) { .tip-card.tip-featured { flex-direction: column; } }
-
-/* Card accent top stripe */
 .tip-card-stripe {
     height: 4px;
     width: 100%;
@@ -429,8 +498,6 @@
 }
 .tip-card.tip-featured .tip-card-stripe { height: 100%; width: 5px; }
 @media(max-width:700px) { .tip-card.tip-featured .tip-card-stripe { height: 4px; width: 100%; } }
-
-/* Card header */
 .tip-card-header {
     padding: 1.3rem 1.5rem 0.8rem;
     display: flex;
@@ -464,8 +531,6 @@
     color: var(--forest);
     line-height: 1.25;
 }
-
-/* Card body */
 .tip-card-body {
     padding: 0 1.5rem 1.2rem;
     flex: 1;
@@ -480,8 +545,6 @@
     font-family: 'Outfit', sans-serif;
 }
 .tip-card-desc strong { color: var(--forest); font-weight: 700; }
-
-/* Impact metric row */
 .tip-impact {
     display: flex;
     align-items: center;
@@ -507,8 +570,6 @@
     font-weight: 600;
     line-height: 1.4;
 }
-
-/* Steps list inside card */
 .tip-steps {
     display: flex;
     flex-direction: column;
@@ -536,8 +597,6 @@
     margin-top: 1px;
     font-family: 'Outfit', sans-serif;
 }
-
-/* Warning / do-not block */
 .tip-donotdo {
     display: flex;
     gap: 8px;
@@ -552,23 +611,18 @@
     line-height: 1.5;
 }
 .tip-donotdo i { font-size: 0.85rem; flex-shrink: 0; margin-top: 1px; }
-
-/* Priority color themes */
 .priority-critica .tip-card-icon   { background: #FFF0EE; color: #C0392B; }
 .priority-critica .tip-card-stripe { background: linear-gradient(90deg, #C0392B, #e85a4a); }
 .priority-critica .tip-card-priority { background: rgba(192,57,43,0.1); color: #8B2318; }
 .priority-critica .tip-impact      { border-left-color: #C0392B; }
-
 .priority-alta .tip-card-icon   { background: #FDF3DC; color: #9a6e00; }
 .priority-alta .tip-card-stripe { background: linear-gradient(90deg, #C8952A, #e0b040); }
 .priority-alta .tip-card-priority { background: rgba(200,149,42,0.12); color: #7A5200; }
 .priority-alta .tip-impact      { border-left-color: #C8952A; }
-
 .priority-media .tip-card-icon   { background: var(--sage-pale); color: var(--forest); }
 .priority-media .tip-card-stripe { background: linear-gradient(90deg, var(--sage), var(--sage-light)); }
 .priority-media .tip-card-priority { background: rgba(107,143,94,0.12); color: var(--forest); }
 .priority-media .tip-impact      { border-left-color: var(--sage); }
-
 .priority-pro .tip-card-icon   { background: #EEF2FD; color: #2c4da0; }
 .priority-pro .tip-card-stripe { background: linear-gradient(90deg, #3a5fc8, #5a7ee0); }
 .priority-pro .tip-card-priority { background: rgba(58,95,200,0.1); color: #2c4da0; }
@@ -580,8 +634,6 @@
     flex-direction: column;
     gap: 1rem;
 }
-
-/* Category filter pills */
 .glos-cats {
     display: flex;
     gap: 0.5rem;
@@ -602,8 +654,6 @@
 }
 .glos-cat-btn:hover { background: var(--sage-pale); border-color: var(--sage); color: var(--forest); }
 .glos-cat-btn.active { background: var(--forest); border-color: var(--forest); color: #fff; }
-
-/* Rich term card */
 .termino-card {
     background: #fff;
     border-radius: 20px;
@@ -622,8 +672,6 @@
     border-color: rgba(107,143,94,0.4);
     box-shadow: 0 2px 0 rgba(107,143,94,0.08), 0 10px 30px rgba(107,143,94,0.14);
 }
-
-/* Card header band */
 .tc-header {
     display: flex;
     align-items: center;
@@ -665,8 +713,6 @@
     padding: 2px 9px;
     border-radius: 99px;
 }
-
-/* Card body */
 .tc-body {
     padding: 1rem 1.5rem 1.2rem;
 }
@@ -684,8 +730,6 @@
     padding: 0 2px;
 }
 .tc-def strong { color: var(--forest); font-weight: 700; }
-
-/* Example / tip row */
 .tc-example {
     background: var(--cream);
     border-radius: 10px;
@@ -701,8 +745,6 @@
     border-left: 3px solid var(--sage-light);
 }
 .tc-example i { color: var(--sage); flex-shrink: 0; margin-top: 1px; font-size: 0.75rem; }
-
-/* Key/value chips */
 .tc-chips {
     display: flex;
     flex-wrap: wrap;
@@ -728,20 +770,16 @@
 .tc-chip.good i { color: #3B7A46; }
 .tc-chip.warn { background: var(--gold-pale); border-color: rgba(200,149,42,0.2); color: #7A5200; }
 .tc-chip.warn i { color: var(--gold); }
-
-/* Color themes per category */
 .cat-costo   .tc-icon { background: #EAF2E4; color: var(--forest); }
 .cat-tiempo  .tc-icon { background: #EEF4FB; color: #1a3a5c; }
 .cat-pago    .tc-icon { background: #FDF3DC; color: #7A5200; }
 .cat-credito .tc-icon { background: #F0EDE5; color: #4a3a20; }
 .cat-bene    .tc-icon { background: #F5EFF9; color: #5a2d82; }
-
 .cat-costo   .tc-category { background: rgba(107,143,94,0.12); color: var(--forest); }
 .cat-tiempo  .tc-category { background: rgba(26,90,160,0.1); color: #1a3a5c; }
 .cat-pago    .tc-category { background: rgba(200,149,42,0.12); color: #7A5200; }
 .cat-credito .tc-category { background: rgba(90,60,20,0.1); color: #4a3a20; }
 .cat-bene    .tc-category { background: rgba(90,45,130,0.1); color: #5a2d82; }
-
 .cat-costo   .tc-header { border-bottom-color: rgba(107,143,94,0.12); }
 .cat-tiempo  .tc-header { border-bottom-color: rgba(26,90,160,0.1); }
 .cat-pago    .tc-header { border-bottom-color: rgba(200,149,42,0.12); }
@@ -794,8 +832,6 @@
     display: none;
 }
 .gsb-clear:hover { background: rgba(107,143,94,0.2); color: var(--forest); }
-
-/* ── Search status bar ── */
 .gsb-status {
     margin-top: 10px;
     font-size: 0.82rem;
@@ -864,8 +900,6 @@
     color: #fff;
     border-color: var(--forest);
 }
-
-/* ── Section title for similar results ── */
 .gsb-section-label {
     font-size: 0.78rem;
     font-weight: 700;
@@ -900,44 +934,83 @@
 
 <!-- ══ CONCEPTOS ══ -->
 <div class="tab-section active" id="tab-conceptos">
-    <div class="concept-grid">
-        <div class="concept-card">
-            <div class="concept-icon"><i class="fas fa-percentage"></i></div>
-            <h4>¿Qué es el CAT?</h4>
-            <p>El <strong>Costo Anual Total</strong> refleja el costo real de un crédito: tasa de interés + comisiones + cargos. A menor CAT, más barato el crédito. Siempre compara el CAT, no solo la tasa.</p>
-        </div>
-        <div class="concept-card">
-            <div class="concept-icon"><i class="fas fa-calendar-alt"></i></div>
-            <h4>Fecha de corte y pago</h4>
-            <p>La <strong>fecha de corte</strong> cierra tu periodo y genera el estado de cuenta. La <strong>fecha límite</strong> es hasta cuándo puedes pagar sin intereses. Conocer ambas es fundamental.</p>
-        </div>
-        <div class="concept-card">
-            <div class="concept-icon"><i class="fas fa-dollar-sign"></i></div>
-            <h4>Anualidad</h4>
-            <p>Comisión anual por tener la tarjeta. Muchas tarjetas para jóvenes la <strong>condonan</strong> si realizas cierto número de compras al mes. Siempre verifica las condiciones.</p>
-        </div>
-        <div class="concept-card">
-            <div class="concept-icon"><i class="fas fa-sync"></i></div>
-            <h4>Meses sin intereses</h4>
-            <p>Los MSI te permiten diferir compras en pagos iguales <strong>sin pagar intereses</strong>. Son útiles si no acumulas varias compras simultáneamente ni excedes tu capacidad de pago.</p>
-        </div>
-        <div class="concept-card">
-            <div class="concept-icon"><i class="fas fa-coins"></i></div>
-            <h4>Cashback y puntos</h4>
-            <p>El <strong>cashback</strong> regresa un % de tus compras en efectivo. Los <strong>puntos</strong> se canjean por productos o saldos. No compres cosas innecesarias solo para acumularlos.</p>
-        </div>
-        <div class="concept-card">
-            <div class="concept-icon"><i class="fas fa-chart-line"></i></div>
-            <h4>Historial crediticio</h4>
-            <p>Tu <strong>buró de crédito</strong> registra cómo pagas. Un historial positivo te abre puertas a mejores tasas, mayor límite y mejores productos financieros en el futuro.</p>
+
+    <div class="carousel-outer" id="carouselOuter">
+        <!-- La pista se duplica para el efecto infinito -->
+        <div class="carousel-track-infinite" id="carouselTrack">
+
+            <!-- SET 1 (original) -->
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-percentage"></i></div>
+                <div class="slide-title">¿Qué es el CAT?</div>
+                <div class="slide-desc">El <strong>Costo Anual Total</strong> refleja el costo real de un crédito: tasa de interés + comisiones + cargos. A menor CAT, más barato el crédito. Siempre compara el CAT, no solo la tasa.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="slide-title">Fecha de corte y pago</div>
+                <div class="slide-desc">La <strong>fecha de corte</strong> cierra tu periodo y genera el estado de cuenta. La <strong>fecha límite</strong> es hasta cuándo puedes pagar sin intereses. Conocer ambas es fundamental.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-dollar-sign"></i></div>
+                <div class="slide-title">Anualidad</div>
+                <div class="slide-desc">Comisión anual por tener la tarjeta. Muchas tarjetas para jóvenes la <strong>condonan</strong> si realizas cierto número de compras al mes. Siempre verifica las condiciones del contrato.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-sync"></i></div>
+                <div class="slide-title">Meses sin intereses</div>
+                <div class="slide-desc">Los MSI te permiten diferir compras en pagos iguales <strong>sin pagar intereses</strong>. Son útiles si no acumulas varias compras simultáneamente ni excedes tu capacidad de pago.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-coins"></i></div>
+                <div class="slide-title">Cashback y puntos</div>
+                <div class="slide-desc">El <strong>cashback</strong> regresa un % de tus compras en efectivo. Los <strong>puntos</strong> se canjean por productos o saldos. No compres cosas innecesarias solo para acumularlos.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="slide-title">Historial crediticio</div>
+                <div class="slide-desc">Tu <strong>buró de crédito</strong> registra cómo pagas. Un historial positivo te abre puertas a mejores tasas, mayor límite y mejores productos financieros en el futuro.</div>
+            </div>
+
+            <!-- SET 2 (duplicado para loop infinito sin saltos) -->
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-percentage"></i></div>
+                <div class="slide-title">¿Qué es el CAT?</div>
+                <div class="slide-desc">El <strong>Costo Anual Total</strong> refleja el costo real de un crédito: tasa de interés + comisiones + cargos. A menor CAT, más barato el crédito. Siempre compara el CAT, no solo la tasa.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="slide-title">Fecha de corte y pago</div>
+                <div class="slide-desc">La <strong>fecha de corte</strong> cierra tu periodo y genera el estado de cuenta. La <strong>fecha límite</strong> es hasta cuándo puedes pagar sin intereses. Conocer ambas es fundamental.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-dollar-sign"></i></div>
+                <div class="slide-title">Anualidad</div>
+                <div class="slide-desc">Comisión anual por tener la tarjeta. Muchas tarjetas para jóvenes la <strong>condonan</strong> si realizas cierto número de compras al mes. Siempre verifica las condiciones del contrato.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-sync"></i></div>
+                <div class="slide-title">Meses sin intereses</div>
+                <div class="slide-desc">Los MSI te permiten diferir compras en pagos iguales <strong>sin pagar intereses</strong>. Son útiles si no acumulas varias compras simultáneamente ni excedes tu capacidad de pago.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-coins"></i></div>
+                <div class="slide-title">Cashback y puntos</div>
+                <div class="slide-desc">El <strong>cashback</strong> regresa un % de tus compras en efectivo. Los <strong>puntos</strong> se canjean por productos o saldos. No compres cosas innecesarias solo para acumularlos.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="slide-title">Historial crediticio</div>
+                <div class="slide-desc">Tu <strong>buró de crédito</strong> registra cómo pagas. Un historial positivo te abre puertas a mejores tasas, mayor límite y mejores productos financieros en el futuro.</div>
+            </div>
+
         </div>
     </div>
+
 </div>
 
 <!-- ══ INFOGRAFÍAS ══ -->
 <div class="tab-section" id="tab-infografias">
 
-    <!-- CAT comparison -->
     <div class="info-card">
         <div class="info-card-title"><i class="fas fa-chart-bar"></i> Comparación de CAT por tarjeta</div>
         <div class="info-card-sub">Entre más corta la barra, menos pagas de intereses</div>
@@ -979,7 +1052,6 @@
         </div>
     </div>
 
-    <!-- Billing cycle -->
     <div class="info-card">
         <div class="info-card-title"><i class="fas fa-sync-alt"></i> Ciclo de facturación mensual</div>
         <div class="cycle-steps">
@@ -1010,13 +1082,11 @@
         </div>
     </div>
 
-    <!-- Payment comparison -->
     <div class="info-card" style="padding:0;overflow:hidden;">
         <div class="info-card-title" style="padding:20px 24px 0;">
             <i class="fas fa-balance-scale"></i> Pago mínimo vs pago total — deuda de $5,000 al 45% CAT
         </div>
         <div style="padding:16px 20px 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-            <!-- BAD -->
             <div style="border-radius:18px;overflow:hidden;border:1px solid rgba(192,57,43,0.15);">
                 <div style="background:#FDF0EE;padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(192,57,43,0.1);">
                     <span style="font-size:20px;line-height:1;"></span>
@@ -1029,7 +1099,6 @@
                     <div style="display:flex;justify-content:space-between;padding:9px 0;font-size:0.81rem;font-family:'Outfit',sans-serif;"><span style="color:#5A7A6A;">Pagas de más</span><span style="font-weight:700;color:#8B2318;">110% extra</span></div>
                 </div>
             </div>
-            <!-- GOOD -->
             <div style="border-radius:18px;overflow:hidden;border:1px solid rgba(46,125,50,0.15);">
                 <div style="background:#EAF5ED;padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(46,125,50,0.1);">
                     <span style="font-size:20px;line-height:1;"></span>
@@ -1045,11 +1114,9 @@
         </div>
     </div>
 
-    <!-- 30% rule -->
     <div class="info-card">
         <div class="info-card-title"><i class="fas fa-tachometer-alt"></i> La regla del 30% — ¿Cuánto de tu límite usar?</div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;">
-            <!-- Ideal -->
             <div style="background:#EFF8F0;border:1px solid rgba(46,125,50,0.18);border-radius:18px;padding:20px 14px;text-align:center;position:relative;overflow:hidden;">
                 <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#3B7A46,#6BAF7A);border-radius:3px 3px 0 0;"></div>
                 <div style="font-family:'DM Serif Display',serif;font-size:1.85rem;font-weight:700;letter-spacing:-0.02em;color:#1e5e30;margin-bottom:6px;">0–30%</div>
@@ -1058,7 +1125,6 @@
                 </div>
                 <div style="font-size:0.76rem;color:#5A7A6A;line-height:1.45;font-family:'Outfit',sans-serif;">Buen score, margen de emergencia y perfil sano</div>
             </div>
-            <!-- Warn -->
             <div style="background:#FBF6E9;border:1px solid rgba(184,131,10,0.22);border-radius:18px;padding:20px 14px;text-align:center;position:relative;overflow:hidden;">
                 <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#9A7000,#C8A830);border-radius:3px 3px 0 0;"></div>
                 <div style="font-family:'DM Serif Display',serif;font-size:1.85rem;font-weight:700;letter-spacing:-0.02em;color:#7A5200;margin-bottom:6px;">31–60%</div>
@@ -1067,7 +1133,6 @@
                 </div>
                 <div style="font-size:0.76rem;color:#5A7A6A;line-height:1.45;font-family:'Outfit',sans-serif;">Score comienza a bajar, riesgo de sobre-endeudamiento</div>
             </div>
-            <!-- Danger -->
             <div style="background:#FBF0EE;border:1px solid rgba(178,46,36,0.18);border-radius:18px;padding:20px 14px;text-align:center;position:relative;overflow:hidden;">
                 <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#8B2318,#C0392B);border-radius:3px 3px 0 0;"></div>
                 <div style="font-family:'DM Serif Display',serif;font-size:1.85rem;font-weight:700;letter-spacing:-0.02em;color:#8B2318;margin-bottom:6px;">61–100%</div>
@@ -1088,27 +1153,6 @@
 <!-- ══ TIPS ══ -->
 <div class="tab-section" id="tab-tips">
 
-    <!-- Summary bar -->
-    <div class="tips-header">
-        <div class="tips-header-stat">
-            <div class="stat-val">9</div>
-            <div class="stat-label">Consejos clave</div>
-        </div>
-        <div class="tips-header-stat">
-            <div class="stat-val">$0</div>
-            <div class="stat-label">Intereses si los sigues</div>
-        </div>
-        <div class="tips-header-stat">
-            <div class="stat-val">700+</div>
-            <div class="stat-label">Score alcanzable</div>
-        </div>
-        <div class="tips-header-stat">
-            <div class="stat-val">100%</div>
-            <div class="stat-label">Aplicables desde hoy</div>
-        </div>
-    </div>
-
-    <!-- Category filters -->
     <div class="tips-cats">
         <button class="tips-cat-btn active" onclick="filterTips('all',this)">Todos</button>
         <button class="tips-cat-btn" onclick="filterTips('pago',this)"><i class="fas fa-money-bill-wave"></i> Pagos</button>
@@ -1117,10 +1161,8 @@
         <button class="tips-cat-btn" onclick="filterTips('pro',this)"><i class="fas fa-star"></i> Nivel pro</button>
     </div>
 
-    <!-- Tips grid -->
     <div class="tips-grid" id="tips-grid">
 
-        <!-- TIP 1 — Featured / crítica -->
         <div class="tip-card tip-featured priority-critica" data-tipcat="pago">
             <div class="tip-card-stripe"></div>
             <div style="flex:1;display:flex;flex-direction:column;">
@@ -1148,7 +1190,6 @@
             </div>
         </div>
 
-        <!-- TIP 2 -->
         <div class="tip-card priority-critica" data-tipcat="pago">
             <div class="tip-card-stripe"></div>
             <div class="tip-card-header">
@@ -1173,7 +1214,6 @@
             </div>
         </div>
 
-        <!-- TIP 3 -->
         <div class="tip-card priority-alta" data-tipcat="credito">
             <div class="tip-card-stripe"></div>
             <div class="tip-card-header">
@@ -1199,7 +1239,6 @@
             </div>
         </div>
 
-        <!-- TIP 4 -->
         <div class="tip-card priority-alta" data-tipcat="habitos">
             <div class="tip-card-stripe"></div>
             <div class="tip-card-header">
@@ -1225,7 +1264,6 @@
             </div>
         </div>
 
-        <!-- TIP 5 -->
         <div class="tip-card priority-media" data-tipcat="habitos">
             <div class="tip-card-stripe"></div>
             <div class="tip-card-header">
@@ -1237,7 +1275,7 @@
             </div>
             <div class="tip-card-body">
                 <div class="tip-card-desc">
-                    El olvido es la principal causa de generación de intereses y mora. Configurar un <strong>débito automático por el total del saldo</strong> al corte elimina este riesgo. Asegúrate de que tu cuenta de débito siempre tenga fondos suficientes 2–3 días antes de la fecha límite. Esto además construye historial de pago puntual de forma automática.
+                    El olvido es la principal causa de generación de intereses y mora. Configurar un <strong>débito automático por el total del saldo</strong> al corte elimina este riesgo. Asegúrate de que tu cuenta de débito siempre tenga fondos suficientes 2–3 días antes de la fecha límite.
                 </div>
                 <div class="tip-impact">
                     <span class="tip-impact-label">⚙️ Cómo hacerlo</span>
@@ -1250,7 +1288,6 @@
             </div>
         </div>
 
-        <!-- TIP 6 -->
         <div class="tip-card priority-media" data-tipcat="habitos">
             <div class="tip-card-stripe"></div>
             <div class="tip-card-header">
@@ -1262,7 +1299,7 @@
             </div>
             <div class="tip-card-body">
                 <div class="tip-card-desc">
-                    Las tarjetas bien elegidas incluyen beneficios genuinamente valiosos: <strong>cashback, seguros de compra, acceso a salas de aeropuerto, seguro de viaje, extensión de garantía y protección contra fraude</strong>. El truco es usarlos en gastos que ya ibas a hacer, no generar gasto adicional para obtenerlos. Un peso gastado innecesariamente para ganar 5 centavos de cashback es una mala inversión.
+                    Las tarjetas bien elegidas incluyen beneficios genuinamente valiosos: <strong>cashback, seguros de compra, acceso a salas de aeropuerto, seguro de viaje, extensión de garantía y protección contra fraude</strong>. El truco es usarlos en gastos que ya ibas a hacer, no generar gasto adicional para obtenerlos.
                 </div>
                 <div class="tip-impact">
                     <span class="tip-impact-label">🎁 Beneficios más valiosos</span>
@@ -1271,7 +1308,6 @@
             </div>
         </div>
 
-        <!-- TIP 7 -->
         <div class="tip-card priority-media" data-tipcat="credito">
             <div class="tip-card-stripe"></div>
             <div class="tip-card-header">
@@ -1283,7 +1319,7 @@
             </div>
             <div class="tip-card-body">
                 <div class="tip-card-desc">
-                    Si estás construyendo tu historial crediticio, la primera tarjeta debe tener <strong>anualidad $0, CAT menor al 40% y límite modesto</strong>. Úsala únicamente para gastos que ya hacías en efectivo (gasolina, supermercado, suscripciones) y paga el total cada mes. En 6–12 meses tendrás historial suficiente para acceder a productos mejores.
+                    Si estás construyendo tu historial crediticio, la primera tarjeta debe tener <strong>anualidad $0, CAT menor al 40% y límite modesto</strong>. Úsala únicamente para gastos que ya hacías en efectivo y paga el total cada mes. En 6–12 meses tendrás historial suficiente para acceder a productos mejores.
                 </div>
                 <div class="tip-impact">
                     <span class="tip-impact-label">📅 Línea de tiempo</span>
@@ -1292,7 +1328,6 @@
             </div>
         </div>
 
-        <!-- TIP 8 — Pro -->
         <div class="tip-card priority-pro" data-tipcat="pro">
             <div class="tip-card-stripe"></div>
             <div class="tip-card-header">
@@ -1318,7 +1353,6 @@
             </div>
         </div>
 
-        <!-- TIP 9 — Pro -->
         <div class="tip-card priority-pro" data-tipcat="pro">
             <div class="tip-card-stripe"></div>
             <div class="tip-card-header">
@@ -1349,7 +1383,6 @@
 <!-- ══ GLOSARIO ══ -->
 <div class="tab-section" id="tab-glosario">
 
-    <!-- Search bar -->
     <div class="glosario-search-wrap">
         <div class="glosario-search-box">
             <div class="gsb-icon"><i class="fas fa-search"></i></div>
@@ -1374,7 +1407,6 @@
         </div>
     </div>
 
-    <!-- Category filters -->
     <div class="glos-cats">
         <button class="glos-cat-btn active" onclick="filterCat('all',this)">Todos</button>
         <button class="glos-cat-btn" onclick="filterCat('costo',this)"><i class="fas fa-percentage" style="margin-right:4px;"></i>Costos y tasas</button>
@@ -1384,13 +1416,10 @@
         <button class="glos-cat-btn" onclick="filterCat('bene',this)"><i class="fas fa-gift" style="margin-right:4px;"></i>Beneficios</button>
     </div>
 
-    <!-- Section label -->
     <div class="gsb-section-label" id="gsb-section-label"></div>
 
-    <!-- Rich glossary list -->
     <div class="glosario-grid" id="glosario-grid">
 
-        <!-- CAT -->
         <div class="termino-card cat-costo" data-cat="costo"
              data-term="cat" data-def="costo anual total porcentaje real del costo del credito incluyendo todos los cargos comisiones seguros intereses">
             <div class="tc-header">
@@ -1416,7 +1445,6 @@
             </div>
         </div>
 
-        <!-- Tasa de interés -->
         <div class="termino-card cat-costo" data-cat="costo"
              data-term="tasa de interes" data-def="porcentaje banco cobra prestarte dinero saldo pendiente mensual anual ordinaria moratoria">
             <div class="tc-header">
@@ -1441,7 +1469,6 @@
             </div>
         </div>
 
-        <!-- Anualidad -->
         <div class="termino-card cat-costo" data-cat="costo"
              data-term="anualidad" data-def="comision anual cargo fijo tarjeta condonacion compras membresía">
             <div class="tc-header">
@@ -1453,7 +1480,7 @@
             </div>
             <div class="tc-body">
                 <div class="tc-def">
-                    La <strong>anualidad</strong> es una comisión fija que el banco cobra una vez al año simplemente por mantenerte como titular de la tarjeta, independientemente de cuánto la uses. Su costo varía desde <strong>$0 (tarjetas sin anualidad)</strong> hasta más de $3,000 anuales en tarjetas premium. Muchos bancos la <strong>condonan automáticamente</strong> si realizas un número mínimo de compras al mes (generalmente 3 a 5 compras). Esta condición debe estar especificada en el contrato.
+                    La <strong>anualidad</strong> es una comisión fija que el banco cobra una vez al año simplemente por mantenerte como titular de la tarjeta, independientemente de cuánto la uses. Su costo varía desde <strong>$0 (tarjetas sin anualidad)</strong> hasta más de $3,000 anuales en tarjetas premium. Muchos bancos la <strong>condonan automáticamente</strong> si realizas un número mínimo de compras al mes (generalmente 3 a 5 compras).
                 </div>
                 <div class="tc-example">
                     <i class="fas fa-lightbulb"></i>
@@ -1467,7 +1494,31 @@
             </div>
         </div>
 
-        <!-- Fecha de corte -->
+        <div class="termino-card cat-costo" data-cat="costo"
+             data-term="comision por mora" data-def="cargo adicional no pagar minimo vencimiento penalizacion multa retraso">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-gavel"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Comisión por mora</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Costos y tasas</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    Es un <strong>cargo fijo adicional que el banco aplica cuando no realizas ni siquiera el pago mínimo</strong> antes de la fecha límite. Su monto varía por institución pero suele ser de <strong>$300 a $600 pesos</strong>. Además de esta comisión, el banco también aplica la tasa moratoria sobre todo el saldo. La mora también <strong>se reporta negativamente</strong> al Buró de Crédito.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>No pagar un mes con saldo de $8,000: comisión por mora ($450) + interés moratorio al mes ($340) + daño en buró. Costo total por un descuido: casi $800 más historial dañado.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Daña tu historial en buró</div>
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Activa tasa moratoria (más alta)</div>
+                    <div class="tc-chip good"><i class="fas fa-check"></i> Evitable pagando al menos el mínimo</div>
+                </div>
+            </div>
+        </div>
+
         <div class="termino-card cat-tiempo" data-cat="tiempo"
              data-term="fecha de corte" data-def="dia banco cierra periodo estado de cuenta mensual ciclo facturacion">
             <div class="tc-header">
@@ -1479,7 +1530,7 @@
             </div>
             <div class="tc-body">
                 <div class="tc-def">
-                    Es el <strong>día del mes en que el banco cierra tu periodo de facturación</strong> y genera tu estado de cuenta. Todas las compras realizadas entre una fecha de corte y la siguiente quedan registradas en el mismo periodo. Esta fecha es fija cada mes (ej: siempre el día 15). Las compras realizadas <strong>después de la fecha de corte</strong> quedarán en el siguiente estado de cuenta y tendrán hasta ~50 días para pagarse sin intereses.
+                    Es el <strong>día del mes en que el banco cierra tu periodo de facturación</strong> y genera tu estado de cuenta. Todas las compras realizadas entre una fecha de corte y la siguiente quedan registradas en el mismo periodo. Esta fecha es fija cada mes. Las compras realizadas <strong>después de la fecha de corte</strong> quedarán en el siguiente estado de cuenta y tendrán hasta ~50 días para pagarse sin intereses.
                 </div>
                 <div class="tc-example">
                     <i class="fas fa-lightbulb"></i>
@@ -1492,7 +1543,6 @@
             </div>
         </div>
 
-        <!-- Fecha límite -->
         <div class="termino-card cat-tiempo" data-cat="tiempo"
              data-term="fecha limite de pago" data-def="ultimo dia pagar sin intereses vencimiento estado cuenta mora">
             <div class="tc-header">
@@ -1504,7 +1554,7 @@
             </div>
             <div class="tc-body">
                 <div class="tc-def">
-                    Es la <strong>fecha máxima para realizar tu pago sin que se generen intereses</strong>. Generalmente cae entre 20 y 25 días después de la fecha de corte. Si pagas el <strong>saldo total</strong> antes de este día, no pagarás ni un peso de intereses. Si pagas solo el mínimo o un monto parcial, el banco calculará intereses sobre el saldo restante desde la fecha de corte. Si no pagas nada, además de intereses ordinarios se generará una <strong>comisión por mora</strong>.
+                    Es la <strong>fecha máxima para realizar tu pago sin que se generen intereses</strong>. Generalmente cae entre 20 y 25 días después de la fecha de corte. Si pagas el <strong>saldo total</strong> antes de este día, no pagarás ni un peso de intereses. Si pagas solo el mínimo o un monto parcial, el banco calculará intereses sobre el saldo restante desde la fecha de corte.
                 </div>
                 <div class="tc-example">
                     <i class="fas fa-lightbulb"></i>
@@ -1518,7 +1568,6 @@
             </div>
         </div>
 
-        <!-- Periodo de gracia -->
         <div class="termino-card cat-tiempo" data-cat="tiempo"
              data-term="periodo de gracia" data-def="dias corte fecha limite sin intereses ventana pago">
             <div class="tc-header">
@@ -1530,7 +1579,7 @@
             </div>
             <div class="tc-body">
                 <div class="tc-def">
-                    Es la <strong>ventana de tiempo entre la fecha de corte y la fecha límite de pago</strong> durante la cual puedes liquidar tu saldo sin pagar intereses. En México esta ventana suele ser de <strong>20 a 25 días</strong>. Es importante saber que el periodo de gracia <strong>solo aplica si liquidaste el saldo total del mes anterior</strong>. Si traes saldo de meses previos, los intereses se calculan desde el día de cada compra, sin periodo de gracia.
+                    Es la <strong>ventana de tiempo entre la fecha de corte y la fecha límite de pago</strong> durante la cual puedes liquidar tu saldo sin pagar intereses. En México esta ventana suele ser de <strong>20 a 25 días</strong>. El periodo de gracia <strong>solo aplica si liquidaste el saldo total del mes anterior</strong>. Si traes saldo de meses previos, los intereses se calculan desde el día de cada compra, sin periodo de gracia.
                 </div>
                 <div class="tc-example">
                     <i class="fas fa-lightbulb"></i>
@@ -1543,7 +1592,6 @@
             </div>
         </div>
 
-        <!-- Pago mínimo -->
         <div class="termino-card cat-pago" data-cat="pago"
              data-term="pago minimo" data-def="monto minimo mora intereses deuda larga pago parcial riesgo">
             <div class="tc-header">
@@ -1555,7 +1603,7 @@
             </div>
             <div class="tc-body">
                 <div class="tc-def">
-                    Es el <strong>importe más bajo que puedes pagar sin caer en mora</strong>, calculado generalmente como un porcentaje del saldo total (entre 1.5% y 2%) o un monto fijo mínimo (ej. $200), el que resulte mayor. Aunque pagar el mínimo evita cargos por mora, <strong>es la peor forma de manejar tu deuda</strong>: la mayor parte del pago se destina a cubrir intereses y muy poco al capital, por lo que la deuda puede tardar años en liquidarse y terminas pagando el doble o triple del precio original.
+                    Es el <strong>importe más bajo que puedes pagar sin caer en mora</strong>, calculado generalmente como un porcentaje del saldo total (entre 1.5% y 2%) o un monto fijo mínimo (ej. $200), el que resulte mayor. Aunque pagar el mínimo evita cargos por mora, <strong>es la peor forma de manejar tu deuda</strong>: la mayor parte del pago se destina a cubrir intereses y muy poco al capital.
                 </div>
                 <div class="tc-example">
                     <i class="fas fa-lightbulb"></i>
@@ -1569,7 +1617,6 @@
             </div>
         </div>
 
-        <!-- MSI -->
         <div class="termino-card cat-pago" data-cat="pago"
              data-term="msi meses sin intereses" data-def="diferir compras pagos iguales sin interes plazo cuotas mensualidades">
             <div class="tc-header">
@@ -1581,7 +1628,7 @@
             </div>
             <div class="tc-body">
                 <div class="tc-def">
-                    Los <strong>Meses Sin Intereses (MSI)</strong> te permiten dividir el costo de una compra en pagos mensuales iguales <strong>sin ningún costo adicional de intereses</strong>, siempre que el comercio participe en la promoción y pagues puntualmente cada cuota. El banco aplica los MSI de tu límite de crédito disponible. El riesgo principal es <strong>comprometer demasiado tu límite</strong>: si tienes varias compras en MSI simultáneas, tu margen disponible se reduce y puedes quedarte sin crédito para emergencias.
+                    Los <strong>Meses Sin Intereses (MSI)</strong> te permiten dividir el costo de una compra en pagos mensuales iguales <strong>sin ningún costo adicional de intereses</strong>, siempre que el comercio participe en la promoción y pagues puntualmente cada cuota. El riesgo principal es <strong>comprometer demasiado tu límite</strong>: si tienes varias compras en MSI simultáneas, tu margen disponible se reduce.
                 </div>
                 <div class="tc-example">
                     <i class="fas fa-lightbulb"></i>
@@ -1595,7 +1642,6 @@
             </div>
         </div>
 
-        <!-- Disposición de efectivo -->
         <div class="termino-card cat-pago" data-cat="pago"
              data-term="disposicion de efectivo retiro cajero" data-def="retirar dinero tarjeta credito cajero atm intereses inmediatos comision cara">
             <div class="tc-header">
@@ -1607,7 +1653,7 @@
             </div>
             <div class="tc-body">
                 <div class="tc-def">
-                    Es la operación de <strong>retirar dinero en efectivo usando tu tarjeta de crédito</strong> en un cajero automático o ventanilla bancaria. A diferencia de las compras normales, la disposición de efectivo <strong>genera intereses desde el primer día</strong>, sin periodo de gracia, a una tasa que puede ser hasta 1.5× la tasa ordinaria. Además, casi siempre implica una <strong>comisión fija inmediata</strong> de entre $50 y $200 por la operación. Es considerada la forma más cara de obtener dinero.
+                    Es la operación de <strong>retirar dinero en efectivo usando tu tarjeta de crédito</strong> en un cajero automático o ventanilla bancaria. A diferencia de las compras normales, la disposición de efectivo <strong>genera intereses desde el primer día</strong>, sin periodo de gracia, a una tasa que puede ser hasta 1.5× la tasa ordinaria. Además, casi siempre implica una <strong>comisión fija inmediata</strong> de entre $50 y $200 por la operación.
                 </div>
                 <div class="tc-example">
                     <i class="fas fa-lightbulb"></i>
@@ -1621,7 +1667,30 @@
             </div>
         </div>
 
-        <!-- Buró de crédito -->
+        <div class="termino-card cat-pago" data-cat="pago"
+             data-term="saldo" data-def="monto total debes banco momento deuda pendiente acumulado">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-balance-scale"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Saldo</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Pagos</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    El <strong>saldo</strong> es el monto total que debes al banco en un momento determinado. Existen varios tipos: <strong>saldo al corte</strong> (lo que debías cuando se generó tu estado de cuenta), <strong>saldo actual</strong> (lo que debes hoy, incluyendo compras posteriores al corte) y <strong>saldo mínimo a pagar</strong>. Cuando pagas menos del saldo al corte, el saldo restante <strong>genera intereses de inmediato</strong>.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Saldo al corte: $6,000. Pagas $4,000. Saldo restante con intereses al siguiente mes: $2,000 + intereses ≈ $2,070. Ya no tienes periodo de gracia hasta liquidar todo.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip"><i class="fas fa-info"></i> Saldo al corte vs saldo actual</div>
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Saldo pendiente genera intereses</div>
+                </div>
+            </div>
+        </div>
+
         <div class="termino-card cat-credito" data-cat="credito"
              data-term="buro de credito historial crediticio" data-def="registro pagos historial score calificacion banco credito futuro condusef reporte">
             <div class="tc-header">
@@ -1633,7 +1702,7 @@
             </div>
             <div class="tc-body">
                 <div class="tc-def">
-                    El <strong>Buró de Crédito</strong> (formalmente "Sociedad de Información Crediticia") es la institución privada que recopila y almacena tu <strong>historial completo de pagos</strong>: tarjetas de crédito, préstamos personales, créditos hipotecarios, servicios de telefonía, entre otros. Los bancos consultan tu buró antes de otorgarte cualquier producto financiero. Tener un historial <strong>positivo</strong> te facilita acceso a mejores tasas y más límite de crédito; uno <strong>negativo</strong> puede cerrarte puertas por años. Puedes consultar tu reporte gratis una vez al año en buro.gob.mx.
+                    El <strong>Buró de Crédito</strong> es la institución privada que recopila y almacena tu <strong>historial completo de pagos</strong>: tarjetas de crédito, préstamos personales, créditos hipotecarios, servicios de telefonía, entre otros. Los bancos consultan tu buró antes de otorgarte cualquier producto financiero. Tener un historial <strong>positivo</strong> te facilita acceso a mejores tasas y más límite de crédito; uno <strong>negativo</strong> puede cerrarte puertas por años.
                 </div>
                 <div class="tc-example">
                     <i class="fas fa-lightbulb"></i>
@@ -1647,7 +1716,6 @@
             </div>
         </div>
 
-        <!-- Score crediticio -->
         <div class="termino-card cat-credito" data-cat="credito"
              data-term="score crediticio puntaje" data-def="numero calificacion comportamiento pago 400 850 utilización credito consultas">
             <div class="tc-header">
@@ -1659,7 +1727,7 @@
             </div>
             <div class="tc-body">
                 <div class="tc-def">
-                    Es un <strong>puntaje numérico (generalmente de 400 a 850)</strong> que resume tu comportamiento financiero histórico en un solo número. Lo calculan empresas como Buró de Crédito o Círculo de Crédito usando factores como: historial de pago puntual, porcentaje de utilización de tu límite, antigüedad de tus cuentas, número de créditos activos, y consultas recientes. Un score <strong>alto (700+)</strong> te da acceso a tasas preferenciales, mayor límite y aprobaciones más rápidas.
+                    Es un <strong>puntaje numérico (generalmente de 400 a 850)</strong> que resume tu comportamiento financiero histórico en un solo número. Lo calculan empresas como Buró de Crédito o Círculo de Crédito usando factores como: historial de pago puntual, porcentaje de utilización de tu límite, antigüedad de tus cuentas, número de créditos activos y consultas recientes. Un score <strong>alto (700+)</strong> te da acceso a tasas preferenciales.
                 </div>
                 <div class="tc-example">
                     <i class="fas fa-lightbulb"></i>
@@ -1673,7 +1741,6 @@
             </div>
         </div>
 
-        <!-- Límite de crédito -->
         <div class="termino-card cat-credito" data-cat="credito"
              data-term="limite de credito" data-def="maximo gastar tarjeta banco autorizacion incremento utilizacion 30 porciento">
             <div class="tc-header">
@@ -1685,7 +1752,7 @@
             </div>
             <div class="tc-body">
                 <div class="tc-def">
-                    Es el <strong>monto máximo que el banco te autoriza para gastar</strong> con tu tarjeta en cualquier momento. Este límite lo define el banco al abrir la cuenta considerando tu ingreso, historial crediticio y capacidad de pago. Conforme demuestras buen manejo, el banco puede <strong>incrementarlo automáticamente</strong>. La clave está en la <strong>utilización</strong>: los expertos recomiendan no usar más del 30% de tu límite para mantener un buen score y siempre tener margen para imprevistos.
+                    Es el <strong>monto máximo que el banco te autoriza para gastar</strong> con tu tarjeta en cualquier momento. Este límite lo define el banco al abrir la cuenta considerando tu ingreso, historial crediticio y capacidad de pago. La clave está en la <strong>utilización</strong>: los expertos recomiendan no usar más del 30% de tu límite para mantener un buen score y siempre tener margen para imprevistos.
                 </div>
                 <div class="tc-example">
                     <i class="fas fa-lightbulb"></i>
@@ -1698,7 +1765,6 @@
             </div>
         </div>
 
-        <!-- Utilización del crédito -->
         <div class="termino-card cat-credito" data-cat="credito"
              data-term="utilizacion del credito" data-def="porcentaje limite usando saldo score impacto 30 porciento regla">
             <div class="tc-header">
@@ -1710,7 +1776,7 @@
             </div>
             <div class="tc-body">
                 <div class="tc-def">
-                    Es el <strong>porcentaje de tu límite de crédito que estás usando actualmente</strong>. Se calcula dividiendo tu saldo actual entre tu límite total. Este indicador es uno de los factores más influyentes en tu score crediticio. Los modelos de scoring penalizan fuertemente la alta utilización porque indica dependencia del crédito. La regla general es mantenerla <strong>por debajo del 30%</strong> para un perfil saludable; por debajo del 10% para un perfil excelente.
+                    Es el <strong>porcentaje de tu límite de crédito que estás usando actualmente</strong>. Se calcula dividiendo tu saldo actual entre tu límite total. Este indicador es uno de los factores más influyentes en tu score crediticio. La regla general es mantenerla <strong>por debajo del 30%</strong> para un perfil saludable; por debajo del 10% para un perfil excelente.
                 </div>
                 <div class="tc-example">
                     <i class="fas fa-lightbulb"></i>
@@ -1724,7 +1790,6 @@
             </div>
         </div>
 
-        <!-- Cashback -->
         <div class="termino-card cat-bene" data-cat="bene"
              data-term="cashback reembolso" data-def="devolucion porcentaje compras saldo favor efectivo reembolso beneficio porcentaje">
             <div class="tc-header">
@@ -1736,7 +1801,7 @@
             </div>
             <div class="tc-body">
                 <div class="tc-def">
-                    El <strong>cashback</strong> es un beneficio que devuelve un porcentaje de tus compras como <strong>saldo a favor en tu cuenta o depósito en efectivo</strong>. Por ejemplo, un 2% de cashback en una compra de $1,000 regresa $20 automáticamente. Las tarjetas pueden ofrecer cashback plano (el mismo % en todo), o categorizado (más % en gasolina, supermercado, restaurantes, etc.). Para que el cashback sea un beneficio real, <strong>la devolución debe superar el costo de la anualidad</strong> y nunca debe motivarte a gastar más de lo planeado.
+                    El <strong>cashback</strong> es un beneficio que devuelve un porcentaje de tus compras como <strong>saldo a favor en tu cuenta o depósito en efectivo</strong>. Por ejemplo, un 2% de cashback en una compra de $1,000 regresa $20 automáticamente. Para que el cashback sea un beneficio real, <strong>la devolución debe superar el costo de la anualidad</strong> y nunca debe motivarte a gastar más de lo planeado.
                 </div>
                 <div class="tc-example">
                     <i class="fas fa-lightbulb"></i>
@@ -1750,58 +1815,6 @@
             </div>
         </div>
 
-        <!-- Comisión por mora -->
-        <div class="termino-card cat-costo" data-cat="costo"
-             data-term="comision por mora" data-def="cargo adicional no pagar minimo vencimiento penalizacion multa retraso">
-            <div class="tc-header">
-                <div class="tc-icon"><i class="fas fa-gavel"></i></div>
-                <div class="tc-title-group">
-                    <div class="tc-term">Comisión por mora</div>
-                    <span class="tc-category"><i class="fas fa-tag"></i> Costos y tasas</span>
-                </div>
-            </div>
-            <div class="tc-body">
-                <div class="tc-def">
-                    Es un <strong>cargo fijo adicional que el banco aplica cuando no realizas ni siquiera el pago mínimo</strong> antes de la fecha límite. Su monto varía por institución pero suele ser de <strong>$300 a $600 pesos</strong>. Además de esta comisión, el banco también aplica la tasa moratoria (más alta que la ordinaria) sobre todo el saldo. La mora también <strong>se reporta negativamente</strong> al Buró de Crédito, dañando tu historial. Un solo mes de mora puede afectar tu score por años.
-                </div>
-                <div class="tc-example">
-                    <i class="fas fa-lightbulb"></i>
-                    <span>No pagar un mes con saldo de $8,000: comisión por mora ($450) + interés moratório al mes ($340) + daño en buró. Costo total por un descuido: casi $800 más historial dañado.</span>
-                </div>
-                <div class="tc-chips">
-                    <div class="tc-chip bad"><i class="fas fa-times"></i> Daña tu historial en buró</div>
-                    <div class="tc-chip bad"><i class="fas fa-times"></i> Activa tasa moratoria (más alta)</div>
-                    <div class="tc-chip good"><i class="fas fa-check"></i> Evitable pagando al menos el mínimo</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Saldo -->
-        <div class="termino-card cat-pago" data-cat="pago"
-             data-term="saldo" data-def="monto total debes banco momento deuda pendiente acumulado">
-            <div class="tc-header">
-                <div class="tc-icon"><i class="fas fa-balance-scale"></i></div>
-                <div class="tc-title-group">
-                    <div class="tc-term">Saldo</div>
-                    <span class="tc-category"><i class="fas fa-tag"></i> Pagos</span>
-                </div>
-            </div>
-            <div class="tc-body">
-                <div class="tc-def">
-                    El <strong>saldo</strong> es el monto total que debes al banco en un momento determinado. Existen varios tipos: <strong>saldo al corte</strong> (lo que debías cuando se generó tu estado de cuenta), <strong>saldo actual</strong> (lo que debes hoy, incluyendo compras posteriores al corte) y <strong>saldo mínimo a pagar</strong> (el mínimo requerido para no caer en mora). Cuando pagas menos del saldo al corte, el saldo restante <strong>genera intereses de inmediato</strong>. Es importante no confundir el saldo disponible (lo que aún puedes gastar) con el saldo que debes.
-                </div>
-                <div class="tc-example">
-                    <i class="fas fa-lightbulb"></i>
-                    <span>Saldo al corte: $6,000. Pagas $4,000. Saldo restante con intereses al siguiente mes: $2,000 + intereses ≈ $2,070. Ya no tienes periodo de gracia hasta liquidar todo.</span>
-                </div>
-                <div class="tc-chips">
-                    <div class="tc-chip"><i class="fas fa-info"></i> Saldo al corte vs saldo actual</div>
-                    <div class="tc-chip bad"><i class="fas fa-times"></i> Saldo pendiente genera intereses</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Puntos y recompensas -->
         <div class="termino-card cat-bene" data-cat="bene"
              data-term="puntos recompensas programa lealtad" data-def="acumular puntos canjear productos vuelos hoteles saldo recompensas miles">
             <div class="tc-header">
@@ -1813,7 +1826,7 @@
             </div>
             <div class="tc-body">
                 <div class="tc-def">
-                    Los <strong>programas de puntos</strong> otorgan puntos por cada peso gastado con tu tarjeta, que posteriormente puedes <strong>canjear por productos, viajes, saldo a favor, descuentos o transferencias a millas aéreas</strong>. El valor real de cada punto varía enormemente según el programa (entre $0.10 y $1.00 por punto) y la forma de canje. Los canjes en efectivo o transferencias suelen dar menos valor que los viajes. Al igual que el cashback, solo representan un beneficio real si <strong>no incurres en intereses</strong> y si los usas efectivamente antes de que venzan.
+                    Los <strong>programas de puntos</strong> otorgan puntos por cada peso gastado con tu tarjeta, que posteriormente puedes <strong>canjear por productos, viajes, saldo a favor, descuentos o transferencias a millas aéreas</strong>. El valor real de cada punto varía enormemente según el programa y la forma de canje. Al igual que el cashback, solo representan un beneficio real si <strong>no incurres en intereses</strong> y si los usas efectivamente antes de que venzan.
                 </div>
                 <div class="tc-example">
                     <i class="fas fa-lightbulb"></i>
@@ -1822,7 +1835,7 @@
                 <div class="tc-chips">
                     <div class="tc-chip warn"><i class="fas fa-exclamation"></i> Verifica fecha de vencimiento</div>
                     <div class="tc-chip good"><i class="fas fa-check"></i> Viajes suelen dar más valor</div>
-                    <div class="tc-chip bad"><i class="fas fa-times"></i> No gasten de más por acumular</div>
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> No gastes de más por acumular</div>
                 </div>
             </div>
         </div>
@@ -1831,21 +1844,6 @@
 </div>
 
 <script>
-/* ── Tips category filter ── */
-function filterTips(cat, btn) {
-    document.querySelectorAll('.tips-cat-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('#tips-grid .tip-card').forEach(card => {
-        const match = cat === 'all' || card.dataset.tipcat === cat;
-        card.style.display = match ? '' : 'none';
-    });
-    /* Featured card spans full width only if visible */
-    const featured = document.querySelector('.tip-card.tip-featured');
-    if (featured) {
-        featured.style.gridColumn = featured.style.display === 'none' ? '' : '1 / -1';
-    }
-}
-
 /* ── Tab switcher ── */
 function showTab(id, btn) {
     document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
@@ -1854,17 +1852,68 @@ function showTab(id, btn) {
     btn.classList.add('active');
 }
 
-/* ── Category filter ── */
-let activeCat = 'all';
+/* ── Tips category filter ── */
+function filterTips(cat, btn) {
+    document.querySelectorAll('.tips-cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#tips-grid .tip-card').forEach(card => {
+        const match = cat === 'all' || card.dataset.tipcat === cat;
+        card.style.display = match ? '' : 'none';
+    });
+    const featured = document.querySelector('.tip-card.tip-featured');
+    if (featured) {
+        featured.style.gridColumn = featured.style.display === 'none' ? '' : '1 / -1';
+    }
+}
+
+/* ══ CARRUSEL INFINITO ══ */
+(function() {
+    const track    = document.getElementById('carouselTrack');
+    const pauseBtn = document.getElementById('carouselPause');
+    const pauseIcon = document.getElementById('pauseIcon');
+    const pauseLabel = document.getElementById('pauseLabel');
+    let isPaused   = false;
+    let speed      = 28; // segundos para recorrer el 50% (un set completo)
+
+    function setSpeed(s) {
+        speed = s;
+        track.style.animationDuration = s + 's';
+    }
+
+    window.togglePause = function() {
+        isPaused = !isPaused;
+        track.style.animationPlayState = isPaused ? 'paused' : 'running';
+        pauseIcon.className = isPaused ? 'fas fa-play' : 'fas fa-pause';
+        pauseLabel.textContent = isPaused ? 'Reanudar' : 'Pausar';
+        pauseBtn.classList.toggle('paused', isPaused);
+    };
+
+    document.getElementById('carouselSlower').addEventListener('click', function() {
+        setSpeed(Math.min(speed + 8, 60));
+    });
+    document.getElementById('carouselFaster').addEventListener('click', function() {
+        setSpeed(Math.max(speed - 8, 8));
+    });
+
+    // Pausa al hacer hover sobre el carrusel
+    const outer = document.getElementById('carouselOuter');
+    outer.addEventListener('mouseenter', function() {
+        if (!isPaused) track.style.animationPlayState = 'paused';
+    });
+    outer.addEventListener('mouseleave', function() {
+        if (!isPaused) track.style.animationPlayState = 'running';
+    });
+})();
+
+/* ── Glosario: category filter ── */
+var activeCat = 'all';
 function filterCat(cat, btn) {
     activeCat = cat;
-    document.querySelectorAll('.glos-cat-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.glos-cat-btn').forEach(function(b) { b.classList.remove('active'); });
     btn.classList.add('active');
-    // Re-run current search with new cat filter
     onGlosarioInput(document.getElementById('glosarioInput').value);
 }
 
-/* ── Normalizar texto (quita tildes, minúsculas) ── */
 function norm(str) {
     return str.toLowerCase()
         .normalize('NFD')
@@ -1872,57 +1921,52 @@ function norm(str) {
         .trim();
 }
 
-/* ── Levenshtein para similitud fuzzy ── */
 function levenshtein(a, b) {
-    const m = a.length, n = b.length;
+    var m = a.length, n = b.length;
     if (m === 0) return n;
     if (n === 0) return m;
-    const dp = Array.from({length: m + 1}, (_, i) => {
-        const row = new Array(n + 1).fill(0);
+    var dp = Array.from({length: m + 1}, function(_, i) {
+        var row = new Array(n + 1).fill(0);
         row[0] = i;
         return row;
     });
-    for (let j = 0; j <= n; j++) dp[0][j] = j;
-    for (let i = 1; i <= m; i++)
-        for (let j = 1; j <= n; j++)
-            dp[i][j] = a[i-1] === b[j-1]
-                ? dp[i-1][j-1]
-                : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+    for (var j = 0; j <= n; j++) dp[0][j] = j;
+    for (var i = 1; i <= m; i++)
+        for (var jj = 1; jj <= n; jj++)
+            dp[i][jj] = a[i-1] === b[jj-1]
+                ? dp[i-1][jj-1]
+                : 1 + Math.min(dp[i-1][jj], dp[i][jj-1], dp[i-1][jj-1]);
     return dp[m][n];
 }
 
-/* ── Highlight coincidencias ── */
 function highlight(text, query) {
     if (!query) return text;
-    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const re = new RegExp(`(${escaped})`, 'gi');
+    var escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    var re = new RegExp('(' + escaped + ')', 'gi');
     return text.replace(re, '<mark>$1</mark>');
 }
 
-/* ── Guardar originales al cargar ── */
-document.querySelectorAll('#glosario-grid .termino-card').forEach(card => {
+document.querySelectorAll('#glosario-grid .termino-card').forEach(function(card) {
     card.dataset.termOrig = card.querySelector('.tc-term').innerHTML;
     card.dataset.defOrig  = card.querySelector('.tc-def').innerHTML;
 });
 
-/* ── Restaurar cards ── */
 function restoreCards() {
-    document.querySelectorAll('#glosario-grid .termino-card').forEach(card => {
+    document.querySelectorAll('#glosario-grid .termino-card').forEach(function(card) {
         card.querySelector('.tc-term').innerHTML = card.dataset.termOrig;
         card.querySelector('.tc-def').innerHTML  = card.dataset.defOrig;
-        const catMatch = activeCat === 'all' || card.dataset.cat === activeCat;
+        var catMatch = activeCat === 'all' || card.dataset.cat === activeCat;
         card.classList.toggle('hidden', !catMatch);
         card.classList.remove('highlighted');
     });
 }
 
-/* ── Lógica principal de búsqueda ── */
 function onGlosarioInput(val) {
-    const q        = norm(val);
-    const status   = document.getElementById('gsb-status');
-    const noRes    = document.getElementById('gsb-no-results');
-    const label    = document.getElementById('gsb-section-label');
-    const clearBtn = document.getElementById('gsb-clear');
+    var q        = norm(val);
+    var status   = document.getElementById('gsb-status');
+    var noRes    = document.getElementById('gsb-no-results');
+    var label    = document.getElementById('gsb-section-label');
+    var clearBtn = document.getElementById('gsb-clear');
 
     if (!q || q.length < 1) {
         restoreCards();
@@ -1935,16 +1979,16 @@ function onGlosarioInput(val) {
 
     clearBtn.style.display = 'inline-flex';
 
-    const cards = Array.from(document.querySelectorAll('#glosario-grid .termino-card'));
-    let exactCount  = 0;
-    let fuzzyMatches = [];
+    var cards = Array.from(document.querySelectorAll('#glosario-grid .termino-card'));
+    var exactCount  = 0;
+    var fuzzyMatches = [];
 
-    cards.forEach(card => {
-        const catMatch = activeCat === 'all' || card.dataset.cat === activeCat;
-        const termN   = card.dataset.term;
-        const defN    = card.dataset.def;
-        const inTerm  = termN.includes(q);
-        const inDef   = defN.includes(q);
+    cards.forEach(function(card) {
+        var catMatch = activeCat === 'all' || card.dataset.cat === activeCat;
+        var termN    = card.dataset.term;
+        var defN     = card.dataset.def;
+        var inTerm   = termN.includes(q);
+        var inDef    = defN.includes(q);
 
         if ((inTerm || inDef) && catMatch) {
             card.classList.remove('hidden');
@@ -1958,17 +2002,17 @@ function onGlosarioInput(val) {
             card.querySelector('.tc-term').innerHTML = card.dataset.termOrig;
             card.querySelector('.tc-def').innerHTML  = card.dataset.defOrig;
             if (catMatch) {
-                const score = levenshtein(q, termN.substring(0, Math.max(q.length, termN.length)));
-                fuzzyMatches.push({ card, score });
+                var score = levenshtein(q, termN.substring(0, Math.max(q.length, termN.length)));
+                fuzzyMatches.push({ card: card, score: score });
             }
         }
     });
 
-    fuzzyMatches.sort((a, b) => a.score - b.score);
+    fuzzyMatches.sort(function(a, b) { return a.score - b.score; });
 
     if (exactCount > 0) {
-        const plural = exactCount === 1 ? 'resultado' : 'resultados';
-        status.innerHTML     = `<span class="gsb-status-count">${exactCount} ${plural}</span> para "<strong>${val.trim()}</strong>"`;
+        var plural = exactCount === 1 ? 'resultado' : 'resultados';
+        status.innerHTML     = '<span class="gsb-status-count">' + exactCount + ' ' + plural + '</span> para "<strong>' + val.trim() + '</strong>"';
         status.style.display = 'flex';
         noRes.style.display  = 'none';
         label.style.display  = 'none';
@@ -1978,20 +2022,20 @@ function onGlosarioInput(val) {
         label.style.display  = 'none';
         document.getElementById('gsb-query-echo').textContent = val.trim();
 
-        const pills = document.getElementById('gsb-similar-pills');
+        var pills = document.getElementById('gsb-similar-pills');
         pills.innerHTML = '';
-        const top4 = fuzzyMatches.slice(0, 4);
+        var top4 = fuzzyMatches.slice(0, 4);
 
         if (top4.length === 0) {
             pills.innerHTML = '<span style="font-size:0.8rem;color:var(--muted);font-family:\'Outfit\',sans-serif;">No hay términos similares disponibles.</span>';
         } else {
-            top4.forEach(({ card }) => {
-                const tmpDiv = document.createElement('div');
-                tmpDiv.innerHTML = card.dataset.termOrig;
-                const pill = document.createElement('button');
+            top4.forEach(function(item) {
+                var tmpDiv = document.createElement('div');
+                tmpDiv.innerHTML = item.card.dataset.termOrig;
+                var pill = document.createElement('button');
                 pill.className   = 'gsb-pill';
                 pill.textContent = tmpDiv.textContent;
-                pill.onclick = () => {
+                pill.onclick = function() {
                     document.getElementById('glosarioInput').value = tmpDiv.textContent;
                     onGlosarioInput(tmpDiv.textContent);
                 };
@@ -2001,7 +2045,6 @@ function onGlosarioInput(val) {
     }
 }
 
-/* ── Limpiar búsqueda ── */
 function clearSearch() {
     document.getElementById('glosarioInput').value = '';
     onGlosarioInput('');
