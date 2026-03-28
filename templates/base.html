@@ -362,10 +362,12 @@
     <span>PoliCard</span>
 </a>
         <ul class="nav-links">
-            <li><a href="/tarjetas"><i class="fas fa-credit-card"></i><span>Tarjetas</span></a></li>
-            <li><a href="/buscar"><i class="fas fa-search"></i><span>Buscar</span></a></li>
-            <li><a href="/educacion"><i class="fas fa-graduation-cap"></i><span>Educación</span></a></li>
-            <li><a href="/calculadora"><i class="fas fa-calculator"></i><span>Calcular</span></a></li>
+            {% if not session.get('tipo') == 'banco' %}
+                <li><a href="/tarjetas"><i class="fas fa-credit-card"></i><span>Tarjetas</span></a></li>
+                <li><a href="/buscar"><i class="fas fa-search"></i><span>Buscar</span></a></li>
+                <li><a href="/educacion"><i class="fas fa-graduation-cap"></i><span>Educación</span></a></li>
+                <li><a href="/calculadora"><i class="fas fa-calculator"></i><span>Calcular</span></a></li>
+            {% endif %}
             {% if session.get('usuario_id') %}
                 {% if session.get('tipo') == 'admin' %}
                     <li><a href="/admin"><i class="fas fa-shield-alt"></i><span>Admin</span></a></li>
