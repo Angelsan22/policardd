@@ -3,8 +3,28 @@
 
 {% block extra_styles %}
 <style>
+
+    :root {
+    --sage:       #6B8F5E;
+    --sage-light: #8FAF7E;
+    --sage-pale:  #EAF2E4;
+    --forest:     #1A2E1A;
+    --forest-mid: #2E4A2E;
+    --moss:       #5A7A6A;
+    --cream:      #F7F9F5;
+    --parchment:  #F0EDE5;
+    --gold:       #C8952A;
+    --gold-pale:  #FDF3DC;
+    --coral:      #C0392B;
+    --coral-pale: #FDECEA;
+    --amber:      #9a6e00;
+    --amber-pale: #FFF8E1;
+    --ink:        #1A2E1A;
+    --muted:      #5A7A6A;
+}
+
 .hero {
-    background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 55%, #3d6b45 100%);
     border-radius: var(--radio-lg);
     padding: 4rem 3rem;
     color: var(--blanco);
