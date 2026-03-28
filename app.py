@@ -462,10 +462,16 @@ def banco_dashboard():
     try:
         usuario = Usuario.query.get(session['usuario_id'])
         banco = usuario.banco
+        tarjeta_ids = [t.id for t in banco.tarjetas]
+        solicitudes_clientes = SolicitudTarjeta.query.filter(
+            SolicitudTarjeta.tarjeta_id.in_(tarjeta_ids),
+            SolicitudTarjeta.estado == 'pendiente'
+        ).count() if tarjeta_ids else 0
         stats = {
             'tarjetas_count':         len(banco.tarjetas),
             'tarjetas_aprobadas':     sum(1 for t in banco.tarjetas if t.aprobada),
             'solicitudes_pendientes': Solicitud.query.filter_by(banco_id=banco.id, estado='pendiente').count(),
+            'solicitudes_clientes':   solicitudes_clientes,
             'banco_aprobado':         banco.aprobado
         }
         return render_template('banco/bancodashboard.html', banco=banco, stats=stats)
@@ -628,6 +634,48 @@ def solicitar_tarjeta(id):
         db.session.rollback()
         flash('Error al enviar la solicitud', 'danger')
         return redirect(url_for('tarjetas'))
+    
+# ==================== SOLICITUDES DE CLIENTES (BANCO) ====================
+@app.route('/banco/solicitudes-clientes')
+@banco_required
+def banco_solicitudes_clientes():
+    try:
+        usuario = Usuario.query.get(session['usuario_id'])
+        banco = usuario.banco
+        tarjeta_ids = [t.id for t in banco.tarjetas]
+        solicitudes = SolicitudTarjeta.query.filter(
+            SolicitudTarjeta.tarjeta_id.in_(tarjeta_ids)
+        ).order_by(SolicitudTarjeta.fecha_solicitud.desc()).all() if tarjeta_ids else []
+        return render_template('banco/solicitudes_clientes.html', solicitudes=solicitudes)
+    except Exception as e:
+        flash('Error al cargar solicitudes', 'danger')
+        return redirect(url_for('banco_dashboard'))
+
+@app.route('/banco/solicitud-cliente/<int:id>/aprobar', methods=['POST'])
+@banco_required
+def aprobar_solicitud_cliente(id):
+    try:
+        sol = SolicitudTarjeta.query.get_or_404(id)
+        sol.estado = 'aprobada'
+        db.session.commit()
+        flash('Solicitud aprobada', 'success')
+    except:
+        db.session.rollback()
+        flash('Error al aprobar', 'danger')
+    return redirect(url_for('banco_solicitudes_clientes'))
+
+@app.route('/banco/solicitud-cliente/<int:id>/rechazar', methods=['POST'])
+@banco_required
+def rechazar_solicitud_cliente(id):
+    try:
+        sol = SolicitudTarjeta.query.get_or_404(id)
+        sol.estado = 'rechazada'
+        db.session.commit()
+        flash('Solicitud rechazada', 'info')
+    except:
+        db.session.rollback()
+        flash('Error al rechazar', 'danger')
+    return redirect(url_for('banco_solicitudes_clientes'))
 
 # ==================== MANEJO DE ERRORES ====================
 @app.errorhandler(404)
