@@ -51,6 +51,14 @@ def poblar_base_datos():
             db.session.flush()
             bancos_creados.append(b)
 
+        solicitud = Solicitud(
+            banco_id=b.id,
+            tipo_solicitud='banco',
+            referencia_id=b.id,
+            estado='pendiente'
+        )
+        db.session.add(solicitud)
+
         db.session.commit()
 
         tarjetas_data = [
