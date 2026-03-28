@@ -362,7 +362,7 @@
             <span>PoliCard</span>
         </a>
         <ul class="nav-links">
-            {% if not session.get('tipo') == 'banco' %}
+            {% if not session.get('tipo') in ['banco', 'admin'] %}
                 <li><a href="/tarjetas"><i class="fas fa-credit-card"></i><span>Tarjetas</span></a></li>
                 <li><a href="/buscar"><i class="fas fa-search"></i><span>Buscar</span></a></li>
                 <li><a href="/educacion"><i class="fas fa-graduation-cap"></i><span>Educación</span></a></li>
