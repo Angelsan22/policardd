@@ -354,13 +354,13 @@
 </head>
 <body>
 
-<nav>
-    <div class="nav-inner">
-       <a href="/" class="nav-brand">
-    <img src="{{ url_for('static', filename='img/logo.png') }}" 
-         alt="PoliCard" height="110">
-    <span>PoliCard</span>
-</a>
+    <nav>
+        <div class="nav-inner">
+        <a href="{% if session.get('tipo') == 'banco' %}/banco/dashboard{% elif session.get('tipo') == 'admin' %}/admin{% else %}/{% endif %}" class="nav-brand">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" 
+                alt="PoliCard" height="110">
+            <span>PoliCard</span>
+        </a>
         <ul class="nav-links">
             {% if not session.get('tipo') == 'banco' %}
                 <li><a href="/tarjetas"><i class="fas fa-credit-card"></i><span>Tarjetas</span></a></li>

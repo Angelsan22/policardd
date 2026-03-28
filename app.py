@@ -152,6 +152,10 @@ def banco_required(f):
 # ==================== RUTAS PÚBLICAS ====================
 @app.route('/')
 def index():
+    if session.get('tipo') == 'banco':
+        return redirect('/banco/dashboard')
+    if session.get('tipo') == 'admin':
+        return redirect('/admin')
     return render_template('index.html')
 
 @app.route('/tarjetas')
