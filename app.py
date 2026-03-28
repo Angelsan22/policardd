@@ -81,6 +81,23 @@ class Solicitud(db.Model):
     fecha_respuesta = db.Column(db.DateTime)
     banco_rel = db.relationship('Banco', backref='solicitudes')
 
+class UsuarioCliente(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    telefono = db.Column(db.String(20))
+    fecha_nacimiento = db.Column(db.Date)
+    direccion = db.Column(db.String(200))
+    usuario = db.relationship('Usuario', backref='cliente', uselist=False)
+
+class SolicitudTarjeta(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    tarjeta_id = db.Column(db.Integer, db.ForeignKey('tarjeta.id'), nullable=False)
+    estado = db.Column(db.String(20), default='pendiente')
+    fecha_solicitud = db.Column(db.DateTime, default=datetime.utcnow)
+    usuario = db.relationship('Usuario', backref='solicitudes_tarjeta')
+    tarjeta = db.relationship('Tarjeta', backref='solicitudes_clientes')
+
 # ==================== FORMULARIOS ====================
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -95,6 +112,15 @@ class RegistroBancoForm(FlaskForm):
     telefono = StringField('Teléfono', validators=[DataRequired()])
     sitio_web = StringField('Sitio Web', validators=[Optional()])
     descripcion = TextAreaField('Descripción del Banco', validators=[Optional()])
+
+class RegistroUsuarioForm(FlaskForm):
+    nombre = StringField('Nombre completo', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Contraseña', validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirmar contraseña', validators=[DataRequired(), EqualTo('password')])
+    telefono = StringField('Teléfono', validators=[DataRequired()])
+    fecha_nacimiento = StringField('Fecha de nacimiento', validators=[DataRequired()])
+    direccion = StringField('Dirección', validators=[DataRequired()])
 
 class TarjetaForm(FlaskForm):
     nombre = StringField('Nombre de la Tarjeta', validators=[DataRequired()])
@@ -542,6 +568,66 @@ def banco_eliminar_tarjeta(id):
         db.session.rollback()
         flash('Error al eliminar la tarjeta', 'danger')
     return redirect(url_for('banco_tarjetas'))
+
+# ==================== REGISTRO Y SOLICITUD CLIENTE ====================
+@app.route('/registro', methods=['GET', 'POST'])
+def registro_usuario():
+    if 'usuario_id' in session:
+        return redirect(url_for('index'))
+    form = RegistroUsuarioForm()
+    if form.validate_on_submit():
+        try:
+            if Usuario.query.filter_by(email=form.email.data).first():
+                flash('Este email ya está registrado', 'danger')
+                return redirect(url_for('registro_usuario'))
+            fecha = datetime.strptime(form.fecha_nacimiento.data, '%Y-%m-%d').date()
+            usuario = Usuario(
+                email=form.email.data,
+                password=generate_password_hash(form.password.data),
+                nombre=form.nombre.data,
+                tipo='cliente'
+            )
+            db.session.add(usuario)
+            db.session.flush()
+            cliente = UsuarioCliente(
+                usuario_id=usuario.id,
+                telefono=form.telefono.data,
+                fecha_nacimiento=fecha,
+                direccion=form.direccion.data
+            )
+            db.session.add(cliente)
+            db.session.commit()
+            flash('¡Registro exitoso! Ya puedes iniciar sesión.', 'success')
+            return redirect(url_for('login'))
+        except Exception as e:
+            db.session.rollback()
+            flash('Error en el registro', 'danger')
+    return render_template('registro_usuario.html', form=form)
+
+@app.route('/tarjeta/<int:id>/solicitar', methods=['POST'])
+@login_required
+def solicitar_tarjeta(id):
+    try:
+        usuario = Usuario.query.get(session['usuario_id'])
+        if usuario.tipo != 'cliente':
+            flash('Solo usuarios registrados pueden solicitar tarjetas', 'warning')
+            return redirect(url_for('tarjetas'))
+        tarjeta = Tarjeta.query.get_or_404(id)
+        ya_solicitada = SolicitudTarjeta.query.filter_by(
+            usuario_id=usuario.id, tarjeta_id=id
+        ).first()
+        if ya_solicitada:
+            flash('Ya solicitaste esta tarjeta anteriormente', 'warning')
+            return redirect(url_for('tarjetas'))
+        sol = SolicitudTarjeta(usuario_id=usuario.id, tarjeta_id=id)
+        db.session.add(sol)
+        db.session.commit()
+        flash(f'¡Solicitud enviada! El banco {tarjeta.banco.nombre_banco} revisará tu solicitud.', 'success')
+        return redirect(url_for('tarjetas'))
+    except Exception as e:
+        db.session.rollback()
+        flash('Error al enviar la solicitud', 'danger')
+        return redirect(url_for('tarjetas'))
 
 # ==================== MANEJO DE ERRORES ====================
 @app.errorhandler(404)

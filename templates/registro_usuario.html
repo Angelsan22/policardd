@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}Registro — PoliCard{% endblock %}
+
+{% block extra_styles %}
+<style>
+.registro-wrap {
+    max-width: 560px;
+    margin: 0 auto;
+}
+.registro-card {
+    background: var(--blanco);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra-lg);
+    overflow: hidden;
+}
+.registro-header {
+    background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));
+    padding: 2.5rem 2rem;
+    text-align: center;
+    color: var(--blanco);
+}
+.registro-header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.9rem;
+    margin-bottom: 0.3rem;
+}
+.registro-header p { color: var(--verde-claro); font-size: 0.9rem; }
+.registro-body { padding: 2rem; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+.divider-text {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--verde-medio);
+    margin-top: 1.25rem;
+}
+.divider-text a { color: var(--verde-oscuro); font-weight: 700; text-decoration: none; }
+.divider-text a:hover { text-decoration: underline; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="registro-wrap">
+    <div class="registro-card">
+        <div class="registro-header">
+            <div style="font-size:2.5rem; margin-bottom:0.75rem;">🎓</div>
+            <h1>Crea tu cuenta</h1>
+            <p>Regístrate para solicitar tarjetas de crédito</p>
+        </div>
+        <div class="registro-body">
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre completo</label>
+                        {{ form.nombre(class="form-control", placeholder="Tu nombre") }}
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        {{ form.telefono(class="form-control", placeholder="55 1234 5678") }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    {{ form.email(class="form-control", placeholder="correo@ejemplo.com") }}
+                </div>
+
+                <div class="form-group">
+                    <label>Fecha de nacimiento</label>
+                    {{ form.fecha_nacimiento(class="form-control", type="date") }}
+                </div>
+
+                <div class="form-group">
+                    <label>Dirección</label>
+                    {{ form.direccion(class="form-control", placeholder="Calle, colonia, ciudad") }}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        {{ form.password(class="form-control", placeholder="Mínimo 6 caracteres") }}
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar contraseña</label>
+                        {{ form.confirm_password(class="form-control", placeholder="Repite tu contraseña") }}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:0.5rem;">
+                    <i class="fas fa-user-plus"></i> Crear cuenta
+                </button>
+            </form>
+            <div class="divider-text">
+                ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
