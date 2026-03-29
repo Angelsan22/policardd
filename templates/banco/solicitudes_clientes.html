@@ -98,13 +98,11 @@
             {% if sol.estado == 'pendiente' %}
             <div class="sol-actions">
                 <form method="POST" action="{{ url_for('aprobar_solicitud_cliente', id=sol.id) }}">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                     <button type="submit" class="btn btn-secondary">
                         <i class="fas fa-check"></i> Aprobar
                     </button>
                 </form>
                 <form method="POST" action="{{ url_for('rechazar_solicitud_cliente', id=sol.id) }}">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                     <button type="submit" class="btn btn-danger">
                         <i class="fas fa-times"></i> Rechazar
                     </button>

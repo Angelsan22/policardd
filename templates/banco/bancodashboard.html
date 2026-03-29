@@ -199,7 +199,7 @@
 <div class="dash-header">
     <div>
         <h1><i class="fas fa-building" style="color:var(--verde-salvia); margin-right:0.5rem;"></i>{{ banco.nombre_banco }}</h1>
-        <p>Bienvenido, {{ session.get('nombre') }}</p>
+        <p>Bienvenido, {{ request.session.get('nombre') }}</p>
     </div>
     {% if banco.aprobado %}
         <span class="badge" style="background:#d4edda; color:#276339; font-size:0.85rem; padding:0.5rem 1.1rem;">
@@ -243,13 +243,8 @@
     </div>
     <div class="stat-card">
         <div class="stat-icon icon-purple"><i class="fas fa-bell"></i></div>
-        <div class="stat-label">Solicitudes Sistema</div>
+        <div class="stat-label">Solicitudes</div>
         <div class="stat-value" style="color:#7c3aed;">{{ stats.solicitudes_pendientes }}</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon" style="background:#fdecea; color:#c0392b;"><i class="fas fa-users"></i></div>
-        <div class="stat-label">Solicitudes Clientes</div>
-        <div class="stat-value" style="color:#c0392b;">{{ stats.solicitudes_clientes }}</div>
     </div>
 </div>
 
@@ -264,7 +259,8 @@
         <p>Ver, editar y eliminar tus tarjetas</p>
         <div class="ac-count">{{ stats.tarjetas_count }} Tarjeta{% if stats.tarjetas_count != 1 %}s{% endif %}</div>
     </a>
-<a href="/banco/tarjeta/nueva"
+
+    <a href="/banco/tarjeta/nueva"
        class="action-card action-card-green {% if not banco.aprobado %}disabled{% endif %}"
        {% if not banco.aprobado %}onclick="return false;"{% endif %}>
         <div class="ac-top">
@@ -276,16 +272,6 @@
         {% if not banco.aprobado %}
         <div class="ac-lock"><i class="fas fa-lock"></i> Requiere aprobación del banco</div>
         {% endif %}
-    </a>
-
-    <a href="/banco/solicitudes-clientes" class="action-card" style="background: linear-gradient(135deg, #c0392b, #e74c3c);">
-        <div class="ac-top">
-            <div class="ac-icon"><i class="fas fa-users"></i></div>
-            <i class="fas fa-arrow-right" style="font-size:1.3rem; opacity:0.7;"></i>
-        </div>
-        <h3>Solicitudes de Clientes</h3>
-        <p>Revisar solicitudes de tarjetas de usuarios</p>
-        <div class="ac-count">{{ stats.solicitudes_clientes }} pendiente{% if stats.solicitudes_clientes != 1 %}s{% endif %}</div>
     </a>
 </div>
 
@@ -302,6 +288,7 @@
         <i class="fas fa-user-circle"></i> Configurar Face ID
     </a>
 </div>
+
 <!-- Información del banco -->
 <div class="info-card">
     <h2><i class="fas fa-info-circle" style="color:var(--verde-salvia);"></i> Información del Banco</h2>

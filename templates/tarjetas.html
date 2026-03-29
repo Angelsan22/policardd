@@ -499,26 +499,8 @@ body { font-family: 'Outfit', sans-serif; }
                 <i class="fas fa-gift"></i>
                 <span>{{ tarjeta.beneficios }}</span>
             </div>
-
-            <!-- Botón solicitar -->
-            <div style="margin-top: 1rem;">
-                {% if session.get('tipo') == 'cliente' %}
-                    <form method="POST" action="{{ url_for('solicitar_tarjeta', id=tarjeta.id) }}">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                        <button type="submit" class="btn btn-secondary btn-full">
-                            <i class="fas fa-paper-plane"></i> Solicitar tarjeta
-                        </button>
-                    </form>
-                {% elif not session.get('usuario_id') %}
-                    <a href="/registro" class="btn btn-outline btn-full">
-                        <i class="fas fa-user-plus"></i> Regístrate para solicitar
-                    </a>
-                {% endif %}
-            </div>
         </div>
     </div>
-
-        <!-- Floating card image — spinning conic border same as card -->
 
         <!-- Floating card image — spinning conic border same as card -->
         <div class="tarjeta-img-wrapper">

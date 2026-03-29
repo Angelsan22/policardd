@@ -49,42 +49,40 @@
         </div>
         <div class="registro-body">
             <form method="POST">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-
                 <div class="form-row">
                     <div class="form-group">
                         <label>Nombre completo</label>
-                        {{ form.nombre(class="form-control", placeholder="Tu nombre") }}
+                        <input type="text" name="nombre" class="form-control" placeholder="Tu nombre" required value="{{ nombre or '' }}">
                     </div>
                     <div class="form-group">
                         <label>Teléfono</label>
-                        {{ form.telefono(class="form-control", placeholder="55 1234 5678") }}
+                        <input type="text" name="telefono" class="form-control" placeholder="55 1234 5678" required value="{{ telefono or '' }}">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Email</label>
-                    {{ form.email(class="form-control", placeholder="correo@ejemplo.com") }}
+                    <input type="email" name="email" class="form-control" placeholder="correo@ejemplo.com" required value="{{ email or '' }}">
                 </div>
 
                 <div class="form-group">
                     <label>Fecha de nacimiento</label>
-                    {{ form.fecha_nacimiento(class="form-control", type="date") }}
+                    <input type="date" name="fecha_nacimiento" class="form-control" required value="{{ fecha_nacimiento or '' }}">
                 </div>
 
                 <div class="form-group">
                     <label>Dirección</label>
-                    {{ form.direccion(class="form-control", placeholder="Calle, colonia, ciudad") }}
+                    <input type="text" name="direccion" class="form-control" placeholder="Calle, colonia, ciudad" required value="{{ direccion or '' }}">
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label>Contraseña</label>
-                        {{ form.password(class="form-control", placeholder="Mínimo 6 caracteres") }}
+                        <input type="password" name="password" class="form-control" placeholder="Mínimo 6 caracteres" required>
                     </div>
                     <div class="form-group">
                         <label>Confirmar contraseña</label>
-                        {{ form.confirm_password(class="form-control", placeholder="Repite tu contraseña") }}
+                        <input type="password" name="confirm_password" class="form-control" placeholder="Repite tu contraseña" required>
                     </div>
                 </div>
 

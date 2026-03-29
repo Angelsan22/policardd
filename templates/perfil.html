@@ -104,7 +104,7 @@
         <div class="perfil-header">
             <div class="perfil-icon"><i class="fas fa-user-circle"></i></div>
             <h1>Mi Perfil</h1>
-            <p>{{ session.get('nombre') }} · {{ session.get('tipo')|capitalize }}</p>
+            <p>{{ request.session.get('nombre') }} · {{ request.session.get('tipo')|capitalize }}</p>
         </div>
 
         <div class="face-section">

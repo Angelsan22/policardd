@@ -141,8 +141,6 @@
 
             <div class="actions-row">
                 <form method="POST" action="{{ url_for('aprobar_solicitud', id=solicitud.id) }}" style="flex:1; min-width:180px;">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                    
                     <button type="submit" onclick="return confirm('¿Aprobar esta solicitud?')" class="btn btn-secondary btn-full">
                         <i class="fas fa-check-circle"></i> Aprobar solicitud
                     </button>
@@ -170,8 +168,6 @@
         <h3 style="font-family:'DM Serif Display',serif; color:var(--verde-oscuro); margin-bottom:0.5rem;">Rechazar solicitud</h3>
         <p style="color:var(--verde-medio); font-size:0.88rem; margin-bottom:1.25rem;">Escribe el motivo del rechazo (opcional)</p>
         <form id="formRechazo" method="POST">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-            
             <div class="form-group">
                 <label>Comentario</label>
                 <textarea name="comentario" class="form-control" rows="3" placeholder="Motivo del rechazo..."></textarea>
