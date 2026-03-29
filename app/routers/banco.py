@@ -36,7 +36,8 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
             "tarjetas_aprobadas":     sum(1 for t in banco.tarjetas if t.aprobada),
             "solicitudes_pendientes": db.query(Solicitud).filter(Solicitud.banco_id == banco.id, Solicitud.estado == "pendiente").count(),
             "banco_aprobado":         banco.aprobado,
-            "solicitudes_clientes":   solicitudes_clientes
+            "solicitudes_clientes":   solicitudes_clientes,
+            "clientes_activos":       db.query(SolicitudTarjeta).filter(SolicitudTarjeta.tarjeta_id.in_(tarjeta_ids), SolicitudTarjeta.estado == "aprobada").count() if tarjeta_ids else 0
         }
         return render(request, "banco/bancodashboard.html", {"banco": banco, "stats": stats})
     except Exception as e:
@@ -203,3 +204,37 @@ async def rechazar_solicitud_cliente(id: int, request: Request, db: Session = De
         db.rollback()
         flash(request, "Error al rechazar", "error")
     return RedirectResponse("/banco/solicitudes-clientes", status_code=302)
+
+@router.get("/clientes", response_class=HTMLResponse)
+async def clientes_aprobados(request: Request, db: Session = Depends(get_db)):
+    usuario, banco = get_banco_usuario(request, db)
+    if not banco:
+        return redirect_login(request)
+    try:
+        tarjeta_ids = [t.id for t in banco.tarjetas]
+        solicitudes = db.query(SolicitudTarjeta).filter(
+            SolicitudTarjeta.tarjeta_id.in_(tarjeta_ids),
+            SolicitudTarjeta.estado == "aprobada"
+        ).order_by(SolicitudTarjeta.fecha_solicitud.desc()).all() if tarjeta_ids else []
+        return render(request, "banco/clientes_aprobados.html", {"solicitudes": solicitudes})
+    except Exception as e:
+        flash(request, "Error al cargar clientes vinculados", "error")
+        return RedirectResponse("/banco/dashboard", status_code=302)
+
+@router.post("/clientes/{id}/cancelar")
+async def cancelar_tarjeta_cliente(id: int, request: Request, db: Session = Depends(get_db)):
+    usuario, banco = get_banco_usuario(request, db)
+    if not banco:
+        return redirect_login(request)
+    try:
+        sol = db.query(SolicitudTarjeta).filter(SolicitudTarjeta.id == id).first()
+        if sol is None:
+            raise Exception("No encontrada")
+        # Simplemente cambiamos el estado de aprobada a cancelada
+        sol.estado = "cancelada"
+        db.commit()
+        flash(request, "La tarjeta del cliente ha sido cancelada exitosamente.", "info")
+    except:
+        db.rollback()
+        flash(request, "Error al cancelar la tarjeta", "error")
+    return RedirectResponse("/banco/clientes", status_code=302)

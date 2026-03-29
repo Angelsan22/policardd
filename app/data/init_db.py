@@ -12,13 +12,13 @@ def init_db():
         if not db.query(Usuario).filter(Usuario.email == "admin@policard.com").first():
             admin = Usuario(
                 email    = "admin@policard.com",
-                password = generate_password_hash("AdminPoliCard2025!"),
+                password = generate_password_hash("admin123"),
                 nombre   = "Administrador",
                 tipo     = "admin"
             )
             db.add(admin)
             db.commit()
-            print("Admin creado: admin@policard.com / AdminPoliCard2025!")
+            print("Admin creado: admin@policard.com / admin123")
 
         if db.query(Tarjeta).count() == 0:
             bancos_data = [

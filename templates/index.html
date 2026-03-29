@@ -225,10 +225,6 @@
         <div class="hero-badge"><i class="fas fa-leaf"></i> Finanzas para jóvenes</div>
         <h1>Encuentra la tarjeta de crédito ideal para ti</h1>
         <p>Compara, aprende y decide con confianza. PoliCard te guía en el mundo de las tarjetas de crédito con información clara y sin letra pequeña.</p>
-        <div class="hero-ctas">
-            <a href="/buscar" class="btn-hero-primary"><i class="fas fa-search"></i> Buscar mi tarjeta</a>
-            <a href="/educacion" class="btn-hero-outline"><i class="fas fa-graduation-cap"></i> Aprender finanzas</a>
-        </div>
     </div>
 </section>
 
@@ -306,7 +302,7 @@
 </div>
 
 <!-- CTA Banco -->
-{% if not request.session.get('usuario_id') %}
+{% if not session.get('usuario_id') %}
 <div style="background:linear-gradient(135deg,var(--verde-oscuro),var(--verde-medio)); border-radius:var(--radio-lg); padding:2.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
     <div>
         <h3 style="font-family:'DM Serif Display',serif; color:#fff; font-size:1.5rem; margin-bottom:0.4rem;">¿Representas a un banco?</h3>

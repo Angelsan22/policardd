@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% block title %}Clientes Activos — PoliCard{% endblock %}
+
+{% block extra_styles %}
+<style>
+.page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;
+}
+.page-header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    color: var(--verde-oscuro);
+    margin-bottom: 0.25rem;
+}
+.page-header p { color: var(--verde-medio); font-size: 0.95rem; }
+
+.table-wrapper {
+    background: var(--blanco);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra);
+    border: 1px solid rgba(0,0,0,0.06);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+.table-responsive {
+    overflow-x: auto;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th {
+    background: #f8faf9;
+    padding: 1rem 1.5rem;
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--verde-medio);
+    border-bottom: 2px solid var(--gris-claro);
+}
+td {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--gris-claro);
+    vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(0,0,0,0.01); }
+
+.cliente-info { display: flex; align-items: center; gap: 1rem; }
+.cliente-avatar {
+    width: 42px; height: 42px;
+    background: #e8f0fe;
+    color: #1a73e8;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1.2rem;
+}
+.cliente-details strong { display: block; color: var(--verde-oscuro); font-weight: 600; margin-bottom: 2px; }
+.cliente-details span { font-size: 0.82rem; color: var(--texto-medio); }
+
+.tarjeta-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 0.35rem 0.85rem;
+    background: #fdfaf3;
+    border: 1px solid #fae8bd;
+    border-radius: 99px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #9a6e00;
+}
+.fecha-alta {
+    font-size: 0.85rem;
+    color: var(--texto-medio);
+    display: flex; align-items: center; gap: 5px;
+}
+
+.empty-state {
+    padding: 4rem 2rem;
+    text-align: center;
+}
+.empty-state i {
+    font-size: 3.5rem;
+    color: var(--gris-claro);
+    margin-bottom: 1rem;
+}
+.empty-state h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem; color: var(--verde-oscuro); margin-bottom: 0.5rem;
+}
+.empty-state p { color: var(--verde-medio); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="fas fa-users" style="color:var(--verde-salvia); margin-right:0.5rem;"></i>Clientes Activos</h1>
+        <p>Usuarios que tienen tarjetas autorizadas con tu banco</p>
+    </div>
+    <a href="/banco/dashboard" class="btn btn-light">
+        <i class="fas fa-arrow-left"></i> Volver al panel
+    </a>
+</div>
+
+{% if solicitudes %}
+<div class="table-wrapper">
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Tarjeta Asignada</th>
+                    <th>Aprobada el</th>
+                    <th style="text-align:right;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sol in solicitudes %}
+                <tr>
+                    <td>
+                        <div class="cliente-info">
+                            <div class="cliente-avatar">{{ sol.usuario.nombre[0].upper() }}</div>
+                            <div class="cliente-details">
+                                <strong>{{ sol.usuario.nombre }}</strong>
+                                <span>{{ sol.usuario.email }}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="tarjeta-badge">
+                            <i class="fas fa-credit-card"></i> {{ sol.tarjeta.nombre }}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="fecha-alta">
+                            <i class="fas fa-calendar-check" style="color:var(--verde-salvia);"></i>
+                            {{ sol.fecha_solicitud.strftime('%d/%m/%Y, %H:%M') if sol.fecha_solicitud else 'N/A' }}
+                        </div>
+                    </td>
+                    <td style="text-align:right;">
+                        <form method="POST" action="/banco/clientes/{{ sol.id }}/cancelar" onsubmit="return confirm('¿Estás seguro de que deseas cancelar la tarjeta de {{ sol.usuario.nombre }}? El cliente quedará sin el servicio.');">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fas fa-ban"></i> Cancelar Tarjeta
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="alert-pending" style="background:#e8f0e9; border-color:var(--verde-salvia); margin-bottom:0;">
+    <i class="fas fa-info-circle" style="color:var(--verde-salvia);"></i>
+    <div>
+        <h3 style="color:var(--verde-oscuro);">Tip de Administración</h3>
+        <p style="color:var(--texto-medio);">Al cancelar una tarjeta, el rol del usuario no se borra íntegramente de la red de PoliCard, pero sí pierde sus privilegios respecto a este plástico de tu banco de manera irreversible mediante esta configuración.</p>
+    </div>
+</div>
+
+{% else %}
+<div class="table-wrapper empty-state">
+    <i class="fas fa-user-friends"></i>
+    <h3>Aún no tienes clientes activos</h3>
+    <p>Empieza a probar solicitudes, o espera a que más jóvenes encuentren tus plásticos.</p>
+</div>
+{% endif %}
+
+{% endblock %}

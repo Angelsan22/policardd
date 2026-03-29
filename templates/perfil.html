@@ -104,9 +104,10 @@
         <div class="perfil-header">
             <div class="perfil-icon"><i class="fas fa-user-circle"></i></div>
             <h1>Mi Perfil</h1>
-            <p>{{ request.session.get('nombre') }} · {{ request.session.get('tipo')|capitalize }}</p>
+            <p>{{ session.get('nombre') }} · {{ session.get('tipo')|capitalize }}</p>
         </div>
 
+        {% if session.get('tipo') == 'banco' %}
         <div class="face-section">
             <h3><i class="fas fa-camera" style="color:var(--verde-salvia);"></i> Registro de Face ID</h3>
 
@@ -137,6 +138,7 @@
                 </button>
             </div>
         </div>
+        {% endif %}
 
         <div style="margin-top: 1.5rem; text-align: center;">
             <a href="/dashboard" class="btn btn-outline">
@@ -148,6 +150,7 @@
 {% endblock %}
 
 {% block extra_scripts %}
+{% if session.get('tipo') == 'banco' %}
 <script>
 (function () {
     const video     = document.getElementById('reg-video');
@@ -166,7 +169,15 @@
     async function abrirCamara() {
         setStatus('Iniciando cámara…');
         try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+            stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+            facingMode: 'user',
+            width: { ideal: 320, max: 640 },
+            height: { ideal: 240, max: 480 },
+            frameRate: { ideal: 10, max: 15 }
+            } 
+        });
+
             video.srcObject = stream;
             video.style.display = 'block';
             btnAbrir.style.display  = 'none';
@@ -198,7 +209,7 @@
         ctx.scale(-1, 1);
         ctx.drawImage(video, 0, 0);
 
-        const imageData = canvas.toDataURL('image/jpeg', 0.85);
+        const imageData = canvas.toDataURL('image/jpeg', 0.4);
 
         try {
             const res  = await fetch('/perfil/registrar-face', {
@@ -227,4 +238,5 @@
     btnCerrar.addEventListener('click', cerrarCamara);
 })();
 </script>
+{% endif %}
 {% endblock %}

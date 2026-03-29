@@ -1788,6 +1788,78 @@
             </div>
         </div>
 
+        <div class="termino-card cat-credito" data-cat="credito"
+             data-term="cvv cvc codigo de seguridad" data-def="numero tres digitos reverso tarjeta compras en linea seguridad fraude">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-lock"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">CVV / Código de Seguridad</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Crédito e historial</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    El <strong>CVV (Card Verification Value)</strong> es un código de seguridad de 3 o 4 dígitos ubicado casi siempre al reverso de tu tarjeta. Su función es <strong>comprobar que físicamente posees el plástico</strong> al realizar compras por internet o por teléfono, ayudando a prevenir fraudes. Hoy en día, muchas apps bancarias ofrecen un <em>CVV dinámico</em> que cambia cada 5 minutos para mayor seguridad.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Nunca compartas tu CVV, ni por mensaje ni al personal físico del comercio. Es tu llave principal para las transacciones digitales.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip bad"><i class="fas fa-times"></i> Secreto y personal</div>
+                    <div class="tc-chip good"><i class="fas fa-check"></i> Dinámicos son más seguros</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="termino-card cat-costo" data-cat="costo"
+             data-term="cargo no reconocido" data-def="transaccion fraudulenta clonacion contracargo disputa reclamo banco">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-search-dollar"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Cargo no reconocido</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Costos y tasas</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    Un <strong>cargo no reconocido</strong> ocurre cuando encuentras en tu estado de cuenta una compra, retiro o suscripción que <strong>tú no autorizaste</strong>. En México, la ley te protege y tienes hasta 90 días naturales posteriores a la fecha de corte para reportarlo al banco. El banco está obligado a investigar y devolverte los fondos en lo que se aclara el fraude.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Tener encendidas las notificaciones push de tu banco te permitirá reportar un cargo no reconocido en los primeros 5 minutos de ocurrir, bloqueando la tarjeta instantáneamente.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip good"><i class="fas fa-check"></i> Derecho a reclamación</div>
+                    <div class="tc-chip warn"><i class="fas fa-exclamation"></i> Tienes 90 días por ley</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="termino-card cat-bene" data-cat="bene"
+             data-term="tarjeta adicional" data-def="plastico prestado extension limite hijos familiares responsable titular">
+            <div class="tc-header">
+                <div class="tc-icon"><i class="fas fa-users"></i></div>
+                <div class="tc-title-group">
+                    <div class="tc-term">Tarjeta Adicional</div>
+                    <span class="tc-category"><i class="fas fa-tag"></i> Beneficios</span>
+                </div>
+            </div>
+            <div class="tc-body">
+                <div class="tc-def">
+                    Una <strong>tarjeta adicional</strong> es un plástico extra emitido bajo la misma cuenta principal, generalmente destinado a familiares directos. Comparte el <strong>mismo límite de crédito total</strong> y los gastos se suman a la factura del titular. Es fundamental saber que <strong>el titular legal (tú) es el único responsable cien por ciento de la deuda</strong>, no el adicional.
+                </div>
+                <div class="tc-example">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Si tu hijo(a) gasta de más con su tarjeta adicional, tú estarás obligado legalmente ante el banco y el Buró de Crédito a pagar esa cuenta.</span>
+                </div>
+                <div class="tc-chips">
+                    <div class="tc-chip warn"><i class="fas fa-exclamation"></i> Titular asume la deuda</div>
+                    <div class="tc-chip good"><i class="fas fa-check"></i> Comparte los beneficios</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -1890,19 +1962,26 @@ function levenshtein(a, b) {
 function highlight(text, query) {
     if (!query) return text;
     var escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    var re = new RegExp('(' + escaped + ')', 'gi');
+    var re = new RegExp('(' + escaped + ')(?![^<]*>)', 'gi');
     return text.replace(re, '<mark>$1</mark>');
 }
 
-document.querySelectorAll('#glosario-grid .termino-card').forEach(function(card) {
-    card.dataset.termOrig = card.querySelector('.tc-term').innerHTML;
-    card.dataset.defOrig  = card.querySelector('.tc-def').innerHTML;
+var glosarioCache = [];
+document.querySelectorAll('#glosario-grid .termino-card').forEach(function(card, idx) {
+    glosarioCache[idx] = {
+        termOrig: card.querySelector('.tc-term').innerHTML || '',
+        defOrig:  card.querySelector('.tc-def').innerHTML || ''
+    };
+    card.setAttribute('data-idx', idx);
 });
 
 function restoreCards() {
     document.querySelectorAll('#glosario-grid .termino-card').forEach(function(card) {
-        card.querySelector('.tc-term').innerHTML = card.dataset.termOrig;
-        card.querySelector('.tc-def').innerHTML  = card.dataset.defOrig;
+        var idx = card.getAttribute('data-idx');
+        if (typeof idx !== 'undefined' && idx !== null && glosarioCache[idx]) {
+            card.querySelector('.tc-term').innerHTML = glosarioCache[idx].termOrig;
+            card.querySelector('.tc-def').innerHTML  = glosarioCache[idx].defOrig;
+        }
         var catMatch = activeCat === 'all' || card.dataset.cat === activeCat;
         card.classList.toggle('hidden', !catMatch);
         card.classList.remove('highlighted');
@@ -1941,14 +2020,20 @@ function onGlosarioInput(val) {
         if ((inTerm || inDef) && catMatch) {
             card.classList.remove('hidden');
             card.classList.add('highlighted');
-            card.querySelector('.tc-term').innerHTML = highlight(card.dataset.termOrig, val.trim());
-            card.querySelector('.tc-def').innerHTML  = highlight(card.dataset.defOrig,  val.trim());
+            var idx = card.getAttribute('data-idx');
+            var cT  = glosarioCache[idx] ? glosarioCache[idx].termOrig : '';
+            var cD  = glosarioCache[idx] ? glosarioCache[idx].defOrig  : '';
+            card.querySelector('.tc-term').innerHTML = highlight(cT, val.trim());
+            card.querySelector('.tc-def').innerHTML  = highlight(cD, val.trim());
             exactCount++;
         } else {
             card.classList.add('hidden');
             card.classList.remove('highlighted');
-            card.querySelector('.tc-term').innerHTML = card.dataset.termOrig;
-            card.querySelector('.tc-def').innerHTML  = card.dataset.defOrig;
+            var idx = card.getAttribute('data-idx');
+            if (typeof idx !== 'undefined' && idx !== null && glosarioCache[idx]) {
+                card.querySelector('.tc-term').innerHTML = glosarioCache[idx].termOrig;
+                card.querySelector('.tc-def').innerHTML  = glosarioCache[idx].defOrig;
+            }
             if (catMatch) {
                 var score = levenshtein(q, termN.substring(0, Math.max(q.length, termN.length)));
                 fuzzyMatches.push({ card: card, score: score });
@@ -1979,7 +2064,8 @@ function onGlosarioInput(val) {
         } else {
             top4.forEach(function(item) {
                 var tmpDiv = document.createElement('div');
-                tmpDiv.innerHTML = item.card.dataset.termOrig;
+                var cId = item.card.getAttribute('data-idx');
+                tmpDiv.innerHTML = glosarioCache[cId] ? glosarioCache[cId].termOrig : '';
                 var pill = document.createElement('button');
                 pill.className   = 'gsb-pill';
                 pill.textContent = tmpDiv.textContent;

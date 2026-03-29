@@ -143,11 +143,12 @@
         </div>
 
         <form method="POST" action="/login">
+            
             <div class="form-group">
                 <label>Correo electrónico</label>
                 <input type="email" name="email" class="form-control"
                        placeholder="correo@ejemplo.com" required
-                      value="{{ email or '' }}">
+                       value="{{ email }}">
             </div>
             <div class="form-group">
                 <label>Contraseña</label>
@@ -245,7 +246,7 @@
         setStatus('Iniciando cámara…');
         try {
             stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'user', width: 640, height: 480 }
+                video: { facingMode: 'user', width: { ideal: 320, max: 640 }, height: { ideal: 240, max: 480 }, frameRate: { max: 15 } }
             });
             video.srcObject = stream;
             await video.play();
@@ -268,7 +269,7 @@
         ctx.scale(-1, 1);
         ctx.drawImage(video, 0, 0);
 
-        const imageData = canvas.toDataURL('image/jpeg', 0.85);
+        const imageData = canvas.toDataURL('image/jpeg', 0.4);
 
         try {
             const res  = await fetch('/login/face', {

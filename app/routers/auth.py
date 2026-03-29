@@ -166,4 +166,6 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
         return redirect_login(request)
     if request.session.get("tipo") == "admin":
         return RedirectResponse("/admin", status_code=302)
-    return RedirectResponse("/banco/dashboard", status_code=302)
+    elif request.session.get("tipo") == "banco":
+        return RedirectResponse("/banco/dashboard", status_code=302)
+    return RedirectResponse("/", status_code=302)
