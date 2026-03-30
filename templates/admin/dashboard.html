@@ -214,7 +214,7 @@
     
     <div id="ts-placeholder" style="text-align:center; padding: 3rem 1rem; color: var(--texto-medio);">
         <i class="fas fa-magic" style="font-size: 2.5rem; opacity: 0.3; margin-bottom: 1rem;"></i>
-        <p>Selecciona una tarjeta para generar la predicción de series de tiempo basada en métricas simuladas (ARIMA).</p>
+        <p>Selecciona una tarjeta para ver el análisis de solicitudes reales de las últimas <b>12 semanas</b> y la proyección de tendencia para las próximas <b>8 semanas</b>.</p>
     </div>
 </div>
 {% endblock %}
@@ -269,51 +269,77 @@
             gradient.addColorStop(0, 'rgba(123, 150, 105, 0.4)'); // verde-salvia orgánico
             gradient.addColorStop(1, 'rgba(123, 150, 105, 0.0)');
 
-            // Dividir los colores entre datos históricos (verdes) y proyección (naranjas)
-            let pointColors = [];
-            data.chart_labels.forEach((_, index) => {
-                if (index <= data.history_length) {
-                    pointColors.push('#6C8480'); // verde-medio
-                } else {
-                    pointColors.push('#e67e22'); // naranja (predicción)
-                }
-            });
+
 
             tsChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: data.chart_labels,
-                    datasets: [{
-                        label: 'Desempeño & Proyección',
-                        data: data.chart_data,
-                        borderColor: '#404E3B', // verde-oscuro
-                        backgroundColor: gradient,
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: pointColors,
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 5,
-                        pointHoverRadius: 7
-                    }]
+                    datasets: [
+                        {
+                            label: 'Solicitudes Históricas',
+                            data: data.chart_data.slice(0, data.history_length + 1),
+                            borderColor: '#404E3B',
+                            backgroundColor: gradient,
+                            borderWidth: 2.5,
+                            fill: true,
+                            tension: 0.35,
+                            pointBackgroundColor: '#6C8480',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        },
+                        {
+                            label: 'Proyección (regresión lineal)',
+                            data: Array(data.history_length).fill(null).concat(data.chart_data.slice(data.history_length)),
+                            borderColor: '#e67e22',
+                            backgroundColor: 'rgba(230,126,34,0.08)',
+                            borderWidth: 2,
+                            borderDash: [6, 4],
+                            fill: true,
+                            tension: 0.35,
+                            pointBackgroundColor: '#e67e22',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false },
-                        tooltip: { backgroundColor: '#2A2E27', padding: 12, cornerRadius: 8, titleFont: {family: "'DM Sans', sans-serif"} }
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: { font: { family: "'DM Sans', sans-serif", size: 12 }, usePointStyle: true, padding: 20 }
+                        },
+                        tooltip: {
+                            backgroundColor: '#2A2E27',
+                            padding: 12,
+                            cornerRadius: 8,
+                            titleFont: { family: "'DM Sans', sans-serif" },
+                            callbacks: {
+                                label: ctx => ` ${ctx.parsed.y !== null ? ctx.parsed.y : '-'} solicitudes`
+                            }
+                        }
                     },
                     scales: {
                         y: {
-                            beginAtZero: false,
+                            beginAtZero: true,
                             grid: { color: 'rgba(0,0,0,0.05)', borderDash: [5, 5] },
-                            ticks: { font: { family: "'DM Sans', sans-serif" } }
+                            ticks: {
+                                font: { family: "'DM Sans', sans-serif" },
+                                stepSize: 1,
+                                callback: v => Number.isInteger(v) ? v : null
+                            },
+                            title: { display: true, text: 'Solicitudes / semana', font: { family: "'DM Sans', sans-serif", size: 11 }, color: '#6C8480' }
                         },
                         x: {
                             grid: { display: false },
-                            ticks: { font: { family: "'DM Sans', sans-serif" } }
+                            ticks: { font: { family: "'DM Sans', sans-serif", size: 10 }, maxRotation: 40 }
                         }
                     }
                 }
@@ -321,7 +347,7 @@
 
         } catch(err) {
             console.error(err);
-            alert("Hubo un error al cargar los datos del modelo simulado.");
+            alert("Hubo un error al cargar los datos de tendencia.");
         }
     });
 </script>

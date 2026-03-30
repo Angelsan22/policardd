@@ -14,3 +14,4 @@ class Usuario(Base):
     fecha_registro = Column(DateTime, default=datetime.utcnow)
     face_encoding  = Column(Text, nullable=True)
     banco          = relationship("Banco", back_populates="usuario", uselist=False, cascade="all, delete-orphan")
+    cliente        = relationship("UsuarioCliente", back_populates="usuario", uselist=False, cascade="all, delete-orphan")

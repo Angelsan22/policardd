@@ -9,4 +9,4 @@ class UsuarioCliente(Base):
     telefono         = Column(String(20))
     fecha_nacimiento = Column(Date)
     direccion        = Column(String(200))
-    usuario          = relationship("Usuario", backref="cliente", uselist=False)
+    usuario          = relationship("Usuario", back_populates="cliente", uselist=False)

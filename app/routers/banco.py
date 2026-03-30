@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Request, Depends, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.data.db import get_db
 from app.data.usuario import Usuario
+from app.data.usuario_cliente import UsuarioCliente
 from app.data.tarjeta import Tarjeta
 from app.data.solicitud import Solicitud
 from app.data.solicitud_tarjeta import SolicitudTarjeta
@@ -163,7 +164,9 @@ async def solicitudes_clientes(request: Request, db: Session = Depends(get_db)):
         return redirect_login(request)
     try:
         tarjeta_ids = [t.id for t in banco.tarjetas]
-        solicitudes = db.query(SolicitudTarjeta).filter(
+        solicitudes = db.query(SolicitudTarjeta).options(
+            joinedload(SolicitudTarjeta.usuario).joinedload(Usuario.cliente)
+        ).filter(
             SolicitudTarjeta.tarjeta_id.in_(tarjeta_ids)
         ).order_by(SolicitudTarjeta.fecha_solicitud.desc()).all() if tarjeta_ids else []
         return render(request, "banco/solicitudes_clientes.html", {"solicitudes": solicitudes})
@@ -212,7 +215,9 @@ async def clientes_aprobados(request: Request, db: Session = Depends(get_db)):
         return redirect_login(request)
     try:
         tarjeta_ids = [t.id for t in banco.tarjetas]
-        solicitudes = db.query(SolicitudTarjeta).filter(
+        solicitudes = db.query(SolicitudTarjeta).options(
+            joinedload(SolicitudTarjeta.usuario).joinedload(Usuario.cliente)
+        ).filter(
             SolicitudTarjeta.tarjeta_id.in_(tarjeta_ids),
             SolicitudTarjeta.estado == "aprobada"
         ).order_by(SolicitudTarjeta.fecha_solicitud.desc()).all() if tarjeta_ids else []
