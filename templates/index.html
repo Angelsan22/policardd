@@ -132,13 +132,6 @@
         background: rgba(255, 255, 255, 0.08);
     }
 
-    /* Stats */
-    .stats-row {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1rem;
-        margin-bottom: 3rem;
-    }
 
     /* ── Cómo funciona ── */
     .como-section {
@@ -286,9 +279,6 @@
             padding: 0.25rem 0;
         }
 
-        .stats-row {
-            grid-template-columns: repeat(2, 1fr);
-        }
 
         .hero {
             padding: 2.5rem 1.75rem;
@@ -640,17 +630,6 @@
 </div>
 {% endif %}
 
-<!-- STATS -->
-<div class="stats-row">
-    <div class="stat-box"><span class="stat-label">Tarjetas</span><span class="stat-value">{{ home_stats.total_tarjetas
-            }}</span></div>
-    <div class="stat-box"><span class="stat-label">Bancos</span><span class="stat-value">{{ home_stats.total_bancos
-            }}</span></div>
-    <div class="stat-box"><span class="stat-label">CAT minimo</span><span class="stat-value">{{ home_stats.cat_min
-            }}%</span></div>
-    <div class="stat-box"><span class="stat-label">Sin anualidad</span><span class="stat-value">{{
-            home_stats.pct_sin_anualidad }}%</span></div>
-</div>
 
 <!-- CÓMO FUNCIONA -->
 <div class="como-section">
