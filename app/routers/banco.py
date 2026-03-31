@@ -45,6 +45,30 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
         flash(request, "Error al cargar el dashboard", "error")
         return RedirectResponse("/", status_code=302)
 
+@router.post("/perfil/editar")
+async def editar_perfil(
+    request: Request,
+    nombre_banco: str = Form(...),
+    telefono: str = Form(None),
+    sitio_web: str = Form(None),
+    descripcion: str = Form(None),
+    db: Session = Depends(get_db)
+):
+    usuario, banco = get_banco_usuario(request, db)
+    if not banco:
+        return redirect_login(request)
+    try:
+        banco.nombre_banco = nombre_banco
+        banco.telefono     = telefono
+        banco.sitio_web    = sitio_web
+        banco.descripcion  = descripcion
+        db.commit()
+        flash(request, "Perfil del banco actualizado correctamente", "success")
+    except Exception as e:
+        db.rollback()
+        flash(request, "Error al actualizar el perfil", "error")
+    return RedirectResponse("/banco/dashboard", status_code=302)
+
 @router.get("/tarjetas", response_class=HTMLResponse)
 async def tarjetas(request: Request, db: Session = Depends(get_db)):
     usuario, banco = get_banco_usuario(request, db)
