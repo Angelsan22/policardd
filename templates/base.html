@@ -50,8 +50,11 @@
             padding: 0 2rem;
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
             box-shadow: 0 2px 16px rgba(10,66,105,0.25);
+            min-height: 70px;
+            display: flex;
+            align-items: center;
         }
         .nav-inner {
             max-width: 1200px;
@@ -59,51 +62,55 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 64px;
+            width: 100%;
+            height: 100%;
+            padding: 0.5rem 0;
         }
         .nav-brand {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             text-decoration: none;
             color: var(--blanco);
+            flex-shrink: 0;
         }
-        .nav-brand .brand-icon {
-            width: 36px; height: 36px;
-            background: var(--secondary);
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1rem;
+        .nav-brand img {
+            height: 45px;
+            width: auto;
+            object-fit: contain;
         }
         .nav-brand span {
             font-family: 'DM Serif Display', serif;
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             letter-spacing: -0.5px;
+            white-space: nowrap;
         }
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 0.5rem;
             list-style: none;
         }
         .nav-links a {
             color: var(--verde-claro);
             text-decoration: none;
-            padding: 0.45rem 0.9rem;
+            padding: 0.5rem 0.8rem;
             border-radius: 8px;
-            font-size: 0.88rem;
+            font-size: 0.9rem;
             font-weight: 500;
-            transition: background 0.2s, color 0.2s;
+            transition: all 0.2s;
             display: flex; align-items: center; gap: 6px;
+            white-space: nowrap;
         }
         .nav-links a:hover, .nav-links a.active {
-            background: rgba(102,194,164,0.15);
+            background: rgba(255,255,255,0.1);
             color: var(--blanco);
         }
         .nav-links .btn-auth {
             background: var(--secondary);
             color: var(--blanco) !important;
             margin-left: 0.5rem;
+            white-space: nowrap;
         }
         .nav-links .btn-auth:hover { background: var(--secondary-dark); }
 
@@ -132,7 +139,10 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 2.5rem 1.5rem 4rem;
+            width: 100%;
         }
+
+        img { max-width: 100%; height: auto; display: block; }
 
         /* ─── CARDS ─── */
         .card {
@@ -245,10 +255,17 @@
         footer a:hover { color: var(--blanco); }
 
         /* ─── RESPONSIVE ─── */
-        @media (max-width: 768px) {
-            .nav-links { gap: 0; }
+        @media (max-width: 900px) {
+            nav { padding: 0.5rem 1rem; height: auto; min-height: auto; }
+            .nav-inner { flex-direction: column; gap: 0.8rem; height: auto; }
+            .nav-brand img { height: 40px; }
+            .nav-brand span { font-size: 1.3rem; }
+            .nav-links { width: 100%; justify-content: center; flex-wrap: wrap; gap: 4px; }
+            .nav-links a { font-size: 0.8rem; padding: 0.4rem 0.6rem; }
             .nav-links a span { display: none; }
-            main { padding: 1.5rem 1rem 3rem; }
+            .nav-links .btn-auth { margin-left: 0; padding: 0.4rem 1rem; }
+            
+            main { padding: 1.5rem 1.25rem 3rem; }
             .section-title { font-size: 1.7rem; }
         }
 
@@ -358,8 +375,7 @@
     <nav>
         <div class="nav-inner">
         <a href="{% if session.get('tipo') == 'banco' %}/banco/dashboard{% elif session.get('tipo') == 'admin' %}/admin{% else %}/{% endif %}" class="nav-brand">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" 
-                alt="PoliCard" height="110">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="PoliCard">
             <span>PoliCard</span>
         </a>
         <ul class="nav-links">

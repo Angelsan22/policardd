@@ -268,26 +268,26 @@
         flex-shrink: 0;
     }
 
-    @media (max-width: 900px) {
-        .pasos-grid {
-            grid-template-columns: 1fr;
-        }
+        @media (max-width: 900px) {
+            .hero {
+                padding: 2rem 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            .hero h1 { font-size: 1.8rem; }
+            .hero p { font-size: 0.95rem; }
+            .hero::before, .hero::after { display: none; } /* Hide decorative circles on mobile to avoid overflow issues */
 
-        .paso-flecha {
-            transform: rotate(90deg);
-            margin: 0 auto;
-            padding: 0.25rem 0;
-        }
+            .pasos-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
 
-
-        .hero {
-            padding: 2.5rem 1.75rem;
+            .paso-flecha {
+                transform: rotate(90deg);
+                margin: -0.5rem auto;
+                padding: 0;
+            }
         }
-
-        .hero h1 {
-            font-size: 2.1rem;
-        }
-    }
 </style>
 {% endblock %}
 

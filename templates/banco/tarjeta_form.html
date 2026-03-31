@@ -95,15 +95,15 @@
 
                 <div class="form-group">
                     <label>Nombre de la Tarjeta *</label>
-                    <input type="text" name="nombre" class="form-control" placeholder="Ej: Gold Card Joven" value="{{ nombre | default('') }}" required>
+                    <input type="text" name="nombre" class="form-control" placeholder="Ej: Gold Card Joven" value="{{ tarjeta.nombre if tarjeta else '' }}" required>
                 </div>
 
                 <div class="form-group" style="margin-top:1rem;">
                     <label>Tipo de Tarjeta *</label>
                     <select name="tipo" class="form-control" required>
-                        <option value="estudiante" {% if (tipo | default('estudiante')) == 'estudiante' %}selected{% endif %}>Estudiante</option>
-                        <option value="joven" {% if (tipo | default('')) == 'joven' %}selected{% endif %}>Joven</option>
-                        <option value="clasica" {% if (tipo | default('')) == 'clasica' %}selected{% endif %}>Clásica</option>
+                        <option value="estudiante" {% if tarjeta and tarjeta.tipo == 'estudiante' %}selected{% endif %}>Estudiante</option>
+                        <option value="joven" {% if tarjeta and tarjeta.tipo == 'joven' %}selected{% endif %}>Joven</option>
+                        <option value="clasica" {% if tarjeta and tarjeta.tipo == 'clasica' %}selected{% endif %}>Clásica</option>
                     </select>
                     <div class="tipo-hints">
                         <div class="tipo-hint"><strong>Estudiante</strong>Sin anualidad</div>
@@ -122,19 +122,19 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>CAT Promedio (%) *</label>
-                        <input type="number" name="cat" step="0.1" class="form-control" placeholder="35.5" value="{{ cat | default('') }}" required>
+                        <input type="number" name="cat" step="0.1" class="form-control" placeholder="35.5" value="{{ tarjeta.cat if tarjeta else '' }}" required>
                         <div class="field-hint"><i class="fas fa-info-circle"></i> Entre más bajo, mejor para el usuario</div>
                     </div>
                     <div class="form-group">
                         <label>Anualidad ($) *</label>
-                        <input type="number" name="anualidad" class="form-control" placeholder="0" value="{{ anualidad | default('') }}" required>
+                        <input type="number" name="anualidad" class="form-control" placeholder="0" value="{{ tarjeta.anualidad if tarjeta else '' }}" required>
                         <div class="field-hint"><i class="fas fa-info-circle"></i> Coloca 0 si no tiene anualidad</div>
                     </div>
                 </div>
 
                 <div class="form-group" style="margin-top:1rem;">
                     <label>Edad mínima requerida *</label>
-                    <input type="number" name="edad_minima" class="form-control" placeholder="18" value="{{ edad_minima | default('') }}" min="18" required>
+                    <input type="number" name="edad_minima" class="form-control" placeholder="18" value="{{ tarjeta.edad_minima if tarjeta else '' }}" min="18" required>
                     <div class="field-hint"><i class="fas fa-info-circle"></i> Edad mínima requerida (18-100 años)</div>
                 </div>
             </div>
@@ -147,13 +147,13 @@
 
                 <div class="form-group">
                     <label>Beneficios *</label>
-                    <textarea name="beneficios" class="form-control" rows="4" placeholder="Cashback del 1%, seguro de viaje, descuentos en comercios..." required>{{ beneficios | default('') }}</textarea>
+                    <textarea name="beneficios" class="form-control" rows="4" placeholder="Cashback del 1%, seguro de viaje, descuentos en comercios..." required>{{ tarjeta.beneficios if tarjeta else '' }}</textarea>
                     <div class="field-hint"><i class="fas fa-lightbulb"></i> Describe los beneficios principales separados por comas</div>
                 </div>
 
                 <div class="form-group" style="margin-top:1rem;">
                     <label>Url de la Imagen <span style="color:var(--verde-medio); font-weight:400;">(Opcional)</span></label>
-                    <input type="url" name="imagen_url" class="form-control" placeholder="https://ejemplo.com/imagen-tarjeta.jpg" value="{{ imagen_url | default('') }}">
+                    <input type="url" name="imagen_url" class="form-control" placeholder="https://ejemplo.com/imagen-tarjeta.jpg" value="{{ tarjeta.imagen_url if tarjeta else '' }}">
                     <div class="field-hint"><i class="fas fa-info-circle"></i> URL directa a la imagen de tu tarjeta</div>
                 </div>
             </div>
