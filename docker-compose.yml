@@ -3,7 +3,7 @@ services:
     build: .
     container_name: server_policard
     ports:
-      - "5000:5000"
+      - "10000:10000"
     volumes:
       - ./app:/app/app
       - ./templates:/app/templates

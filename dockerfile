@@ -21,6 +21,6 @@ COPY ./templates ./templates
 COPY ./static ./static
 COPY face_utils.py .
 
-EXPOSE 5000
+EXPOSE 10000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5000", "--reload"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000}"]
