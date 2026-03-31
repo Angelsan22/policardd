@@ -6,7 +6,7 @@ from app.routers import publicas, auth, admin, banco, cliente
 
 # Importar modelos para que SQLAlchemy los registre
 from app.data import usuario, banco as bancoModel, tarjeta, solicitud
-from app.data import usuario_cliente, solicitud_tarjeta
+from app.data import usuario_cliente, solicitud_tarjeta, admin_log
 
 # Crear tablas
 Base.metadata.create_all(bind=engine)

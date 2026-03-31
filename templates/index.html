@@ -228,12 +228,229 @@
     </div>
 </section>
 
+<!-- ════════ PANEL DE CLIENTE LOGUEADO ════════ -->
+{% if session.get('tipo') == 'cliente' %}
+<style>
+.client-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+@media (max-width: 880px) { .client-panels { grid-template-columns: 1fr; } }
+
+.cl-panel {
+    background: var(--blanco);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra);
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.cl-panel-header {
+    padding: 1.25rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 2px solid var(--gris-claro);
+}
+.cl-panel-header h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    color: var(--verde-oscuro);
+    display: flex; align-items: center; gap: 0.5rem;
+}
+.cl-panel-header .cl-count {
+    background: var(--verde-oscuro);
+    color: #fff;
+    padding: 0.2rem 0.65rem;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+.cl-panel-body { padding: 0; }
+
+/* Notificaciones */
+.notif-list { list-style: none; padding: 0; margin: 0; max-height: 320px; overflow-y: auto; }
+.notif-item {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--gris-claro);
+    display: flex; align-items: flex-start; gap: 0.85rem;
+    transition: background 0.15s;
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item:hover { background: rgba(0,0,0,0.01); }
+.notif-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.85rem;
+}
+.notif-icon.aprobada  { background: #d4edda; color: #276339; }
+.notif-icon.pendiente { background: #fef9e7; color: #9a6e00; }
+.notif-icon.rechazada { background: #fdecea; color: #c0392b; }
+.notif-text { font-size: 0.88rem; color: var(--texto-oscuro); line-height: 1.4; }
+.notif-text strong { color: var(--verde-oscuro); }
+.notif-date { font-size: 0.75rem; color: var(--texto-medio); margin-top: 2px; }
+.notif-badge {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    border-radius: 99px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.nb-aprobada  { background: #d4edda; color: #276339; }
+.nb-pendiente { background: #fef9e7; color: #9a6e00; }
+.nb-rechazada { background: #fdecea; color: #c0392b; }
+
+/* Tarjetas aprobadas */
+.my-cards { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; max-height: 320px; overflow-y: auto; }
+.my-card {
+    display: flex; align-items: center; gap: 1rem;
+    background: linear-gradient(135deg, #f8faf9, #eef3ec);
+    border: 1px solid rgba(107,143,94,0.18);
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.my-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+.my-card-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    color: #fff;
+    flex-shrink: 0;
+}
+.my-card-info { flex: 1; }
+.my-card-info .mc-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1rem;
+    color: var(--verde-oscuro);
+    margin-bottom: 2px;
+}
+.my-card-info .mc-banco {
+    font-size: 0.78rem;
+    color: var(--verde-medio);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.my-card-badge {
+    background: #d4edda;
+    color: #276339;
+    padding: 0.25rem 0.7rem;
+    border-radius: 99px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.cl-empty {
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    color: var(--texto-medio);
+}
+.cl-empty i { font-size: 2rem; opacity: 0.3; display: block; margin-bottom: 0.5rem; }
+</style>
+
+<div class="client-panels">
+    <!-- ─── Notificaciones ─── -->
+    <div class="cl-panel">
+        <div class="cl-panel-header">
+            <h3><i class="fas fa-bell" style="color:#e67e22;"></i> Notificaciones</h3>
+            {% if mis_solicitudes %}<span class="cl-count">{{ mis_solicitudes|length }}</span>{% endif %}
+        </div>
+        <div class="cl-panel-body">
+            {% if mis_solicitudes %}
+            <ul class="notif-list">
+                {% for sol in mis_solicitudes %}
+                <li class="notif-item">
+                    <div class="notif-icon {{ sol.estado }}">
+                        <i class="fas fa-{% if sol.estado == 'aprobada' %}check-circle{% elif sol.estado == 'pendiente' %}clock{% else %}times-circle{% endif %}"></i>
+                    </div>
+                    <div>
+                        <div class="notif-text">
+                            {% if sol.estado == 'aprobada' %}
+                                Tu solicitud de <strong>{{ sol.tarjeta.nombre }}</strong> fue <span class="notif-badge nb-aprobada">aprobada</span>
+                            {% elif sol.estado == 'pendiente' %}
+                                <strong>{{ sol.tarjeta.nombre }}</strong> esta <span class="notif-badge nb-pendiente">en revision</span>
+                            {% elif sol.estado == 'rechazada' %}
+                                Tu solicitud de <strong>{{ sol.tarjeta.nombre }}</strong> fue <span class="notif-badge nb-rechazada">rechazada</span>
+                            {% else %}
+                                <strong>{{ sol.tarjeta.nombre }}</strong> — <span class="notif-badge nb-pendiente">{{ sol.estado }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="notif-date">
+                            <i class="fas fa-calendar-alt" style="margin-right:3px;"></i>
+                            {{ sol.fecha_solicitud.strftime('%d/%m/%Y %H:%M') }}
+                            · {{ sol.tarjeta.banco.nombre_banco if sol.tarjeta.banco else '' }}
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="cl-empty">
+                <i class="fas fa-bell-slash"></i>
+                <p>Aun no has solicitado ninguna tarjeta.</p>
+                <a href="/tarjetas" class="btn btn-outline btn-sm" style="margin-top:0.5rem;">
+                    <i class="fas fa-credit-card"></i> Explorar tarjetas
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ─── Mis Tarjetas Aprobadas ─── -->
+    <div class="cl-panel">
+        <div class="cl-panel-header">
+            <h3><i class="fas fa-wallet" style="color:var(--verde-salvia);"></i> Mis Tarjetas</h3>
+            {% if mis_aprobadas %}<span class="cl-count">{{ mis_aprobadas|length }}</span>{% endif %}
+        </div>
+        <div class="cl-panel-body">
+            {% if mis_aprobadas %}
+            <div class="my-cards">
+                {% for sol in mis_aprobadas %}
+                {% set bn = sol.tarjeta.banco.nombre_banco|lower if sol.tarjeta.banco else '' %}
+                {% if 'bbva' in bn %}{% set bg = 'linear-gradient(135deg,#003b8e,#1a6fd4)' %}
+                {% elif 'santander' in bn %}{% set bg = 'linear-gradient(135deg,#8b0000,#cc0000)' %}
+                {% elif 'banamex' in bn or 'citibanamex' in bn %}{% set bg = 'linear-gradient(135deg,#7a5800,#c8952a)' %}
+                {% elif 'hsbc' in bn %}{% set bg = 'linear-gradient(135deg,#8b0010,#db0011)' %}
+                {% elif 'banorte' in bn %}{% set bg = 'linear-gradient(135deg,#b34000,#f06000)' %}
+                {% elif 'nu' in bn %}{% set bg = 'linear-gradient(135deg,#3d0060,#8b1db8)' %}
+                {% else %}{% set bg = 'linear-gradient(135deg,#2E4A2E,#5A7A6A)' %}
+                {% endif %}
+                <div class="my-card">
+                    <div class="my-card-icon" style="background:{{ bg }};">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="my-card-info">
+                        <div class="mc-name">{{ sol.tarjeta.nombre }}</div>
+                        <div class="mc-banco">{{ sol.tarjeta.banco.nombre_banco if sol.tarjeta.banco else 'Banco' }}</div>
+                    </div>
+                    <span class="my-card-badge"><i class="fas fa-check" style="margin-right:3px;"></i> Activa</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="cl-empty">
+                <i class="fas fa-wallet"></i>
+                <p>Aun no tienes tarjetas aprobadas.</p>
+                <a href="/tarjetas" class="btn btn-outline btn-sm" style="margin-top:0.5rem;">
+                    <i class="fas fa-search"></i> Solicitar una
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- STATS -->
 <div class="stats-row">
-    <div class="stat-box"><span class="stat-label">Tarjetas</span><span class="stat-value">12+</span></div>
-    <div class="stat-box"><span class="stat-label">Bancos</span><span class="stat-value">6</span></div>
-    <div class="stat-box"><span class="stat-label">CAT mínimo</span><span class="stat-value">35%</span></div>
-    <div class="stat-box"><span class="stat-label">Sin anualidad</span><span class="stat-value">50%</span></div>
+    <div class="stat-box"><span class="stat-label">Tarjetas</span><span class="stat-value">{{ home_stats.total_tarjetas }}</span></div>
+    <div class="stat-box"><span class="stat-label">Bancos</span><span class="stat-value">{{ home_stats.total_bancos }}</span></div>
+    <div class="stat-box"><span class="stat-label">CAT minimo</span><span class="stat-value">{{ home_stats.cat_min }}%</span></div>
+    <div class="stat-box"><span class="stat-label">Sin anualidad</span><span class="stat-value">{{ home_stats.pct_sin_anualidad }}%</span></div>
 </div>
 
 <!-- CÓMO FUNCIONA -->

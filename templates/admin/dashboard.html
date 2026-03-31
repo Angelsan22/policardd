@@ -20,7 +20,7 @@
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 1rem;
     margin-bottom: 2rem;
 }
@@ -149,11 +149,16 @@
         <div class="s-label">Solicitudes</div>
         <div class="s-value {% if stats.solicitudes_pendientes > 0 %}alert{% endif %}">{{ stats.solicitudes_pendientes }}</div>
     </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:#eef0f4; color:#2c3e50;"><i class="fas fa-users"></i></div>
+        <div class="s-label">Total Usuarios</div>
+        <div class="s-value">{{ stats.total_usuarios }}</div>
+    </div>
 </div>
 
 <!-- Actions -->
 <h2 class="section-title" style="margin-bottom:1rem;">Acciones rápidas</h2>
-<div class="grid-3">
+<div class="grid-3" style="grid-template-columns: repeat(4, 1fr);">
     <a href="/admin/solicitudes" class="action-card" style="background: linear-gradient(135deg, var(--verde-oscuro), #2d5a27);">
         <div class="ac-icon"><i class="fas fa-tasks"></i></div>
         <h3>Solicitudes</h3>
@@ -178,6 +183,15 @@
         <p class="ac-sub">Ver todas las tarjetas del sistema</p>
         <div class="ac-count">
             <span>{{ stats.total_tarjetas }}</span>
+            <i class="fas fa-arrow-right" style="font-size:1rem; opacity:0.7;"></i>
+        </div>
+    </a>
+    <a href="/admin/usuarios" class="action-card" style="background: linear-gradient(135deg, #2c3e50, #34495e);">
+        <div class="ac-icon"><i class="fas fa-users-cog"></i></div>
+        <h3>Usuarios</h3>
+        <p class="ac-sub">Gestionar usuarios y crear administradores</p>
+        <div class="ac-count">
+            <span>{{ stats.total_usuarios }}</span>
             <i class="fas fa-arrow-right" style="font-size:1rem; opacity:0.7;"></i>
         </div>
     </a>

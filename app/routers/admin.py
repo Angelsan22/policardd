@@ -1,13 +1,16 @@
 from fastapi import APIRouter, Request, Depends, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from datetime import datetime, timedelta
 from fastapi.responses import JSONResponse
+from werkzeug.security import generate_password_hash
 from app.data.db import get_db
 from app.data.banco import Banco
 from app.data.tarjeta import Tarjeta
 from app.data.solicitud import Solicitud
 from app.data.solicitud_tarjeta import SolicitudTarjeta
+from app.data.usuario import Usuario
+from app.data.admin_log import AdminLog
 from app.helpers import render
 from app.security.auth import flash, is_logged_in, redirect_login
 
@@ -32,7 +35,8 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
             "bancos_pendientes":      db.query(Banco).filter(Banco.aprobado == False).count(),
             "total_tarjetas":         db.query(Tarjeta).count(),
             "tarjetas_pendientes":    db.query(Tarjeta).filter(Tarjeta.aprobada == False).count(),
-            "solicitudes_pendientes": db.query(Solicitud).filter(Solicitud.estado == "pendiente").count()
+            "solicitudes_pendientes": db.query(Solicitud).filter(Solicitud.estado == "pendiente").count(),
+            "total_usuarios":         db.query(Usuario).count()
         }
         tarjetas = db.query(Tarjeta).all()
         return render(request, "admin/dashboard.html", {"stats": stats, "tarjetas": tarjetas})
@@ -245,3 +249,87 @@ async def tendencia_tarjeta(id: int, request: Request, db: Session = Depends(get
         "chart_data":     chart_data,
         "history_length": HIST_WEEKS - 1,
     }
+
+# ── Gestión de Usuarios ──────────────────────────────────────────────────────
+
+@router.get("/usuarios", response_class=HTMLResponse)
+async def gestionar_usuarios(request: Request, db: Session = Depends(get_db)):
+    if not is_logged_in(request) or request.session.get("tipo") != "admin":
+        return redirect_login(request)
+    try:
+        usuarios = db.query(Usuario).order_by(Usuario.fecha_registro.desc()).all()
+        logs = db.query(AdminLog).options(
+            joinedload(AdminLog.creado_por),
+            joinedload(AdminLog.usuario_nuevo)
+        ).order_by(AdminLog.fecha.desc()).limit(50).all()
+        return render(request, "admin/usuarios.html", {"usuarios": usuarios, "logs": logs})
+    except Exception as e:
+        flash(request, f"Error al cargar usuarios: {e}", "error")
+        return RedirectResponse("/admin/dashboard", status_code=302)
+
+@router.post("/usuarios/crear-admin")
+async def crear_admin(
+    request: Request,
+    nombre: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    if not is_logged_in(request) or request.session.get("tipo") != "admin":
+        return redirect_login(request)
+    try:
+        if db.query(Usuario).filter(Usuario.email == email).first():
+            flash(request, "Ese correo ya esta registrado en el sistema", "error")
+            return RedirectResponse("/admin/usuarios", status_code=302)
+
+        nuevo = Usuario(
+            email=email,
+            password=generate_password_hash(password),
+            nombre=nombre,
+            tipo="admin"
+        )
+        db.add(nuevo)
+        db.flush()
+
+        log = AdminLog(
+            creado_por_id=request.session["usuario_id"],
+            usuario_nuevo_id=nuevo.id,
+            accion="crear_admin",
+            notas=f"Admin '{nombre}' creado con email {email}"
+        )
+        db.add(log)
+        db.commit()
+        flash(request, f"Administrador '{nombre}' creado exitosamente", "success")
+    except Exception as e:
+        db.rollback()
+        flash(request, f"Error al crear administrador: {e}", "error")
+    return RedirectResponse("/admin/usuarios", status_code=302)
+
+@router.post("/usuario/{id}/toggle")
+async def toggle_usuario(id: int, request: Request, db: Session = Depends(get_db)):
+    if not is_logged_in(request) or request.session.get("tipo") != "admin":
+        return redirect_login(request)
+    try:
+        usuario = db.query(Usuario).filter(Usuario.id == id).first()
+        if usuario is None:
+            raise Exception("Usuario no encontrado")
+        if usuario.id == request.session["usuario_id"]:
+            flash(request, "No puedes desactivar tu propia cuenta", "warning")
+            return RedirectResponse("/admin/usuarios", status_code=302)
+
+        usuario.activo = not usuario.activo
+        accion = "reactivar" if usuario.activo else "desactivar"
+
+        log = AdminLog(
+            creado_por_id=request.session["usuario_id"],
+            usuario_nuevo_id=usuario.id,
+            accion=accion,
+            notas=f"Usuario '{usuario.nombre}' ({usuario.email}) fue {accion}do"
+        )
+        db.add(log)
+        db.commit()
+        flash(request, f"Usuario {accion}do correctamente", "success")
+    except Exception as e:
+        db.rollback()
+        flash(request, f"Error: {e}", "error")
+    return RedirectResponse("/admin/usuarios", status_code=302)
