@@ -37,64 +37,6 @@
     margin-bottom: 0.25rem;
 }
 .perfil-header p { color: var(--verde-medio); font-size: 0.9rem; }
-
-.face-section {
-    background: var(--fondo);
-    border-radius: var(--radio);
-    padding: 1.5rem;
-    text-align: center;
-}
-.face-section h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--verde-oscuro);
-    margin-bottom: 0.4rem;
-}
-.face-section p {
-    font-size: 0.85rem;
-    color: var(--verde-medio);
-    margin-bottom: 1.25rem;
-}
-
-#reg-video {
-    width: 100%;
-    border-radius: var(--radio);
-    border: 3px solid var(--verde-claro);
-    background: #000;
-    transform: scaleX(-1);
-    display: none;
-}
-#reg-canvas { display: none; }
-
-.face-status {
-    margin-top: 1rem;
-    font-size: 0.88rem;
-    font-weight: 600;
-    min-height: 22px;
-    color: var(--verde-medio);
-}
-.face-status.error { color: #c62828; }
-.face-status.ok    { color: #276339; }
-
-.face-actions {
-    display: flex;
-    gap: 0.75rem;
-    margin-top: 1.25rem;
-}
-.face-actions .btn { flex: 1; justify-content: center; }
-
-.badge-face {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0.4rem 1rem;
-    border-radius: 99px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-.badge-face.registrado   { background: #d4edda; color: #276339; }
-.badge-face.sin-registro { background: #fde8e8; color: #9b2c2c; }
 </style>
 {% endblock %}
 
@@ -107,40 +49,10 @@
             <p>{{ session.get('nombre') }} · {{ session.get('tipo')|capitalize }}</p>
         </div>
 
-        {% if session.get('tipo') == 'banco' %}
-        <div class="face-section">
-            <h3><i class="fas fa-camera" style="color:var(--verde-salvia);"></i> Registro de Face ID</h3>
-
-            {% if tiene_face %}
-                <span class="badge-face registrado"><i class="fas fa-check-circle"></i> Rostro registrado</span>
-                <p>Ya tienes Face ID activo. Puedes actualizarlo capturando uno nuevo.</p>
-            {% else %}
-                <span class="badge-face sin-registro"><i class="fas fa-times-circle"></i> Sin Face ID</span>
-                <p>Registra tu rostro para iniciar sesión sin contraseña.</p>
-            {% endif %}
-
-            <video id="reg-video" autoplay playsinline></video>
-            <canvas id="reg-canvas"></canvas>
-
-            <div class="face-status" id="reg-status"></div>
-
-            <div class="face-actions">
-                <button class="btn btn-secondary" id="btn-abrir-camara">
-                    <i class="fas fa-camera"></i> Abrir cámara
-                </button>
-                <button class="btn btn-primary" id="btn-capturar" style="display:none;">
-                    <i class="fas fa-user-plus"></i> Registrar rostro
-                </button>
-            </div>
-            <div style="margin-top:0.75rem;">
-                <button class="btn btn-light btn-full" id="btn-cerrar-camara" style="display:none;">
-                    <i class="fas fa-times"></i> Cancelar
-                </button>
-            </div>
-        </div>
-        {% endif %}
-
         <div style="margin-top: 1.5rem; text-align: center;">
+            <p style="color: var(--verde-medio); margin-bottom: 1.5rem;">
+                Actualmente tu cuenta está protegida con contraseña estándar.
+            </p>
             <a href="/dashboard" class="btn btn-outline">
                 <i class="fas fa-arrow-left"></i> Volver al dashboard
             </a>
@@ -150,93 +62,4 @@
 {% endblock %}
 
 {% block extra_scripts %}
-{% if session.get('tipo') == 'banco' %}
-<script>
-(function () {
-    const video     = document.getElementById('reg-video');
-    const canvas    = document.getElementById('reg-canvas');
-    const status    = document.getElementById('reg-status');
-    const btnAbrir  = document.getElementById('btn-abrir-camara');
-    const btnCap    = document.getElementById('btn-capturar');
-    const btnCerrar = document.getElementById('btn-cerrar-camara');
-    let stream      = null;
-
-    function setStatus(msg, type) {
-        status.textContent = msg;
-        status.className   = 'face-status' + (type ? ' ' + type : '');
-    }
-
-    async function abrirCamara() {
-        setStatus('Iniciando cámara…');
-        try {
-            stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { 
-            facingMode: 'user',
-            width: { ideal: 320, max: 640 },
-            height: { ideal: 240, max: 480 },
-            frameRate: { ideal: 10, max: 15 }
-            } 
-        });
-
-            video.srcObject = stream;
-            video.style.display = 'block';
-            btnAbrir.style.display  = 'none';
-            btnCap.style.display    = 'flex';
-            btnCerrar.style.display = 'flex';
-            setStatus('Listo. Colócate frente a la cámara y presiona "Registrar rostro".');
-        } catch (err) {
-            setStatus('No se pudo acceder a la cámara. Usa http://127.0.0.1:5000', 'error');
-        }
-    }
-
-    function cerrarCamara() {
-        if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
-        video.style.display     = 'none';
-        btnAbrir.style.display  = 'flex';
-        btnCap.style.display    = 'none';
-        btnCerrar.style.display = 'none';
-        setStatus('');
-    }
-
-    async function registrarRostro() {
-        setStatus('Capturando rostro…');
-        btnCap.disabled = true;
-
-        canvas.width  = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.translate(canvas.width, 0);
-        ctx.scale(-1, 1);
-        ctx.drawImage(video, 0, 0);
-
-        const imageData = canvas.toDataURL('image/jpeg', 0.4);
-
-        try {
-            const res  = await fetch('/perfil/registrar-face', {
-                method:  'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify({ image: imageData })
-            });
-            const data = await res.json();
-
-            if (data.ok) {
-                setStatus(' ' + data.msg, 'ok');
-                cerrarCamara();
-                setTimeout(() => location.reload(), 1200);
-            } else {
-                setStatus(data.msg || 'No se detectó rostro. Intenta de nuevo.', 'error');
-                btnCap.disabled = false;
-            }
-        } catch (err) {
-            setStatus('Error de conexión. Intenta de nuevo.', 'error');
-            btnCap.disabled = false;
-        }
-    }
-
-    btnAbrir.addEventListener('click', abrirCamara);
-    btnCap.addEventListener('click', registrarRostro);
-    btnCerrar.addEventListener('click', cerrarCamara);
-})();
-</script>
-{% endif %}
 {% endblock %}

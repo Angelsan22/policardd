@@ -8,7 +8,6 @@ from app.data.banco import Banco
 from app.data.solicitud import Solicitud
 from app.helpers import render
 from app.security.auth import flash, is_logged_in, redirect_login
-from face_utils import extract_encoding_from_b64, encoding_to_str, str_to_encoding, compare_encodings
 
 router = APIRouter(tags=["Autenticacion"])
 
@@ -39,47 +38,12 @@ async def login_post(
         flash(request, "Error al iniciar sesion", "error")
     return render(request, "login.html", {"email": email})
 
-@router.post("/login/face")
-async def login_face(request: Request, db: Session = Depends(get_db)):
-    data = await request.json()
-    if not data or "image" not in data:
-        return JSONResponse({"ok": False, "msg": "No se recibio imagen"}, status_code=400)
-    candidate = extract_encoding_from_b64(data["image"])
-    if candidate is None:
-        return JSONResponse({"ok": False, "msg": "No se detecto ningun rostro."})
-    usuarios = db.query(Usuario).filter(Usuario.face_encoding.isnot(None)).all()
-    for usuario in usuarios:
-        known = str_to_encoding(usuario.face_encoding)
-        if compare_encodings(known, candidate):
-            request.session["usuario_id"] = usuario.id
-            request.session["tipo"]       = usuario.tipo
-            request.session["nombre"]     = usuario.nombre
-            redirect_url = "/admin" if usuario.tipo == "admin" else "/banco/dashboard"
-            return JSONResponse({"ok": True, "redirect": redirect_url, "nombre": usuario.nombre})
-    return JSONResponse({"ok": False, "msg": "Rostro no reconocido."})
-
-@router.post("/perfil/registrar-face")
-async def registrar_face(request: Request, db: Session = Depends(get_db)):
-    if not is_logged_in(request):
-        return JSONResponse({"ok": False, "msg": "No autenticado"}, status_code=401)
-    data = await request.json()
-    if not data or "image" not in data:
-        return JSONResponse({"ok": False, "msg": "No se recibio imagen"}, status_code=400)
-    encoding = extract_encoding_from_b64(data["image"])
-    if encoding is None:
-        return JSONResponse({"ok": False, "msg": "No se detecto ningun rostro."})
-    usuario = db.query(Usuario).filter(Usuario.id == request.session["usuario_id"]).first()
-    usuario.face_encoding = encoding_to_str(encoding)
-    db.commit()
-    return JSONResponse({"ok": True, "msg": "Rostro registrado exitosamente!"})
-
 @router.get("/perfil", response_class=HTMLResponse)
 async def perfil(request: Request, db: Session = Depends(get_db)):
     if not is_logged_in(request):
         return redirect_login(request)
     usuario    = db.query(Usuario).filter(Usuario.id == request.session["usuario_id"]).first()
-    tiene_face = usuario.face_encoding is not None
-    return render(request, "perfil.html", {"tiene_face": tiene_face})
+    return render(request, "perfil.html")
 
 @router.get("/registro_banco", response_class=HTMLResponse)
 async def registro_banco_get(request: Request):

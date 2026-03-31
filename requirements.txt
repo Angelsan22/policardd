@@ -7,6 +7,3 @@ jinja2
 itsdangerous
 starlette
 werkzeug
-face_recognition
-numpy
-opencv-python-headless
