@@ -3,217 +3,301 @@
 
 {% block extra_styles %}
 <style>
-
     :root {
-    --sage:       #6B8F5E;
-    --sage-light: #8FAF7E;
-    --sage-pale:  #EAF2E4;
-    --forest:     #1A2E1A;
-    --forest-mid: #2E4A2E;
-    --moss:       #5A7A6A;
-    --cream:      #F7F9F5;
-    --parchment:  #F0EDE5;
-    --gold:       #C8952A;
-    --gold-pale:  #FDF3DC;
-    --coral:      #C0392B;
-    --coral-pale: #FDECEA;
-    --amber:      #9a6e00;
-    --amber-pale: #FFF8E1;
-    --ink:        #1A2E1A;
-    --muted:      #5A7A6A;
-}
-
-.hero {
-    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 55%, #3d6b45 100%);
-    border-radius: var(--radio-lg);
-    padding: 4rem 3rem;
-    color: var(--blanco);
-    margin-bottom: 2rem;
-    position: relative;
-    overflow: hidden;
-}
-.hero::before {
-    content: '';
-    position: absolute;
-    top: -60px; right: -60px;
-    width: 280px; height: 280px;
-    border-radius: 50%;
-    background: rgba(186,200,177,0.12);
-}
-.hero::after {
-    content: '';
-    position: absolute;
-    bottom: -80px; left: 40%;
-    width: 200px; height: 200px;
-    border-radius: 50%;
-    background: rgba(186,200,177,0.08);
-}
-.hero-content { position: relative; z-index: 1; max-width: 600px; }
-.hero-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(186,200,177,0.2);
-    border: 1px solid rgba(186,200,177,0.3);
-    color: var(--verde-claro);
-    padding: 0.3rem 0.9rem;
-    border-radius: 99px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-bottom: 1.25rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-.hero h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 3rem;
-    line-height: 1.15;
-    margin-bottom: 1rem;
-    color: var(--blanco);
-}
-.hero p {
-    font-size: 1.05rem;
-    color: var(--verde-claro);
-    margin-bottom: 2rem;
-    line-height: 1.65;
-}
-.hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
-.btn-hero-primary {
-    background: var(--blanco);
-    color: var(--verde-oscuro);
-    font-weight: 700;
-    padding: 0.85rem 2rem;
-    border-radius: 10px;
-    text-decoration: none;
-    font-size: 0.95rem;
-    display: inline-flex; align-items: center; gap: 8px;
-    transition: all 0.2s;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-}
-.btn-hero-primary:hover { background: var(--verde-claro); }
-.btn-hero-outline {
-    border: 2px solid rgba(255,255,255,0.35);
-    color: var(--blanco);
-    padding: 0.85rem 2rem;
-    border-radius: 10px;
-    text-decoration: none;
-    font-size: 0.95rem;
-    display: inline-flex; align-items: center; gap: 8px;
-    transition: all 0.2s;
-}
-.btn-hero-outline:hover { border-color: var(--blanco); background: rgba(255,255,255,0.08); }
-
-/* Stats */
-.stats-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 3rem;
-}
-
-/* ── Cómo funciona ── */
-.como-section { margin-bottom: 3.5rem; }
-.como-section .section-title { margin-bottom: 0.4rem; }
-.como-section .section-subtitle { margin-bottom: 2.5rem; }
-
-.pasos-grid {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr auto 1fr;
-    align-items: start;
-    gap: 0;
-}
-.paso {
-    background: var(--blanco);
-    border-radius: var(--radio-lg);
-    padding: 2rem 1.75rem;
-    box-shadow: var(--sombra);
-    border: 1px solid rgba(0,0,0,0.06);
-    text-align: center;
-    position: relative;
-    transition: box-shadow 0.25s, transform 0.25s;
-}
-.paso:hover { box-shadow: var(--sombra-lg); transform: translateY(-3px); }
-
-.paso-numero {
-    position: absolute;
-    top: -14px; left: 50%;
-    transform: translateX(-50%);
-    background: var(--verde-oscuro);
-    color: var(--blanco);
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    font-size: 0.8rem;
-    font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 8px rgba(64,78,59,0.3);
-}
-.paso-icono {
-    width: 72px; height: 72px;
-    border-radius: 20px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.7rem;
-    margin: 0.75rem auto 1.25rem;
-}
-.paso h3 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.2rem;
-    color: var(--verde-oscuro);
-    margin-bottom: 0.5rem;
-}
-.paso p {
-    font-size: 0.87rem;
-    color: var(--verde-medio);
-    line-height: 1.6;
-    margin-bottom: 1.25rem;
-}
-.paso .paso-link {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    text-decoration: none;
-    color: var(--verde-oscuro);
-    transition: gap 0.2s;
-}
-.paso .paso-link:hover { gap: 8px; }
-
-/* Flecha entre pasos */
-.paso-flecha {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 0.5rem;
-    margin-top: 3.5rem;
-    color: var(--verde-claro);
-    font-size: 1.4rem;
-}
-
-/* Detalle sub-items dentro del paso */
-.paso-items {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    text-align: left;
-    margin-top: 0.25rem;
-}
-.paso-item {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 0.83rem;
-    color: var(--texto-medio);
-    background: var(--fondo);
-    border-radius: 8px;
-    padding: 0.4rem 0.7rem;
-}
-.paso-item i { color: var(--verde-salvia); font-size: 0.75rem; flex-shrink: 0; }
-
-@media (max-width: 900px) {
-    .pasos-grid {
-        grid-template-columns: 1fr;
+        --brand-navy:   #0A4269;
+        --brand-teal:   #66C2A4;
+        --brand-yellow: #FEE482;
+        --brand-bg:     #F3F7F9;
+        
+        /* Local overrides to match legacy names */
+        --forest:       var(--brand-navy);
+        --forest-mid:   #125785;
+        --sage:         var(--brand-teal);
+        --sage-light:   #85D1B8;
+        --sage-pale:    #E2F5EF;
+        --cream:        #F8FAF9;
+        --gold:         var(--brand-yellow);
     }
-    .paso-flecha { transform: rotate(90deg); margin: 0 auto; padding: 0.25rem 0; }
-    .stats-row { grid-template-columns: repeat(2,1fr); }
-    .hero { padding: 2.5rem 1.75rem; }
-    .hero h1 { font-size: 2.1rem; }
-}
+
+    .hero {
+        background: linear-gradient(135deg, var(--brand-navy) 0%, #125785 55%, var(--brand-teal) 100%);
+        border-radius: var(--radio-lg);
+        padding: 4rem 3rem;
+        color: var(--blanco);
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: -60px;
+        right: -60px;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        background: rgba(186, 200, 177, 0.12);
+    }
+
+    .hero::after {
+        content: '';
+        position: absolute;
+        bottom: -80px;
+        left: 40%;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(186, 200, 177, 0.08);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 600px;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(186, 200, 177, 0.2);
+        border: 1px solid rgba(186, 200, 177, 0.3);
+        color: var(--verde-claro);
+        padding: 0.3rem 0.9rem;
+        border-radius: 99px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .hero h1 {
+        font-family: 'DM Serif Display', serif;
+        font-size: 3rem;
+        line-height: 1.15;
+        margin-bottom: 1rem;
+        color: var(--blanco);
+    }
+
+    .hero p {
+        font-size: 1.05rem;
+        color: var(--verde-claro);
+        margin-bottom: 2rem;
+        line-height: 1.65;
+    }
+
+    .hero-ctas {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-hero-primary {
+        background: var(--blanco);
+        color: var(--verde-oscuro);
+        font-weight: 700;
+        padding: 0.85rem 2rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-hero-primary:hover {
+        background: var(--brand-teal);
+        color: var(--blanco);
+    }
+
+    .btn-hero-outline {
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        color: var(--blanco);
+        padding: 0.85rem 2rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+
+    .btn-hero-outline:hover {
+        border-color: var(--blanco);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Stats */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 3rem;
+    }
+
+    /* ── Cómo funciona ── */
+    .como-section {
+        margin-bottom: 3.5rem;
+    }
+
+    .como-section .section-title {
+        margin-bottom: 0.4rem;
+    }
+
+    .como-section .section-subtitle {
+        margin-bottom: 2.5rem;
+    }
+
+    .pasos-grid {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr auto 1fr;
+        align-items: start;
+        gap: 0;
+    }
+
+    .paso {
+        background: var(--blanco);
+        border-radius: var(--radio-lg);
+        padding: 2rem 1.75rem;
+        box-shadow: var(--sombra);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        text-align: center;
+        position: relative;
+        transition: box-shadow 0.25s, transform 0.25s;
+    }
+
+    .paso:hover {
+        box-shadow: var(--sombra-lg);
+        transform: translateY(-3px);
+    }
+
+    .paso-numero {
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--verde-oscuro);
+        color: var(--blanco);
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(64, 78, 59, 0.3);
+    }
+
+    .paso-icono {
+        width: 72px;
+        height: 72px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.7rem;
+        margin: 0.75rem auto 1.25rem;
+        background: var(--brand-bg);
+        color: var(--brand-navy);
+    }
+
+    .paso h3 {
+        font-family: 'DM Serif Display', serif;
+        font-size: 1.2rem;
+        color: var(--verde-oscuro);
+        margin-bottom: 0.5rem;
+    }
+
+    .paso p {
+        font-size: 0.87rem;
+        color: var(--verde-medio);
+        line-height: 1.6;
+        margin-bottom: 1.25rem;
+    }
+
+    .paso .paso-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        text-decoration: none;
+        color: var(--verde-oscuro);
+        transition: gap 0.2s;
+    }
+
+    .paso .paso-link:hover {
+        gap: 8px;
+    }
+
+    /* Flecha entre pasos */
+    .paso-flecha {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 0.5rem;
+        margin-top: 3.5rem;
+        color: var(--verde-claro);
+        font-size: 1.4rem;
+    }
+
+    /* Detalle sub-items dentro del paso */
+    .paso-items {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        text-align: left;
+        margin-top: 0.25rem;
+    }
+
+    .paso-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.83rem;
+        color: var(--texto-medio);
+        background: var(--fondo);
+        border-radius: 8px;
+        padding: 0.4rem 0.7rem;
+    }
+
+    .paso-item i {
+        color: var(--verde-salvia);
+        font-size: 0.75rem;
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 900px) {
+        .pasos-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .paso-flecha {
+            transform: rotate(90deg);
+            margin: 0 auto;
+            padding: 0.25rem 0;
+        }
+
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .hero {
+            padding: 2.5rem 1.75rem;
+        }
+
+        .hero h1 {
+            font-size: 2.1rem;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -224,132 +308,236 @@
     <div class="hero-content">
         <div class="hero-badge"><i class="fas fa-leaf"></i> Finanzas para jóvenes</div>
         <h1>Encuentra la tarjeta de crédito ideal para ti</h1>
-        <p>Compara, aprende y decide con confianza. PoliCard te guía en el mundo de las tarjetas de crédito con información clara y sin letra pequeña.</p>
+        <p>Compara, aprende y decide con confianza. PoliCard te guía en el mundo de las tarjetas de crédito con
+            información clara y sin letra pequeña.</p>
     </div>
 </section>
 
 <!-- ════════ PANEL DE CLIENTE LOGUEADO ════════ -->
 {% if session.get('tipo') == 'cliente' %}
 <style>
-.client-panels {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-@media (max-width: 880px) { .client-panels { grid-template-columns: 1fr; } }
+    .client-panels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
 
-.cl-panel {
-    background: var(--blanco);
-    border-radius: var(--radio-lg);
-    box-shadow: var(--sombra);
-    overflow: hidden;
-    border: 1px solid rgba(0,0,0,0.05);
-}
-.cl-panel-header {
-    padding: 1.25rem 1.5rem;
-    display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 2px solid var(--gris-claro);
-}
-.cl-panel-header h3 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.2rem;
-    color: var(--verde-oscuro);
-    display: flex; align-items: center; gap: 0.5rem;
-}
-.cl-panel-header .cl-count {
-    background: var(--verde-oscuro);
-    color: #fff;
-    padding: 0.2rem 0.65rem;
-    border-radius: 99px;
-    font-size: 0.75rem;
-    font-weight: 700;
-}
-.cl-panel-body { padding: 0; }
+    @media (max-width: 880px) {
+        .client-panels {
+            grid-template-columns: 1fr;
+        }
+    }
 
-/* Notificaciones */
-.notif-list { list-style: none; padding: 0; margin: 0; max-height: 320px; overflow-y: auto; }
-.notif-item {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--gris-claro);
-    display: flex; align-items: flex-start; gap: 0.85rem;
-    transition: background 0.15s;
-}
-.notif-item:last-child { border-bottom: none; }
-.notif-item:hover { background: rgba(0,0,0,0.01); }
-.notif-icon {
-    width: 36px; height: 36px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    font-size: 0.85rem;
-}
-.notif-icon.aprobada  { background: #d4edda; color: #276339; }
-.notif-icon.pendiente { background: #fef9e7; color: #9a6e00; }
-.notif-icon.rechazada { background: #fdecea; color: #c0392b; }
-.notif-text { font-size: 0.88rem; color: var(--texto-oscuro); line-height: 1.4; }
-.notif-text strong { color: var(--verde-oscuro); }
-.notif-date { font-size: 0.75rem; color: var(--texto-medio); margin-top: 2px; }
-.notif-badge {
-    display: inline-block;
-    padding: 0.15rem 0.55rem;
-    border-radius: 99px;
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-.nb-aprobada  { background: #d4edda; color: #276339; }
-.nb-pendiente { background: #fef9e7; color: #9a6e00; }
-.nb-rechazada { background: #fdecea; color: #c0392b; }
+    .cl-panel {
+        background: var(--blanco);
+        border-radius: var(--radio-lg);
+        box-shadow: var(--sombra);
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
 
-/* Tarjetas aprobadas */
-.my-cards { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; max-height: 320px; overflow-y: auto; }
-.my-card {
-    display: flex; align-items: center; gap: 1rem;
-    background: linear-gradient(135deg, #f8faf9, #eef3ec);
-    border: 1px solid rgba(107,143,94,0.18);
-    border-radius: 14px;
-    padding: 1rem 1.25rem;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-.my-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
-.my-card-icon {
-    width: 48px; height: 48px;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.3rem;
-    color: #fff;
-    flex-shrink: 0;
-}
-.my-card-info { flex: 1; }
-.my-card-info .mc-name {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1rem;
-    color: var(--verde-oscuro);
-    margin-bottom: 2px;
-}
-.my-card-info .mc-banco {
-    font-size: 0.78rem;
-    color: var(--verde-medio);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-.my-card-badge {
-    background: #d4edda;
-    color: #276339;
-    padding: 0.25rem 0.7rem;
-    border-radius: 99px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    white-space: nowrap;
-}
-.cl-empty {
-    padding: 2.5rem 1.5rem;
-    text-align: center;
-    color: var(--texto-medio);
-}
-.cl-empty i { font-size: 2rem; opacity: 0.3; display: block; margin-bottom: 0.5rem; }
+    .cl-panel-header {
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 2px solid var(--gris-claro);
+    }
+
+    .cl-panel-header h3 {
+        font-family: 'DM Serif Display', serif;
+        font-size: 1.2rem;
+        color: var(--verde-oscuro);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .cl-panel-header .cl-count {
+        background: var(--verde-oscuro);
+        color: #fff;
+        padding: 0.2rem 0.65rem;
+        border-radius: 99px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .cl-panel-body {
+        padding: 0;
+    }
+
+    /* Notificaciones */
+    .notif-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 320px;
+        overflow-y: auto;
+    }
+
+    .notif-item {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--gris-claro);
+        display: flex;
+        align-items: flex-start;
+        gap: 0.85rem;
+        transition: background 0.15s;
+    }
+
+    .notif-item:last-child {
+        border-bottom: none;
+    }
+
+    .notif-item:hover {
+        background: rgba(0, 0, 0, 0.01);
+    }
+
+    .notif-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 0.85rem;
+    }
+
+    .notif-icon.aprobada {
+        background: #d4edda;
+        color: #276339;
+    }
+
+    .notif-icon.pendiente {
+        background: #fef9e7;
+        color: #9a6e00;
+    }
+
+    .notif-icon.rechazada {
+        background: #fdecea;
+        color: #c0392b;
+    }
+
+    .notif-text {
+        font-size: 0.88rem;
+        color: var(--texto-oscuro);
+        line-height: 1.4;
+    }
+
+    .notif-text strong {
+        color: var(--verde-oscuro);
+    }
+
+    .notif-date {
+        font-size: 0.75rem;
+        color: var(--texto-medio);
+        margin-top: 2px;
+    }
+
+    .notif-badge {
+        display: inline-block;
+        padding: 0.15rem 0.55rem;
+        border-radius: 99px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .nb-aprobada {
+        background: #d4edda;
+        color: #276339;
+    }
+
+    .nb-pendiente {
+        background: #fef9e7;
+        color: #9a6e00;
+    }
+
+    .nb-rechazada {
+        background: #fdecea;
+        color: #c0392b;
+    }
+
+    /* Tarjetas aprobadas */
+    .my-cards {
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        max-height: 320px;
+        overflow-y: auto;
+    }
+
+    .my-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: linear-gradient(135deg, #f8faf9, #eef3ec);
+        border: 1px solid rgba(107, 143, 94, 0.18);
+        border-radius: 14px;
+        padding: 1rem 1.25rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .my-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .my-card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    .my-card-info {
+        flex: 1;
+    }
+
+    .my-card-info .mc-name {
+        font-family: 'DM Serif Display', serif;
+        font-size: 1rem;
+        color: var(--verde-oscuro);
+        margin-bottom: 2px;
+    }
+
+    .my-card-info .mc-banco {
+        font-size: 0.78rem;
+        color: var(--verde-medio);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .my-card-badge {
+        background: #d4edda;
+        color: #276339;
+        padding: 0.25rem 0.7rem;
+        border-radius: 99px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .cl-empty {
+        padding: 2.5rem 1.5rem;
+        text-align: center;
+        color: var(--texto-medio);
+    }
+
+    .cl-empty i {
+        font-size: 2rem;
+        opacity: 0.3;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
 </style>
 
 <div class="client-panels">
@@ -365,18 +553,23 @@
                 {% for sol in mis_solicitudes %}
                 <li class="notif-item">
                     <div class="notif-icon {{ sol.estado }}">
-                        <i class="fas fa-{% if sol.estado == 'aprobada' %}check-circle{% elif sol.estado == 'pendiente' %}clock{% else %}times-circle{% endif %}"></i>
+                        <i
+                            class="fas fa-{% if sol.estado == 'aprobada' %}check-circle{% elif sol.estado == 'pendiente' %}clock{% else %}times-circle{% endif %}"></i>
                     </div>
                     <div>
                         <div class="notif-text">
                             {% if sol.estado == 'aprobada' %}
-                                Tu solicitud de <strong>{{ sol.tarjeta.nombre }}</strong> fue <span class="notif-badge nb-aprobada">aprobada</span>
+                            Tu solicitud de <strong>{{ sol.tarjeta.nombre }}</strong> fue <span
+                                class="notif-badge nb-aprobada">aprobada</span>
                             {% elif sol.estado == 'pendiente' %}
-                                <strong>{{ sol.tarjeta.nombre }}</strong> esta <span class="notif-badge nb-pendiente">en revision</span>
+                            <strong>{{ sol.tarjeta.nombre }}</strong> esta <span class="notif-badge nb-pendiente">en
+                                revision</span>
                             {% elif sol.estado == 'rechazada' %}
-                                Tu solicitud de <strong>{{ sol.tarjeta.nombre }}</strong> fue <span class="notif-badge nb-rechazada">rechazada</span>
+                            Tu solicitud de <strong>{{ sol.tarjeta.nombre }}</strong> fue <span
+                                class="notif-badge nb-rechazada">rechazada</span>
                             {% else %}
-                                <strong>{{ sol.tarjeta.nombre }}</strong> — <span class="notif-badge nb-pendiente">{{ sol.estado }}</span>
+                            <strong>{{ sol.tarjeta.nombre }}</strong> — <span class="notif-badge nb-pendiente">{{
+                                sol.estado }}</span>
                             {% endif %}
                         </div>
                         <div class="notif-date">
@@ -413,7 +606,8 @@
                 {% set bn = sol.tarjeta.banco.nombre_banco|lower if sol.tarjeta.banco else '' %}
                 {% if 'bbva' in bn %}{% set bg = 'linear-gradient(135deg,#003b8e,#1a6fd4)' %}
                 {% elif 'santander' in bn %}{% set bg = 'linear-gradient(135deg,#8b0000,#cc0000)' %}
-                {% elif 'banamex' in bn or 'citibanamex' in bn %}{% set bg = 'linear-gradient(135deg,#7a5800,#c8952a)' %}
+                {% elif 'banamex' in bn or 'citibanamex' in bn %}{% set bg = 'linear-gradient(135deg,#7a5800,#c8952a)'
+                %}
                 {% elif 'hsbc' in bn %}{% set bg = 'linear-gradient(135deg,#8b0010,#db0011)' %}
                 {% elif 'banorte' in bn %}{% set bg = 'linear-gradient(135deg,#b34000,#f06000)' %}
                 {% elif 'nu' in bn %}{% set bg = 'linear-gradient(135deg,#3d0060,#8b1db8)' %}
@@ -425,7 +619,8 @@
                     </div>
                     <div class="my-card-info">
                         <div class="mc-name">{{ sol.tarjeta.nombre }}</div>
-                        <div class="mc-banco">{{ sol.tarjeta.banco.nombre_banco if sol.tarjeta.banco else 'Banco' }}</div>
+                        <div class="mc-banco">{{ sol.tarjeta.banco.nombre_banco if sol.tarjeta.banco else 'Banco' }}
+                        </div>
                     </div>
                     <span class="my-card-badge"><i class="fas fa-check" style="margin-right:3px;"></i> Activa</span>
                 </div>
@@ -447,10 +642,14 @@
 
 <!-- STATS -->
 <div class="stats-row">
-    <div class="stat-box"><span class="stat-label">Tarjetas</span><span class="stat-value">{{ home_stats.total_tarjetas }}</span></div>
-    <div class="stat-box"><span class="stat-label">Bancos</span><span class="stat-value">{{ home_stats.total_bancos }}</span></div>
-    <div class="stat-box"><span class="stat-label">CAT minimo</span><span class="stat-value">{{ home_stats.cat_min }}%</span></div>
-    <div class="stat-box"><span class="stat-label">Sin anualidad</span><span class="stat-value">{{ home_stats.pct_sin_anualidad }}%</span></div>
+    <div class="stat-box"><span class="stat-label">Tarjetas</span><span class="stat-value">{{ home_stats.total_tarjetas
+            }}</span></div>
+    <div class="stat-box"><span class="stat-label">Bancos</span><span class="stat-value">{{ home_stats.total_bancos
+            }}</span></div>
+    <div class="stat-box"><span class="stat-label">CAT minimo</span><span class="stat-value">{{ home_stats.cat_min
+            }}%</span></div>
+    <div class="stat-box"><span class="stat-label">Sin anualidad</span><span class="stat-value">{{
+            home_stats.pct_sin_anualidad }}%</span></div>
 </div>
 
 <!-- CÓMO FUNCIONA -->
@@ -463,7 +662,7 @@
         <!-- PASO 1 -->
         <div class="paso">
             <div class="paso-numero">1</div>
-            <div class="paso-icono" style="background:#e8f0e9; color:var(--verde-oscuro);">
+            <div class="paso-icono">
                 <i class="fas fa-search"></i>
             </div>
             <h3>Busca</h3>
@@ -482,7 +681,7 @@
         <!-- PASO 2 -->
         <div class="paso">
             <div class="paso-numero">2</div>
-            <div class="paso-icono" style="background:#d4edda; color:#276339;">
+            <div class="paso-icono" style="background:var(--sage-pale); color:var(--brand-navy);">
                 <i class="fas fa-balance-scale"></i>
             </div>
             <h3>Compara</h3>
@@ -520,10 +719,13 @@
 
 <!-- CTA Banco -->
 {% if not session.get('usuario_id') %}
-<div style="background:linear-gradient(135deg,var(--verde-oscuro),var(--verde-medio)); border-radius:var(--radio-lg); padding:2.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
+<div
+    style="background:linear-gradient(135deg, var(--brand-navy), var(--brand-teal)); border-radius:var(--radio-lg); padding:2.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
     <div>
-        <h3 style="font-family:'DM Serif Display',serif; color:#fff; font-size:1.5rem; margin-bottom:0.4rem;">¿Representas a un banco?</h3>
-        <p style="color:var(--verde-claro); font-size:0.95rem;">Registra tu institución y gestiona tus tarjetas en nuestra plataforma.</p>
+        <h3 style="font-family:'DM Serif Display',serif; color:#fff; font-size:1.5rem; margin-bottom:0.4rem;">
+            ¿Representas a un banco?</h3>
+        <p style="color:var(--brand-bg); font-size:0.95rem; opacity:0.9;">Registra tu institución y gestiona tus tarjetas en
+            nuestra plataforma.</p>
     </div>
     <a href="/registro_banco" class="btn btn-secondary btn-lg"><i class="fas fa-building"></i> Registrar banco</a>
 </div>

@@ -15,12 +15,12 @@ body { font-family: 'Outfit', sans-serif; }
 .page-header h1 {
     font-family: 'DM Serif Display', serif;
     font-size: 2.4rem;
-    color: #1A2E1A;
+    color: var(--primary);
     display: flex; align-items: center; gap: 0.7rem;
     margin-bottom: 0.4rem;
 }
-.page-header h1 i { color: #6B8F5E; }
-.page-header p { color: #5A7A6A; font-size: 1rem; }
+.page-header h1 i { color: var(--secondary); }
+.page-header p { color: var(--texto-medio); font-size: 1rem; }
 
 /* ── Filter Bar ── */
 .filter-bar {
@@ -29,7 +29,7 @@ body { font-family: 'Outfit', sans-serif; }
     border-radius: 18px;
     padding: 1.25rem 1.5rem;
     box-shadow: 0 2px 0 rgba(0,0,0,0.04), 0 8px 28px rgba(0,0,0,0.09);
-    border: 1px solid rgba(107,143,94,0.18);
+    border: 1px solid rgba(10,66,105,0.1);
     margin-bottom: 3.5rem;
     display: flex;
     gap: 1rem;
@@ -83,7 +83,7 @@ body { font-family: 'Outfit', sans-serif; }
         transparent 30%,
         rgba(255,255,255,0.9) 45%,
         rgba(200,255,200,0.7) 50%,
-        rgba(107,143,94,0.9) 55%,
+        rgba(10,66,105,0.9) 55%,
         transparent 70%,
         transparent 100%
     );
@@ -230,7 +230,7 @@ body { font-family: 'Outfit', sans-serif; }
 .grad-hsbc      { background: linear-gradient(135deg, #8b0010 0%, #db0011 100%); }
 .grad-banorte   { background: linear-gradient(135deg, #b34000 0%, #f06000 100%); }
 .grad-nu        { background: linear-gradient(135deg, #3d0060 0%, #8b1db8 100%); }
-.grad-default   { background: linear-gradient(135deg, #2E4A2E 0%, #5A7A6A 100%); }
+.grad-default   { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); }
 
 /* ── Card body ── */
 .tarjeta-body {
@@ -246,13 +246,13 @@ body { font-family: 'Outfit', sans-serif; }
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #6B8F5E;
+    color: var(--secondary);
     margin-bottom: 0.15rem;
 }
 .tarjeta-nombre {
     font-family: 'DM Serif Display', serif;
     font-size: 1.35rem;
-    color: #1A2E1A;
+    color: var(--primary);
     margin-bottom: 0.8rem;
     line-height: 1.2;
 }
@@ -289,22 +289,22 @@ body { font-family: 'Outfit', sans-serif; }
     font-size: 0.85rem;
 }
 .tarjeta-stat .label i { width: 13px; text-align: center; opacity: 0.75; }
-.tarjeta-stat .value { font-weight: 700; color: #1a2e1a; }
+.tarjeta-stat .value { font-weight: 700; color: var(--primary); }
 .value-free { color: #16a34a !important; }
 
 /* Benefits */
 .beneficios-box {
     margin-top: 1rem;
-    background: rgba(107,143,94,0.08);
-    border: 1px solid rgba(107,143,94,0.2);
+    background: rgba(102,194,164,0.08);
+    border: 1px solid rgba(102,194,164,0.2);
     border-radius: 12px;
     padding: 0.85rem 1rem;
     font-size: 0.82rem;
-    color: #3d5c3d;
+    color: var(--primary);
     line-height: 1.55;
     display: flex; gap: 8px; align-items: flex-start;
 }
-.beneficios-box i { color: #6B8F5E; flex-shrink: 0; margin-top: 2px; font-size: 0.85rem; }
+.beneficios-box i { color: var(--secondary); flex-shrink: 0; margin-top: 2px; font-size: 0.85rem; }
 
 /* ── Entry animation ── */
 @keyframes card-enter {
@@ -454,7 +454,7 @@ body { font-family: 'Outfit', sans-serif; }
     {% elif 'nu' in bn or 'nubank' in bn %}
     <div class="glow-blob" style="background:linear-gradient(135deg,#3d0060,#bb55ee);"></div>
     {% else %}
-    <div class="glow-blob" style="background:linear-gradient(135deg,#2E4A2E,#6B8F5E);"></div>
+    <div class="glow-blob" style="background:linear-gradient(135deg, var(--primary), var(--secondary));"></div>
     {% endif %}
     <div class="halo-ring"></div>
     <div class="sparkles">

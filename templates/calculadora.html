@@ -3,732 +3,568 @@
 
 {% block extra_styles %}
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 
 :root {
-    --forest:      #1A2E1A;
-    --forest-mid:  #2E4A2E;
-    --sage:        #6B8F5E;
-    --sage-light:  #8FAF7E;
-    --sage-pale:   #EAF2E4;
-    --moss:        #5A7A6A;
-    --cream:       #F7F9F5;
-    --parchment:   #F0EDE5;
-    --gold:        #C8952A;
-    --gold-light:  #E8B84B;
-    --gold-pale:   #FDF3DC;
-    --coral:       #C0392B;
-    --muted:       #5A7A6A;
-    --ink:         #1A2E1A;
+    /* PoliCard Brand Palette - Synchronized with base.html */
+    --primary:       #0A4269; /* Navy */
+    --primary-dark:  #062D48;
+    --primary-light: #5B8FB9;
+    --secondary:     #66C2A4; /* Light Teal */
+    --accent:        #FEE482; /* Yellow */
+    --success:       #10B981; 
+    --warning:       #F59E0B;
+    --danger:        #EF4444;
+    
+    --brand-bg:      #F0F4F7; /* Matches base.html --fondo */
+    --brand-grey:    #DAE1E7;
+    
+    --slate-900:     var(--primary);
+    --slate-800:     #1A2B34;
+    --slate-700:     #435761;
+    --slate-600:     #475569;
+    --slate-500:     #64748B;
+    --slate-400:     #94A3B8;
+    --slate-200:     var(--brand-grey);
+    --slate-100:     #EBF0F3;
+    --slate-50:      var(--brand-bg);
+    
+    --glass:         rgba(255, 255, 255, 0.7);
+    --card-shadow:   0 1px 3px rgba(10,66,105,0.06), 0 6px 24px rgba(10,66,105,0.08);
+    --card-shadow-lg: 0 4px 6px rgba(10,66,105,0.07), 0 16px 40px rgba(10,66,105,0.12);
 }
 
-/* ══ Hero header ══ */
+/* ══ Global Reset & Typography ══ */
+body {
+    background-color: var(--slate-50);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--slate-800);
+}
+
+/* ══ Hero Section ══ */
 .calc-hero {
-    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 55%, #3d6b45 100%);
-    border-radius: 28px;
-    padding: 2.4rem 3rem;
+    background: linear-gradient(135deg, var(--slate-900) 0%, var(--primary) 100%);
+    border-radius: 24px;
+    padding: 3.5rem 4rem;
     color: #fff;
-    margin-bottom: 2rem;
-    display: flex;
-    align-items: center;
-    gap: 2rem;
+    margin-bottom: 2.5rem;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 8px 40px rgba(26,46,26,0.22);
+    box-shadow: var(--card-shadow-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
 .calc-hero::before {
     content: '';
     position: absolute;
-    top: -60px; right: -40px;
-    width: 220px; height: 220px;
+    top: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
     border-radius: 50%;
-    background: rgba(107,143,94,0.15);
-    pointer-events: none;
 }
-.calc-hero::after {
-    content: '';
-    position: absolute;
-    bottom: -50px; left: 25%;
-    width: 160px; height: 160px;
-    border-radius: 50%;
-    background: rgba(200,149,42,0.1);
-    pointer-events: none;
+
+.calc-hero-content {
+    max-width: 600px;
+    position: relative;
+    z-index: 2;
 }
-.calc-hero-icon {
-    width: 68px; height: 68px;
-    border-radius: 20px;
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.18);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.9rem;
-    flex-shrink: 0;
-    position: relative; z-index: 1;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-.calc-hero-text { position: relative; z-index: 1; }
+
 .calc-hero h1 {
     font-family: 'DM Serif Display', serif;
-    font-size: 1.85rem;
-    margin-bottom: 0.35rem;
+    font-size: 3rem;
+    font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 1rem;
     letter-spacing: -0.01em;
-    line-height: 1.15;
 }
+
 .calc-hero p {
-    color: rgba(255,255,255,0.68);
-    font-size: 0.93rem;
-    font-family: 'Outfit', sans-serif;
-    line-height: 1.5;
-}
-.calc-hero-badge {
-    margin-left: auto;
-    position: relative; z-index: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    background: rgba(255,255,255,0.09);
-    border: 1px solid rgba(255,255,255,0.14);
-    border-radius: 18px;
-    padding: 1rem 1.5rem;
-    text-align: center;
-    flex-shrink: 0;
-    backdrop-filter: blur(8px);
-}
-.calc-hero-badge .bv {
-    font-family: 'DM Serif Display', serif;
-    font-size: 2rem;
-    color: var(--gold-light);
-    line-height: 1;
-}
-.calc-hero-badge .bl {
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.7rem;
-    color: rgba(255,255,255,0.55);
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    font-weight: 600;
-}
-@media(max-width:680px) {
-    .calc-hero { flex-wrap: wrap; padding: 1.8rem 1.6rem; }
-    .calc-hero-badge { margin-left: 0; }
-}
-
-/* ══ Layout ══ */
-.calc-layout {
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 1.6rem;
-    align-items: start;
-}
-@media(max-width: 800px) { .calc-layout { grid-template-columns: 1fr; } }
-
-/* ══ Form panel ══ */
-.calc-panel {
-    background: #fff;
-    border-radius: 24px;
-    box-shadow: 0 2px 0 rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.08);
-    border: 1px solid rgba(107,143,94,0.12);
-    overflow: hidden;
-}
-.calc-panel-header {
-    padding: 1.8rem 2rem 1.2rem;
-    border-bottom: 1px solid rgba(107,143,94,0.1);
-}
-.calc-panel-header h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.3rem;
-    color: var(--forest);
-    margin-bottom: 0.2rem;
-}
-.calc-panel-header .sub {
-    font-family: 'Outfit', sans-serif;
-    color: var(--muted);
-    font-size: 0.84rem;
-}
-.calc-panel-body { padding: 1.6rem 2rem; }
-
-/* ── Field group ── */
-.field-group {
-    margin-bottom: 1.25rem;
-}
-.field-label {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--forest);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 0.55rem;
-}
-.field-label i { color: var(--sage); font-size: 0.78rem; }
-.field-wrap {
-    position: relative;
-}
-.field-prefix {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--sage);
-    pointer-events: none;
-}
-.field-suffix {
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--sage);
-    pointer-events: none;
-}
-.calc-input {
-    width: 100%;
-    padding: 0.75rem 2.4rem 0.75rem 2rem;
-    border: 1.5px solid rgba(107,143,94,0.28);
-    border-radius: 12px;
-    font-family: 'Outfit', sans-serif;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--forest);
-    background: var(--cream);
-    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-    box-sizing: border-box;
-    -moz-appearance: textfield;
-}
-.calc-input::-webkit-inner-spin-button,
-.calc-input::-webkit-outer-spin-button { -webkit-appearance: none; }
-.calc-input:focus {
-    outline: none;
-    border-color: var(--sage);
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(107,143,94,0.15);
-}
-.calc-input::placeholder { color: #9cb89c; font-weight: 400; }
-.calc-input.has-value {
-    border-color: rgba(107,143,94,0.5);
-    background: #fff;
-}
-
-/* ── Fields grid ── */
-.fields-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    font-size: 1.125rem;
+    color: var(--slate-200);
+    line-height: 1.6;
     margin-bottom: 0;
 }
-@media(max-width:480px) { .fields-grid { grid-template-columns: 1fr; } }
 
-/* ── Divider ── */
-.calc-divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(107,143,94,0.2), transparent);
-    margin: 1.4rem 0;
-}
-
-/* ══ Result display ══ */
-.result-display {
-    margin-top: 1.4rem;
-    display: none;
-}
-.result-display.visible {
-    display: block;
-    animation: fadeSlideUp 0.4s ease;
-}
-@keyframes fadeSlideUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-.result-header {
-    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 60%, #3a6840 100%);
-    border-radius: 18px 18px 0 0;
-    padding: 1.1rem 1.5rem;
+.calc-hero-visual {
+    width: 140px;
+    height: 140px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 30px;
     display: flex;
     align-items: center;
-    gap: 10px;
-}
-.result-header-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1rem;
-    color: #fff;
-}
-.result-header-badge {
-    margin-left: auto;
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    background: rgba(255,255,255,0.15);
-    color: rgba(255,255,255,0.8);
-    border-radius: 99px;
-    padding: 3px 10px;
+    justify-content: center;
+    font-size: 4rem;
+    transform: rotate(-10deg);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
 }
 
-.result-body {
-    background: linear-gradient(180deg, #1e3620 0%, #253d27 100%);
-    border-radius: 0 0 18px 18px;
-    padding: 1.3rem 1.5rem 1.4rem;
+@media(max-width: 768px) {
+    .calc-hero { padding: 2.5rem; flex-direction: column; text-align: center; gap: 2rem; }
+    .calc-hero h1 { font-size: 2.25rem; }
+    .calc-hero-visual { width: 100px; height: 100px; font-size: 2.5rem; }
 }
-.result-grid {
+
+/* ══ Central Calculator Card ══ */
+.calc-main-card {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid var(--slate-200);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    margin-bottom: 3rem;
+}
+
+.calc-unified-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
 }
-.res-cell {
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 0.9rem 1rem;
-    transition: background 0.2s;
-}
-.res-cell.highlight {
-    background: rgba(200,149,42,0.2);
-    border-color: rgba(200,149,42,0.3);
-}
-.res-cell .rc-label {
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: rgba(255,255,255,0.5);
-    margin-bottom: 0.3rem;
-}
-.res-cell.highlight .rc-label { color: rgba(232,184,75,0.8); }
-.res-cell .rc-value {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.4rem;
-    color: #fff;
-    line-height: 1;
-}
-.res-cell.highlight .rc-value { color: var(--gold-light); }
 
-.res-alert {
-    border-radius: 12px;
-    padding: 0.85rem 1.1rem;
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.83rem;
-    line-height: 1.55;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
+@media(max-width: 991px) {
+    .calc-unified-grid { grid-template-columns: 1fr; }
 }
-.res-alert.green  { background: rgba(107,143,94,0.2); border: 1px solid rgba(107,143,94,0.3); color: #a8d4a0; }
-.res-alert.yellow { background: rgba(200,149,42,0.18); border: 1px solid rgba(200,149,42,0.3); color: #f0cc72; }
-.res-alert.red    { background: rgba(192,57,43,0.2); border: 1px solid rgba(192,57,43,0.3); color: #f4a499; }
-.res-alert i { font-size: 0.9rem; flex-shrink: 0; margin-top: 1px; }
 
-/* ══ Info panel ══ */
-.info-panel {
-    background: #fff;
-    border-radius: 24px;
-    box-shadow: 0 2px 0 rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.08);
-    border: 1px solid rgba(107,143,94,0.12);
-    overflow: hidden;
+/* ── Left Column: Inputs ── */
+.calc-inputs-section {
+    padding: 3rem;
+    background: #ffffff;
 }
-.info-panel-header {
-    padding: 1.8rem 2rem 1.2rem;
-    border-bottom: 1px solid rgba(107,143,94,0.1);
-}
-.info-panel-header h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.3rem;
-    color: var(--forest);
-    margin-bottom: 0.2rem;
-}
-.info-panel-header .sub {
-    font-family: 'Outfit', sans-serif;
-    color: var(--muted);
-    font-size: 0.84rem;
-}
-.info-panel-body { padding: 1.4rem 1.6rem 1.6rem; }
 
-/* ── Info cards redesigned ── */
-.icard {
-    border-radius: 16px;
-    margin-bottom: 0.9rem;
-    overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-.icard:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 24px rgba(0,0,0,0.08);
-}
-.icard:last-child { margin-bottom: 0; }
-
-.icard-inner {
-    display: flex;
-    gap: 0;
-}
-.icard-stripe {
-    width: 4px;
-    flex-shrink: 0;
-}
-.icard-content {
-    padding: 1.1rem 1.3rem;
-    flex: 1;
-}
-.icard-top {
+.section-label {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--primary);
+    margin-bottom: 2rem;
+}
+
+.input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media(max-width: 480px) {
+    .input-grid { grid-template-columns: 1fr; }
+}
+
+.field-group {
+    margin-bottom: 1.5rem;
+}
+
+.field-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--slate-700);
     margin-bottom: 0.5rem;
 }
-.icard-icon {
-    width: 34px; height: 34px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.9rem;
-    flex-shrink: 0;
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
 }
-.icard-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.88rem;
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    color: var(--slate-400);
+    font-size: 1rem;
+}
+
+.input-suffix {
+    position: absolute;
+    right: 1rem;
     font-weight: 700;
-    color: var(--forest);
-    line-height: 1.2;
+    color: var(--slate-400);
+    font-size: 0.875rem;
 }
-.icard-desc {
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.82rem;
-    line-height: 1.62;
-    color: var(--muted);
-}
-.icard-desc strong { color: var(--forest); font-weight: 700; }
 
-/* Green card */
-.icard.green {
-    background: linear-gradient(135deg, #f0f8ec 0%, #e6f2e0 100%);
-    border: 1px solid rgba(107,143,94,0.2);
+.calc-input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 2.75rem;
+    background: var(--slate-50);
+    border: 2px solid var(--slate-200);
+    border-radius: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--slate-900);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.icard.green .icard-stripe { background: linear-gradient(180deg, var(--sage), var(--sage-light)); }
-.icard.green .icard-icon   { background: rgba(107,143,94,0.15); color: var(--forest); }
 
-/* Gold card */
-.icard.gold {
-    background: linear-gradient(135deg, #fef8ed 0%, #fdf0d8 100%);
-    border: 1px solid rgba(200,149,42,0.22);
+.calc-input:focus {
+    outline: none;
+    background: #fff;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
 }
-.icard.gold .icard-stripe { background: linear-gradient(180deg, var(--gold), var(--gold-light)); }
-.icard.gold .icard-icon   { background: rgba(200,149,42,0.15); color: #7A5200; }
-.icard.gold .icard-title  { color: #7A5200; }
-.icard.gold .icard-desc   { color: #8a6820; }
-.icard.gold .icard-desc strong { color: #5a3e00; }
 
-/* Forest card */
-.icard.forest {
-    background: linear-gradient(135deg, #eaf4ec 0%, #ddeee1 100%);
-    border: 1px solid rgba(26,46,26,0.15);
+.calc-input.has-value {
+    border-color: var(--secondary);
+    background: #fff;
 }
-.icard.forest .icard-stripe { background: linear-gradient(180deg, var(--forest), var(--forest-mid)); }
-.icard.forest .icard-icon   { background: rgba(26,46,26,0.1); color: var(--forest); }
 
-/* ── CAT reference box ── */
-.cat-ref-box {
-    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 70%, #3a6840 100%);
+/* ── Right Column: Results ── */
+.calc-results-section {
+    padding: 3rem;
+    background: var(--slate-900);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.results-header {
+    margin-bottom: 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.results-header h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin: 0;
+}
+
+.badge-live {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success);
+    padding: 0.25rem 0.75rem;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.badge-live::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--success);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--success);
+}
+
+.result-main {
+    margin-bottom: 2.5rem;
+}
+
+.res-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--slate-400);
+    margin-bottom: 0.5rem;
+}
+
+.res-value-hero {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: #fff;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.res-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 1.25rem;
     border-radius: 16px;
-    padding: 1.3rem 1.4rem;
-    margin-top: 0.9rem;
+}
+
+.res-card .label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--slate-400);
+    margin-bottom: 0.5rem;
+}
+
+.res-card .value {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* ── Visual Progress Bar ── */
+.visual-breakdown {
+    margin-bottom: 2.5rem;
+}
+
+.bar-label-group {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--slate-300);
+}
+
+.progress-bar-container {
+    height: 12px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+}
+
+.progress-capital {
+    height: 100%;
+    background: var(--secondary);
+    transition: width 0.5s ease;
+}
+
+.progress-interest {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.5s ease;
+}
+
+.res-status-box {
+    padding: 1.25rem;
+    border-radius: 16px;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    display: flex;
+    gap: 1rem;
+    border: 1px solid transparent;
+}
+
+.res-status-box.success { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #D1FAE5; }
+.res-status-box.warning { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); color: #FEF3C7; }
+.res-status-box.danger  { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #FEE2E2; }
+
+/* ══ Info Sidebar Redesigned ══ */
+.info-rail {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+}
+
+.smart-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid var(--slate-200);
+    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
 }
-.cat-ref-box::before {
-    content: '';
-    position: absolute;
-    top: -40px; right: -30px;
-    width: 130px; height: 130px;
-    border-radius: 50%;
-    background: rgba(107,143,94,0.12);
-    pointer-events: none;
-}
-.cat-ref-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--gold-light);
-    margin-bottom: 0.85rem;
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-}
-.cat-ref-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: rgba(255,255,255,0.12);
-}
-.cat-ref-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.6rem;
-    position: relative;
-    z-index: 1;
-}
-.cat-ref-item {
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 10px;
-    padding: 0.65rem 0.85rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-}
-.cat-ref-name {
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.75rem;
-    color: rgba(255,255,255,0.6);
-    font-weight: 500;
-    line-height: 1.25;
-}
-.cat-ref-val {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.1rem;
-    color: var(--gold-light);
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-.cat-ref-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
+
+.smart-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-shadow-lg);
+    border-color: var(--primary-light);
 }
 
-/* ── Tip chip ── */
-.tip-chip {
-    display: inline-flex;
+.sc-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--slate-50);
+    border-radius: 14px;
+    display: flex;
     align-items: center;
-    gap: 5px;
-    background: rgba(107,143,94,0.12);
-    border: 1px solid rgba(107,143,94,0.2);
-    border-radius: 99px;
-    padding: 3px 10px;
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--forest);
-    margin-bottom: 0.45rem;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
 }
-.tip-chip i { color: var(--sage); font-size: 0.65rem; }
+
+.smart-card:hover .sc-icon {
+    background: var(--primary);
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.smart-card h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--slate-900);
+}
+
+.smart-card p {
+    font-size: 0.9375rem;
+    color: var(--slate-600);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.smart-card strong {
+    color: var(--slate-900);
+}
+
+
 </style>
 {% endblock %}
 
 {% block content %}
 
-<!-- HERO -->
+<!-- HERO MODERNIZADO -->
 <div class="calc-hero">
-    <div class="calc-hero-icon">🧮</div>
-    <div class="calc-hero-text">
-        <h1>Calculadora de Intereses</h1>
-        <p>Descubre cuánto pagas realmente por tu crédito y toma decisiones inteligentes.</p>
+    <div class="calc-hero-content">
+        <h1>Calculadora Interactiva de Crédito</h1>
+        <p>Proyecta tus pagos, visualiza el costo real de tus intereses y descubre el camino más rápido hacia la libertad financiera.</p>
     </div>
-    <div class="calc-hero-badge">
-        <span class="bv">100%</span>
-        <span class="bl">Gratis &amp; sin registro</span>
+    <div class="calc-hero-visual">
+        <i class="fas fa-calculator"></i>
     </div>
 </div>
 
-<!-- LAYOUT -->
-<div class="calc-layout">
+<!-- CALCULADORA INTEGRADA -->
+<div class="calc-main-card">
+    <div class="calc-unified-grid">
+        
+        <!-- PARTE IZQUIERDA: CONFIGURACIÓN -->
+        <div class="calc-inputs-section">
+            <div class="section-label">
+                <i class="fas fa-sliders-h"></i> Configuración del Crédito
+            </div>
+            
+            <div class="field-group">
+                <label class="field-label">Nombre del Crédito (Opcional)</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-tag input-icon"></i>
+                    <input type="text" class="calc-input" placeholder="Ej: Mi Tarjeta Nu" oninput="markFilled(this)">
+                </div>
+            </div>
 
-    <!-- ══ Panel izquierdo: formulario ══ -->
-    <div class="calc-panel">
-        <div class="calc-panel-header">
-            <h2>Ingresa tus datos</h2>
-            <p class="sub">Llena los campos y el resultado aparece automáticamente</p>
+            <div class="input-grid">
+                <div class="field-group">
+                    <label class="field-label">Monto de la Deuda</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-dollar-sign input-icon"></i>
+                        <input type="number" id="monto" class="calc-input" placeholder="0.00" oninput="calcular(); markFilled(this)">
+                    </div>
+                </div>
+                
+                <div class="field-group">
+                    <label class="field-label">CAT Anual</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-percent input-icon"></i>
+                        <input type="number" id="cat" class="calc-input" placeholder="0.0" oninput="calcular(); markFilled(this)">
+                        <span class="input-suffix">%</span>
+                    </div>
+                </div>
+                
+                <div class="field-group">
+                    <label class="field-label">Pago Mensual</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-hand-holding-usd input-icon"></i>
+                        <input type="number" id="pago" class="calc-input" placeholder="0.00" oninput="calcular(); markFilled(this)">
+                    </div>
+                </div>
+                
+                <div class="field-group">
+                    <label class="field-label">Plazo Estimado</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-calendar-alt input-icon"></i>
+                        <input type="number" id="plazo" class="calc-input" placeholder="0" oninput="calcular(); markFilled(this)">
+                        <span class="input-suffix">meses</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem; padding: 1.5rem; background: var(--slate-50); border-radius: 16px; border: 1px dashed var(--slate-300);">
+                <p style="font-size: 0.875rem; color: var(--slate-600); margin: 0; line-height: 1.6;">
+                    <i class="fas fa-info-circle" style="color: var(--primary);"></i> 
+                    Los resultados son proyecciones basadas en saldos insolutos. Los cálculos exactos pueden variar según las fechas de corte y comisiones específicas de tu banco.
+                </p>
+            </div>
         </div>
-        <div class="calc-panel-body">
 
-            <div class="fields-grid">
-                <div class="field-group">
-                    <div class="field-label"><i class="fas fa-money-bill-wave"></i> Monto de la deuda</div>
-                    <div class="field-wrap">
-                        <span class="field-prefix">$</span>
-                        <input type="number" id="monto" class="calc-input" placeholder="5,000" min="0" step="100" oninput="calcular(); markFilled(this)">
-                    </div>
+        <!-- PARTE DERECHA: RESULTADO EN TIEMPO REAL -->
+        <div class="calc-results-section" id="results-panel">
+            <div class="results-header">
+                <h2>Tu Proyección</h2>
+                <div class="badge-live">En vivo</div>
+            </div>
+
+            <div class="result-main">
+                <div class="res-label">Total a pagar al final del plazo</div>
+                <div class="res-value-hero" id="res-total">$0.00</div>
+            </div>
+
+            <div class="results-grid">
+                <div class="res-card">
+                    <div class="label">Capital Original</div>
+                    <div class="value" id="res-capital">$0.00</div>
                 </div>
-                <div class="field-group">
-                    <div class="field-label"><i class="fas fa-percentage"></i> CAT anual</div>
-                    <div class="field-wrap">
-                        <input type="number" id="cat" class="calc-input" placeholder="45" min="0" max="200" step="0.5" style="padding-right:2.4rem;" oninput="calcular(); markFilled(this)">
-                        <span class="field-suffix">%</span>
-                    </div>
-                </div>
-                <div class="field-group">
-                    <div class="field-label"><i class="fas fa-wallet"></i> Pago mensual</div>
-                    <div class="field-wrap">
-                        <span class="field-prefix">$</span>
-                        <input type="number" id="pago" class="calc-input" placeholder="500" min="0" step="50" oninput="calcular(); markFilled(this)">
-                    </div>
-                </div>
-                <div class="field-group">
-                    <div class="field-label"><i class="fas fa-calendar-alt"></i> Plazo</div>
-                    <div class="field-wrap">
-                        <input type="number" id="plazo" class="calc-input" placeholder="12" min="1" max="120" style="padding-right:3.2rem;" oninput="calcular(); markFilled(this)">
-                        <span class="field-suffix">meses</span>
-                    </div>
+                <div class="res-card">
+                    <div class="label">Total Intereses</div>
+                    <div class="value" id="res-interes-total" style="color: var(--accent);">$0.00</div>
                 </div>
             </div>
 
-            <div class="calc-divider"></div>
-
-            <!-- RESULTADO -->
-            <div class="result-display" id="resultado">
-                <div class="result-header">
-                    <i class="fas fa-chart-pie" style="color:rgba(255,255,255,0.6);font-size:0.9rem;"></i>
-                    <span class="result-header-title">Resultado del cálculo</span>
-                    <span class="result-header-badge">Automático</span>
+            <div class="visual-breakdown">
+                <div class="bar-label-group">
+                    <span>Distribución del pago</span>
+                    <span id="res-pct-text">Capital vs Interés</span>
                 </div>
-                <div class="result-body">
-                    <div class="result-grid">
-                        <div class="res-cell">
-                            <div class="rc-label">Capital original</div>
-                            <div class="rc-value" id="res-capital">—</div>
-                        </div>
-                        <div class="res-cell">
-                            <div class="rc-label">Interés mensual</div>
-                            <div class="rc-value" id="res-interes-mes">—</div>
-                        </div>
-                        <div class="res-cell highlight">
-                            <div class="rc-label">Total a pagar</div>
-                            <div class="rc-value" id="res-total">—</div>
-                        </div>
-                        <div class="res-cell highlight">
-                            <div class="rc-label">Interés total</div>
-                            <div class="rc-value" id="res-interes-total">—</div>
-                        </div>
-                    </div>
-                    <div class="res-alert" id="res-alerta"></div>
+                <div class="progress-bar-container">
+                    <div class="progress-capital" id="bar-capital" style="width: 0%"></div>
+                    <div class="progress-interest" id="bar-interest" style="width: 0%"></div>
                 </div>
             </div>
 
+            <div id="res-status" style="margin-top: auto;">
+                <div class="res-status-box" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
+                    <i class="fas fa-mouse-pointer" style="margin-top: 3px; opacity: 0.5;"></i>
+                    <span>Ingresa los valores de tu crédito para comenzar a visualizar tu proyección financiera.</span>
+                </div>
+            </div>
         </div>
     </div>
+</div>
 
-    <!-- ══ Panel derecho: información ══ -->
-    <div class="info-panel">
-        <div class="info-panel-header">
-            <h2>¿Qué estás calculando?</h2>
-            <p class="sub">Entiende cada número antes de firmar</p>
-        </div>
-        <div class="info-panel-body">
-
-            <!-- Card CAT -->
-            <div class="icard green">
-                <div class="icard-inner">
-                    <div class="icard-stripe"></div>
-                    <div class="icard-content">
-                        <div class="icard-top">
-                            <div class="icard-icon"><i class="fas fa-percentage"></i></div>
-                            <div>
-                                <div class="tip-chip"><i class="fas fa-star"></i> Concepto clave</div>
-                                <div class="icard-title">¿Qué es el CAT?</div>
-                            </div>
-                        </div>
-                        <div class="icard-desc">
-                            El <strong>Costo Anual Total</strong> incluye la tasa de interés <em>más</em> todas las comisiones y cargos. Es el costo real y completo de tu crédito. A menor CAT, menos pagas.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card pago mínimo -->
-            <div class="icard gold">
-                <div class="icard-inner">
-                    <div class="icard-stripe"></div>
-                    <div class="icard-content">
-                        <div class="icard-top">
-                            <div class="icard-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                            <div>
-                                <div class="tip-chip" style="background:rgba(200,149,42,0.15);border-color:rgba(200,149,42,0.3);color:#7A5200;"><i class="fas fa-exclamation" style="color:var(--gold);"></i> Alerta financiera</div>
-                                <div class="icard-title">El pago mínimo: la trampa</div>
-                            </div>
-                        </div>
-                        <div class="icard-desc">
-                            Pagar solo el mínimo (~2% del saldo) puede hacer que tu deuda dure <strong>años más de lo planeado</strong> y que termines pagando el doble. Siempre paga más del mínimo.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card consejo -->
-            <div class="icard forest">
-                <div class="icard-inner">
-                    <div class="icard-stripe"></div>
-                    <div class="icard-content">
-                        <div class="icard-top">
-                            <div class="icard-icon"><i class="fas fa-lightbulb"></i></div>
-                            <div>
-                                <div class="tip-chip"><i class="fas fa-check"></i> Consejo PoliCard</div>
-                                <div class="icard-title">La regla de oro</div>
-                            </div>
-                        </div>
-                        <div class="icard-desc">
-                            Liquida el <strong>100% de tu saldo</strong> antes de la fecha límite de pago y no pagarás <em>ni un centavo</em> de intereses. Así se usa correctamente una tarjeta.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CAT reference -->
-            <div class="cat-ref-box">
-                <div class="cat-ref-title">
-                    <i class="fas fa-table" style="opacity:0.7;"></i>
-                    CATs de referencia 2025
-                </div>
-                <div class="cat-ref-grid">
-                    <div class="cat-ref-item">
-                        <div>
-                            <div class="cat-ref-name">Nu Ultravioleta</div>
-                        </div>
-                        <div class="cat-ref-val">35%</div>
-                    </div>
-                    <div class="cat-ref-item">
-                        <div>
-                            <div class="cat-ref-name">Banamex Tec</div>
-                        </div>
-                        <div class="cat-ref-val">38.5%</div>
-                    </div>
-                    <div class="cat-ref-item">
-                        <div>
-                            <div class="cat-ref-name">Santander Like U</div>
-                        </div>
-                        <div class="cat-ref-val">42%</div>
-                    </div>
-                    <div class="cat-ref-item">
-                        <div>
-                            <div class="cat-ref-name">HSBC Zero</div>
-                        </div>
-                        <div class="cat-ref-val">50%</div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+<!-- SECCIÓN DE INFORMACIÓN REIMAGINADA -->
+<div class="info-rail">
+    <div class="smart-card">
+        <div class="sc-icon"><i class="fas fa-chart-line"></i></div>
+        <h3>¿Qué es el CAT?</h3>
+        <p>El <strong>Costo Anual Total</strong> es tu mejor herramienta para comparar. Incluye la tasa de interés fundamental más comisiones y cargos extras. <strong>Siempre busca el CAT más bajo.</strong></p>
+    </div>
+    
+    <div class="smart-card">
+        <div class="sc-icon"><i class="fas fa-fire-extinguisher"></i></div>
+        <h3>Evita el Pago Mínimo</h3>
+        <p>Pagar solo el mínimo es como intentar apagar un incendio con un vaso de agua. Tu deuda puede tardar <strong>años</strong> en liquidarse. Intenta pagar al menos el doble.</p>
+    </div>
+    
+    <div class="smart-card">
+        <div class="sc-icon"><i class="fas fa-gem"></i></div>
+        <h3>Estrategia Totalera</h3>
+        <p>Si liquidas el <strong>100% de tu saldo</strong> antes de la fecha límite, no pagas ni un peso de intereses. Usas el dinero del banco gratis por hasta 50 días.</p>
     </div>
 
 </div>
 
 <script>
 function fmt(n) {
-    return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return '$' + n.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function markFilled(el) {
@@ -742,9 +578,10 @@ function calcular() {
     const pago   = parseFloat(document.getElementById('pago').value);
     const plazo  = parseInt(document.getElementById('plazo').value);
 
-    if (!monto || !cat || !plazo) return;
+    // Si no hay datos suficientes para el cálculo básico, no hacer nada
+    if (!monto || !cat || isNaN(plazo)) return;
 
-    const tasaMes    = cat / 100 / 12;
+    const tasaMes    = (cat / 100) / 12;
     const interesMes = monto * tasaMes;
 
     let total = 0;
@@ -761,26 +598,33 @@ function calcular() {
     }
 
     const interesTotal = Math.max(total - monto, 0);
-    const pct = interesTotal / monto * 100;
+    const totalPagar   = total;
+    const pctInteres   = (interesTotal / totalPagar) * 100;
+    const pctCapital   = 100 - pctInteres;
 
-    document.getElementById('res-capital').textContent       = fmt(monto);
-    document.getElementById('res-interes-mes').textContent   = fmt(interesMes);
-    document.getElementById('res-total').textContent         = fmt(total);
-    document.getElementById('res-interes-total').textContent = fmt(interesTotal);
+    // Actualizar Textos
+    document.getElementById('res-total').innerText         = fmt(totalPagar);
+    document.getElementById('res-capital').innerText       = fmt(monto);
+    document.getElementById('res-interes-total').innerText = fmt(interesTotal);
+    document.getElementById('res-pct-text').innerText     = `${pctCapital.toFixed(0)}% Capital vs ${pctInteres.toFixed(0)}% Interés`;
 
-    const alerta = document.getElementById('res-alerta');
-    if (pct < 20) {
-        alerta.className = 'res-alert green';
-        alerta.innerHTML = '<i class="fas fa-check-circle"></i><span>Excelente plan. Los intereses son moderados respecto al capital que pediste.</span>';
-    } else if (pct < 60) {
-        alerta.className = 'res-alert yellow';
-        alerta.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Considera aumentar tu pago mensual para reducir el interés total y liquidar antes.</span>';
+    // Actualizar Barra Visual
+    document.getElementById('bar-capital').style.width = pctCapital + '%';
+    document.getElementById('bar-interest').style.width = pctInteres + '%';
+
+    // Actualizar Estado / Alerta
+    const statusBox = document.getElementById('res-status');
+    const ratio = interesTotal / monto;
+    
+    let statusHTML = '';
+    if (ratio < 0.2) {
+        statusHTML = `<div class="res-status-box success"><i class="fas fa-check-circle"></i><span><strong>¡Excelente Plan!</strong> Los intereses representan una parte pequeña de tu deuda. Este es un crédito muy saludable.</span></div>`;
+    } else if (ratio < 0.6) {
+        statusHTML = `<div class="res-status-box warning"><i class="fas fa-exclamation-triangle"></i><span><strong>Cuidado con el costo.</strong> Estás pagando una cantidad considerable de intereses. Considera aumentar el pago mensual.</span></div>`;
     } else {
-        alerta.className = 'res-alert red';
-        alerta.innerHTML = '<i class="fas fa-times-circle"></i><span>¡Cuidado! Estás pagando demasiado en intereses. Intenta liquidar la deuda en mucho menos tiempo.</span>';
+        statusHTML = `<div class="res-status-box danger"><i class="fas fa-skull-crossbones"></i><span><strong>Alerta Roja.</strong> Estás pagando más del 60% de tu deuda original en intereses. ¡Busca liquidar antes!</span></div>`;
     }
-
-    document.getElementById('resultado').classList.add('visible');
+    statusBox.innerHTML = statusHTML;
 }
 </script>
 {% endblock %}

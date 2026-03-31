@@ -14,7 +14,7 @@ body { font-family: 'Outfit', sans-serif; }
     backdrop-filter: blur(14px);
     border-radius: 22px;
     box-shadow: 0 2px 0 rgba(0,0,0,0.04), 0 8px 28px rgba(0,0,0,0.09);
-    border: 1px solid rgba(107,143,94,0.18);
+    border: 1px solid rgba(10,66,105,0.1);
     padding: 2rem;
     margin-bottom: 2.2rem;
 }
@@ -109,7 +109,7 @@ body { font-family: 'Outfit', sans-serif; }
         from var(--angle, 0deg),
         transparent 0%, transparent 28%,
         rgba(255,255,255,0.9) 43%, rgba(200,255,200,0.75) 50%,
-        rgba(107,143,94,0.95) 57%, transparent 72%, transparent 100%
+        rgba(10,66,105,0.95) 57%, transparent 72%, transparent 100%
     );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor; mask-composite: exclude;
@@ -148,7 +148,7 @@ body { font-family: 'Outfit', sans-serif; }
         from var(--img-angle, 0deg),
         transparent 0%, transparent 28%,
         rgba(255,255,255,0.95) 43%, rgba(200,255,200,0.85) 50%,
-        rgba(107,143,94,1) 57%, transparent 72%, transparent 100%
+        rgba(102,194,164,1) 57%, transparent 72%, transparent 100%
     );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor; mask-composite: exclude;
@@ -192,7 +192,7 @@ body { font-family: 'Outfit', sans-serif; }
 .grad-hsbc      { background: linear-gradient(135deg,#8b0010,#db0011); }
 .grad-banorte   { background: linear-gradient(135deg,#b34000,#f06000); }
 .grad-nu        { background: linear-gradient(135deg,#3d0060,#8b1db8); }
-.grad-default   { background: linear-gradient(135deg,#2E4A2E,#5A7A6A); }
+.grad-default   { background: linear-gradient(135deg, var(--primary), var(--secondary)); }
 
 /* Card body */
 .tarjeta-body {
@@ -202,11 +202,11 @@ body { font-family: 'Outfit', sans-serif; }
 }
 .tarjeta-banco {
     font-size: 0.72rem; font-weight: 700; letter-spacing: 0.09em;
-    text-transform: uppercase; color: #6B8F5E; margin-bottom: 0.15rem;
+    text-transform: uppercase; color: var(--secondary); margin-bottom: 0.15rem;
 }
 .tarjeta-nombre {
     font-family: 'DM Serif Display', serif;
-    font-size: 1.25rem; color: #1A2E1A;
+    font-size: 1.25rem; color: var(--primary);
     margin-bottom: 0.75rem; line-height: 1.2;
 }
 .badge-tipo {
@@ -238,26 +238,26 @@ body { font-family: 'Outfit', sans-serif; }
 .tarjeta-stat-box .s-label {
     font-size: 0.62rem; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.06em;
-    color: #6B8F5E; margin-bottom: 0.15rem;
+    color: var(--secondary); margin-bottom: 0.15rem;
 }
 .tarjeta-stat-box .s-val {
-    font-size: 1rem; font-weight: 700; color: #1a2e1a;
+    font-size: 1rem; font-weight: 700; color: var(--primary);
 }
 .s-val-free { color: #16a34a !important; }
 
 /* Benefits */
 .beneficios-box {
     margin-top: 0.85rem; width: 100%;
-    background: rgba(107,143,94,0.08);
-    border: 1px solid rgba(107,143,94,0.2);
+    background: rgba(102,194,164,0.08);
+    border: 1px solid rgba(102,194,164,0.2);
     border-radius: 12px;
     padding: 0.75rem 1rem;
-    font-size: 0.8rem; color: #3d5c3d;
+    font-size: 0.8rem; color: var(--primary);
     line-height: 1.5;
     display: flex; gap: 8px; align-items: flex-start;
     text-align: left;
 }
-.beneficios-box i { color:#6B8F5E;flex-shrink:0;margin-top:2px;font-size:0.82rem; }
+.beneficios-box i { color:var(--secondary);flex-shrink:0;margin-top:2px;font-size:0.82rem; }
 
 /* Empty / initial states */
 .no-results, .empty-state {
@@ -434,8 +434,8 @@ body { font-family: 'Outfit', sans-serif; }
 {% else %}
 <div style="background:#fff;border-radius:22px;padding:3rem;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
     <i class="fas fa-hand-pointer" style="font-size:2.5rem;color:var(--verde-salvia);margin-bottom:1rem;display:block;"></i>
-    <h3 style="font-family:'DM Serif Display',serif;color:var(--verde-oscuro);margin-bottom:0.5rem;">Completa el formulario</h3>
-    <p style="color:var(--verde-medio);">Usa los filtros de arriba para encontrar las tarjetas que mejor se adaptan a ti.</p>
+    <h3 style="font-family:'DM Serif Display',serif;color:var(--primary);margin-bottom:0.5rem;">Completa el formulario</h3>
+    <p style="color:var(--texto-medio);">Usa los filtros de arriba para encontrar las tarjetas que mejor se adaptan a ti.</p>
 </div>
 {% endif %}
 

@@ -8,20 +8,31 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --verde-oscuro:   #404E3B;
-            --verde-medio:    #6C8480;
-            --verde-salvia:   #7B9669;
-            --verde-claro:    #BAC8B1;
-            --fondo:          #F5F5F5;
-            --gris-claro:     #E0E0E0;
-            --beige:          #F5E6D3;
+            /* Brand Colors from Logo */
+            --primary:        #0A4269; /* Navy Mortarboard */
+            --primary-dark:   #062D48;
+            --secondary:      #66C2A4; /* Initial Light Teal */
+            --secondary-dark: #4A9E84;
+            --accent:         #FEE482; /* Yellow Card Detail */
+            --accent-dark:    #E4CC76;
+            
+            /* Functional Palette */
+            --fondo:          #F0F4F7; /* Light navy tint */
+            --gris-claro:     #DAE1E7;
             --blanco:         #FFFFFF;
-            --texto-oscuro:   #2A2E27;
-            --texto-medio:    #4A5240;
-            --sombra:         0 1px 3px rgba(0,0,0,0.06), 0 6px 24px rgba(0,0,0,0.08);
-            --sombra-lg:      0 4px 6px rgba(0,0,0,0.07), 0 16px 40px rgba(0,0,0,0.12);
+            --texto-oscuro:   #1A2B34;
+            --texto-medio:    #435761;
+            --sombra:         0 1px 3px rgba(10,66,105,0.06), 0 6px 24px rgba(10,66,105,0.08);
+            --sombra-lg:      0 4px 6px rgba(10,66,105,0.07), 0 16px 40px rgba(10,66,105,0.12);
             --radio:          14px;
             --radio-lg:       22px;
+            
+            /* Backward compatibility for templates still using old names */
+            --verde-oscuro:   var(--primary);
+            --verde-medio:    var(--texto-medio);
+            --verde-salvia:   var(--secondary);
+            --verde-claro:    #D1EAE2;
+            --beige:          #F9F4E8;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -35,12 +46,12 @@
 
         /* ─── NAVBAR ─── */
         nav {
-            background: var(--verde-oscuro);
+            background: var(--primary);
             padding: 0 2rem;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 16px rgba(64,78,59,0.25);
+            box-shadow: 0 2px 16px rgba(10,66,105,0.25);
         }
         .nav-inner {
             max-width: 1200px;
@@ -59,7 +70,7 @@
         }
         .nav-brand .brand-icon {
             width: 36px; height: 36px;
-            background: var(--verde-salvia);
+            background: var(--secondary);
             border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
             font-size: 1rem;
@@ -86,15 +97,15 @@
             display: flex; align-items: center; gap: 6px;
         }
         .nav-links a:hover, .nav-links a.active {
-            background: rgba(186,200,177,0.15);
+            background: rgba(102,194,164,0.15);
             color: var(--blanco);
         }
         .nav-links .btn-auth {
-            background: var(--verde-salvia);
+            background: var(--secondary);
             color: var(--blanco) !important;
             margin-left: 0.5rem;
         }
-        .nav-links .btn-auth:hover { background: var(--verde-medio); }
+        .nav-links .btn-auth:hover { background: var(--secondary-dark); }
 
         /* ─── FLASH MESSAGES ─── */
         .flash-container {
@@ -149,10 +160,10 @@
             text-decoration: none;
             transition: all 0.2s;
         }
-        .btn-primary   { background: var(--verde-oscuro); color: var(--blanco); }
-        .btn-primary:hover { background: #2e3a2a; }
-        .btn-secondary { background: var(--verde-salvia); color: var(--blanco); }
-        .btn-secondary:hover { background: #6a8558; }
+        .btn-primary   { background: var(--primary); color: var(--blanco); }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-secondary { background: var(--secondary); color: var(--blanco); }
+        .btn-secondary:hover { background: var(--secondary-dark); }
         .btn-outline   { background: transparent; border: 2px solid var(--verde-oscuro); color: var(--verde-oscuro); }
         .btn-outline:hover { background: var(--verde-oscuro); color: var(--blanco); }
         .btn-light     { background: var(--blanco); color: var(--texto-oscuro); border: 1.5px solid var(--gris-claro); }
@@ -270,9 +281,10 @@
 
                 /* ─── FOOTER PRO ─── */
         .footer {
-            background: var(--verde-oscuro);
-            color: var(--verde-claro);
+            background: var(--primary);
+            color: var(--blanco);
             padding: 1.2rem 2rem;
+            opacity: 0.95;
             font-size: 0.85rem;
         }
 

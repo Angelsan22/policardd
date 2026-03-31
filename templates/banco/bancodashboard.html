@@ -22,7 +22,7 @@
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 1.25rem;
     margin-bottom: 2rem;
 }
@@ -254,28 +254,28 @@
 <div class="stats-grid">
     <div class="stat-card">
         <div class="stat-icon icon-blue"><i class="fas fa-credit-card"></i></div>
-        <div class="stat-label">Total Tarjetas</div>
+        <div class="stat-label">Tarjetas activas</div>
         <div class="stat-value">{{ stats.tarjetas_count }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-icon icon-green"><i class="fas fa-check-circle"></i></div>
-        <div class="stat-label">Aprobadas</div>
+        <div class="stat-icon icon-green"><i class="fas fa-check-double"></i></div>
+        <div class="stat-label">Tarjetas Aprobadas</div>
         <div class="stat-value" style="color:#276339;">{{ stats.tarjetas_aprobadas }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-icon icon-yellow"><i class="fas fa-clock"></i></div>
-        <div class="stat-label">Pendientes</div>
-        <div class="stat-value" style="color:#f59e0b;">{{ stats.tarjetas_count - stats.tarjetas_aprobadas }}</div>
+        <div class="stat-icon icon-purple"><i class="fas fa-user-check"></i></div>
+        <div class="stat-label">Solicitudes Aceptadas</div>
+        <div class="stat-value" style="color:#7c3aed;">{{ stats.clientes_activos }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-icon icon-purple"><i class="fas fa-bell"></i></div>
-        <div class="stat-label">Solicitudes Sistema</div>
-        <div class="stat-value" style="color:#7c3aed;">{{ stats.solicitudes_pendientes }}</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon" style="background:#fdecea; color:#c0392b;"><i class="fas fa-users"></i></div>
-        <div class="stat-label">Solicitudes Clientes</div>
+        <div class="stat-icon" style="background:#fdecea; color:#c0392b;"><i class="fas fa-user-clock"></i></div>
+        <div class="stat-label">Solicitudes Pendientes</div>
         <div class="stat-value" style="color:#c0392b;">{{ stats.solicitudes_clientes }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon icon-yellow"><i class="fas fa-bell"></i></div>
+        <div class="stat-label">Pendientes por el Sistema</div>
+        <div class="stat-value" style="color:#f59e0b;">{{ stats.solicitudes_pendientes }}</div>
     </div>
 </div>
 

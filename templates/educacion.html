@@ -7,27 +7,26 @@
 
 /* ── Palette ── */
 :root {
-    --sage:       #6B8F5E;
-    --sage-light: #8FAF7E;
-    --sage-pale:  #EAF2E4;
-    --forest:     #1A2E1A;
-    --forest-mid: #2E4A2E;
-    --moss:       #5A7A6A;
-    --cream:      #F7F9F5;
-    --parchment:  #F0EDE5;
-    --gold:       #C8952A;
-    --gold-pale:  #FDF3DC;
-    --coral:      #C0392B;
-    --coral-pale: #FDECEA;
-    --amber:      #9a6e00;
-    --amber-pale: #FFF8E1;
-    --ink:        #1A2E1A;
-    --muted:      #5A7A6A;
+    --brand-navy:   #0A4269;
+    --brand-teal:   #66C2A4;
+    --brand-yellow: #FEE482;
+    --brand-bg:     #F3F7F9;
+
+    /* Local overrides to match legacy names */
+    --forest:       var(--brand-navy);
+    --forest-mid:   #125785;
+    --sage:         var(--brand-teal);
+    --sage-light:   #85D1B8;
+    --sage-pale:    #E2F5EF;
+    --moss:         #447A8F;
+    --cream:        #F8FAF9;
+    --gold:         var(--brand-yellow);
+    --muted:        #64748B;
 }
 
 /* ── Hero ── */
 .edu-hero {
-    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 55%, #3d6b45 100%);
+    background: linear-gradient(135deg, var(--brand-navy) 0%, #125785 55%, var(--brand-teal) 100%);
     border-radius: 28px;
     padding: 2.8rem 3rem;
     color: #fff;
@@ -38,7 +37,7 @@
     flex-wrap: wrap;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 8px 40px rgba(26,46,26,0.22);
+    box-shadow: 0 8px 40px rgba(10,66,105,0.2);
 }
 .edu-hero::before {
     content: '';
@@ -344,7 +343,7 @@
 
 /* ══ TIPS ══ */
 .tips-header {
-    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 60%, #3a6840 100%);
+    background: linear-gradient(135deg, var(--brand-navy) 0%, #125785 60%, var(--brand-teal) 100%);
     border-radius: 22px;
     padding: 1.6rem 2rem;
     margin-bottom: 1.8rem;
