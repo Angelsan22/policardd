@@ -377,6 +377,12 @@
 .cat-legend-item { display: flex; align-items: center; gap: 7px; color: var(--muted); }
 .cat-legend-dot  { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
 
+.util-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
 /* ── Cycle steps ── */
 /* ── Cycle steps ── */
 .cycle-steps {
@@ -387,22 +393,10 @@
     margin-bottom: 2rem;
     padding-top: 1rem;
 }
-@media(max-width:850px) { .cycle-steps { grid-template-columns: 1fr 1fr; gap: 2rem 0; } }
-.cycle-step {
-    text-align: center;
-    padding: 1rem 0.6rem;
-    position: relative;
-}
-/* The Connector Line - Full Path Center to Center */
-.cycle-step::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 48px;
-    width: 100%;
-    height: 3px;
-    background: rgba(10, 66, 105, 0.08); /* Faint path */
-    z-index: 1;
+@media(max-width:850px) { 
+    .cycle-steps { grid-template-columns: 1fr; gap: 1.5rem; } 
+    .cycle-step::after { display: none; } 
+    .util-cards-grid { grid-template-columns: 1fr !important; }
 }
 @media(max-width:850px) { .cycle-step::after { display: none; } }
 .cycle-step:last-child::after { display: none; }
@@ -1401,7 +1395,7 @@
             <span>100%</span>
         </div>
 
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:1.5rem;">
+        <div class="util-cards-grid">
             <div class="util-card" style="background:#f0fff4;border:2px solid #c6f6d5;border-radius:24px;padding:2rem 1rem;text-align:center;">
                 <div style="font-family:'DM Serif Display',serif;font-size:2.2rem;color:#276749;margin-bottom:0.5rem;">0–30%</div>
                 <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#2f855a; margin-bottom:1rem; letter-spacing:0.05em;">✅ Zona Ideal</div>

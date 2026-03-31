@@ -385,20 +385,35 @@ body { font-family: 'Outfit', sans-serif; }
 
 /* ── Mobile Overrides ── */
 @media (max-width: 600px) {
-    .tarjetas-grid { gap: 1.25rem; }
-    .tarjeta-wrap { padding-top: 10px; } /* Less top padding as we move the img */
-    .tarjeta-img-wrapper, .tarjeta-img-placeholder, .tarjeta-img {
-        position: static !important;
-        width: 100% !important;
-        height: auto !important;
-        aspect-ratio: 1.58 / 1;
-        margin-bottom: 1rem;
-        transform: none !important;
-        box-shadow: var(--sombra) !important;
+    .tarjetas-grid { gap: 3rem; padding-top: 2rem; } /* Más espacio para la tarjeta que sobresale */
+    .tarjeta-wrap { 
+        position: relative;
+        margin-top: 1rem;
+    } 
+    .tarjeta-img-wrapper { 
+        position: absolute !important; 
+        top: -30px !important; 
+        right: 10px !important; 
+        width: 160px !important; 
+        height: 101px !important; 
+        z-index: 10;
+        transform: rotate(-5deg) translateY(-10px) !important;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3) !important;
     }
-    .tarjeta-body { padding: 1.25rem; }
+    .tarjeta-img, .tarjeta-img-placeholder {
+        width: 100% !important;
+        height: 100% !important;
+        border-radius: 10px !important;
+    }
+    .tarjeta-card { 
+        width: 100%; 
+        padding-top: 10px; 
+        position: relative;
+        z-index: 1;
+    }
+    .tarjeta-body { padding: 4.5rem 1.25rem 1.25rem; } /* Espacio para que la tarjeta flote arriba */
+    
     .filter-bar { padding: 1rem; flex-direction: column; align-items: stretch; gap: 0.75rem; }
-    .filter-bar .form-group { min-width: 100%; }
     .page-header h1 { font-size: 1.8rem; }
 }
 </style>
