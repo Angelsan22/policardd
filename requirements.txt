@@ -7,3 +7,5 @@ jinja2
 itsdangerous
 starlette
 werkzeug
+pyjwt
+slowapi

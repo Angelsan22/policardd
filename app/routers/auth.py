@@ -8,6 +8,7 @@ from app.data.banco import Banco
 from app.data.solicitud import Solicitud
 from app.helpers import render
 from app.security.auth import flash, is_logged_in, redirect_login
+from app.security.rate_limit import limiter
 
 router = APIRouter(tags=["Autenticacion"])
 
@@ -18,6 +19,7 @@ async def login_get(request: Request):
     return render(request, "login.html", {"email": ""})
 
 @router.post("/login", response_class=HTMLResponse)
+@limiter.limit("5/minute")
 async def login_post(
     request: Request,
     email:    str = Form(...),
@@ -57,6 +59,7 @@ async def registro_banco_get(request: Request):
     })
 
 @router.post("/registro_banco", response_class=HTMLResponse)
+@limiter.limit("5/minute")
 async def registro_banco_post(
     request:         Request,
     email:           str = Form(...),

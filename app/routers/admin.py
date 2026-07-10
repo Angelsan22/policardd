@@ -12,23 +12,17 @@ from app.data.solicitud_tarjeta import SolicitudTarjeta
 from app.data.usuario import Usuario
 from app.data.admin_log import AdminLog
 from app.helpers import render
-from app.security.auth import flash, is_logged_in, redirect_login
+from app.security.auth import flash, is_logged_in
+from app.security.roles import check_role
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
-
-def require_admin(request: Request, db: Session = Depends(get_db)):
-    if not is_logged_in(request):
-        return redirect_login(request)
-    if request.session.get("tipo") != "admin":
-        flash(request, "No tienes permisos de administrador", "error")
-        return RedirectResponse("/", status_code=302)
-    return None
 
 @router.get("", response_class=HTMLResponse)
 @router.get("/dashboard", response_class=HTMLResponse)
 async def dashboard(request: Request, db: Session = Depends(get_db)):
-    if not is_logged_in(request) or request.session.get("tipo") != "admin":
-        return redirect_login(request)
+    guard = check_role(request, "admin")
+    if guard:
+        return guard
     try:
         stats = {
             "total_bancos":           db.query(Banco).count(),
@@ -46,8 +40,9 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
 
 @router.get("/solicitudes", response_class=HTMLResponse)
 async def solicitudes(request: Request, db: Session = Depends(get_db)):
-    if not is_logged_in(request) or request.session.get("tipo") != "admin":
-        return redirect_login(request)
+    guard = check_role(request, "admin")
+    if guard:
+        return guard
     try:
         solicitudes = db.query(Solicitud).filter(Solicitud.estado == "pendiente").all()
         return render(request, "admin/solicitudes.html", {"solicitudes": solicitudes})
@@ -56,8 +51,9 @@ async def solicitudes(request: Request, db: Session = Depends(get_db)):
 
 @router.post("/solicitud/{id}/aprobar")
 async def aprobar_solicitud(id: int, request: Request, db: Session = Depends(get_db)):
-    if not is_logged_in(request) or request.session.get("tipo") != "admin":
-        return redirect_login(request)
+    guard = check_role(request, "admin")
+    if guard:
+        return guard
     try:
         solicitud = db.query(Solicitud).filter(Solicitud.id == id).first()
         if solicitud is None:
@@ -88,8 +84,9 @@ async def rechazar_solicitud(
     comentario: str = Form(""),
     db: Session = Depends(get_db)
 ):
-    if not is_logged_in(request) or request.session.get("tipo") != "admin":
-        return redirect_login(request)
+    guard = check_role(request, "admin")
+    if guard:
+        return guard
     try:
         solicitud = db.query(Solicitud).filter(Solicitud.id == id).first()
         if solicitud is None:
@@ -106,8 +103,9 @@ async def rechazar_solicitud(
 
 @router.get("/bancos", response_class=HTMLResponse)
 async def bancos(request: Request, db: Session = Depends(get_db)):
-    if not is_logged_in(request) or request.session.get("tipo") != "admin":
-        return redirect_login(request)
+    guard = check_role(request, "admin")
+    if guard:
+        return guard
     try:
         bancos = db.query(Banco).all()
         return render(request, "admin/bancos.html", {"bancos": bancos})
@@ -116,8 +114,9 @@ async def bancos(request: Request, db: Session = Depends(get_db)):
 
 @router.get("/tarjetas", response_class=HTMLResponse)
 async def tarjetas(request: Request, db: Session = Depends(get_db)):
-    if not is_logged_in(request) or request.session.get("tipo") != "admin":
-        return redirect_login(request)
+    guard = check_role(request, "admin")
+    if guard:
+        return guard
     try:
         tarjetas = db.query(Tarjeta).all()
         return render(request, "admin/tarjetas.html", {"tarjetas": tarjetas})
@@ -126,8 +125,9 @@ async def tarjetas(request: Request, db: Session = Depends(get_db)):
 
 @router.post("/tarjeta/{id}/aprobar")
 async def aprobar_tarjeta(id: int, request: Request, db: Session = Depends(get_db)):
-    if not is_logged_in(request) or request.session.get("tipo") != "admin":
-        return redirect_login(request)
+    guard = check_role(request, "admin")
+    if guard:
+        return guard
     try:
         tarjeta = db.query(Tarjeta).filter(Tarjeta.id == id).first()
         if tarjeta is None:
@@ -145,6 +145,9 @@ async def aprobar_tarjeta(id: int, request: Request, db: Session = Depends(get_d
 async def tendencia_tarjeta(id: int, request: Request, db: Session = Depends(get_db)):
     if not is_logged_in(request) or request.session.get("tipo") != "admin":
         return JSONResponse(status_code=403, content={"error": "No autorizado"})
+    # Nota: este endpoint JSON sigue protegido por sesion (consumido por el
+    # propio panel admin via fetch); no se migra a JWT/API key porque no lo
+    # usa la app movil.
 
     tarjeta = db.query(Tarjeta).filter(Tarjeta.id == id).first()
     if not tarjeta:
@@ -254,8 +257,9 @@ async def tendencia_tarjeta(id: int, request: Request, db: Session = Depends(get
 
 @router.get("/usuarios", response_class=HTMLResponse)
 async def gestionar_usuarios(request: Request, db: Session = Depends(get_db)):
-    if not is_logged_in(request) or request.session.get("tipo") != "admin":
-        return redirect_login(request)
+    guard = check_role(request, "admin")
+    if guard:
+        return guard
     try:
         usuarios = db.query(Usuario).order_by(Usuario.fecha_registro.desc()).all()
         logs = db.query(AdminLog).options(
@@ -275,8 +279,9 @@ async def crear_admin(
     password: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    if not is_logged_in(request) or request.session.get("tipo") != "admin":
-        return redirect_login(request)
+    guard = check_role(request, "admin")
+    if guard:
+        return guard
     try:
         if db.query(Usuario).filter(Usuario.email == email).first():
             flash(request, "Ese correo ya esta registrado en el sistema", "error")
@@ -307,8 +312,9 @@ async def crear_admin(
 
 @router.post("/usuario/{id}/toggle")
 async def toggle_usuario(id: int, request: Request, db: Session = Depends(get_db)):
-    if not is_logged_in(request) or request.session.get("tipo") != "admin":
-        return redirect_login(request)
+    guard = check_role(request, "admin")
+    if guard:
+        return guard
     try:
         usuario = db.query(Usuario).filter(Usuario.id == id).first()
         if usuario is None:

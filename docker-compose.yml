@@ -14,6 +14,11 @@ services:
         condition: service_healthy
     environment:
       - DATABASE_URL=postgresql://admin:123456@postgres:5432/DB_policard
+      # Valores de desarrollo: en produccion sobreescribir con secretos reales
+      # (nunca commitear los valores reales de produccion a este archivo).
+      - JWT_SECRET_KEY=policard-dev-jwt-secret-CHANGE-ME
+      - API_KEY=policard-dev-api-key-CHANGE-ME
+      - SESSION_SECRET_KEY=policard2025secret
 
   postgres:
     image: postgres:15

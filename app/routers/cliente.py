@@ -10,6 +10,7 @@ from app.data.tarjeta import Tarjeta
 from app.data.solicitud_tarjeta import SolicitudTarjeta
 from app.helpers import render
 from app.security.auth import flash, is_logged_in, redirect_login
+from app.security.rate_limit import limiter
 
 router = APIRouter(tags=["Cliente"])
 
@@ -26,6 +27,7 @@ async def registro_get(request: Request):
     })
 
 @router.post("/registro", response_class=HTMLResponse)
+@limiter.limit("5/minute")
 async def registro_post(
     request:          Request,
     nombre:           str = Form(...),

@@ -204,7 +204,11 @@ async def aprobar_solicitud_cliente(id: int, request: Request, db: Session = Dep
     if not banco:
         return redirect_login(request)
     try:
-        sol = db.query(SolicitudTarjeta).filter(SolicitudTarjeta.id == id).first()
+        tarjeta_ids = [t.id for t in banco.tarjetas]
+        sol = db.query(SolicitudTarjeta).filter(
+            SolicitudTarjeta.id == id,
+            SolicitudTarjeta.tarjeta_id.in_(tarjeta_ids)
+        ).first()
         if sol is None:
             raise Exception("No encontrada")
         sol.estado = "aprobada"
@@ -221,7 +225,11 @@ async def rechazar_solicitud_cliente(id: int, request: Request, db: Session = De
     if not banco:
         return redirect_login(request)
     try:
-        sol = db.query(SolicitudTarjeta).filter(SolicitudTarjeta.id == id).first()
+        tarjeta_ids = [t.id for t in banco.tarjetas]
+        sol = db.query(SolicitudTarjeta).filter(
+            SolicitudTarjeta.id == id,
+            SolicitudTarjeta.tarjeta_id.in_(tarjeta_ids)
+        ).first()
         if sol is None:
             raise Exception("No encontrada")
         sol.estado = "rechazada"
@@ -256,7 +264,11 @@ async def cancelar_tarjeta_cliente(id: int, request: Request, db: Session = Depe
     if not banco:
         return redirect_login(request)
     try:
-        sol = db.query(SolicitudTarjeta).filter(SolicitudTarjeta.id == id).first()
+        tarjeta_ids = [t.id for t in banco.tarjetas]
+        sol = db.query(SolicitudTarjeta).filter(
+            SolicitudTarjeta.id == id,
+            SolicitudTarjeta.tarjeta_id.in_(tarjeta_ids)
+        ).first()
         if sol is None:
             raise Exception("No encontrada")
         # Simplemente cambiamos el estado de aprobada a cancelada
