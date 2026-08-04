@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 from slowapi import _rate_limit_exceeded_handler
@@ -12,6 +13,7 @@ from app.security.rate_limit import limiter
 # Importar modelos para que SQLAlchemy los registre
 from app.data import usuario, banco as bancoModel, tarjeta, solicitud
 from app.data import usuario_cliente, solicitud_tarjeta, admin_log
+from app.data import tarjeta_personal, alerta, historial_analisis
 
 # Crear tablas
 Base.metadata.create_all(bind=engine)
@@ -30,6 +32,14 @@ app.add_middleware(SlowAPIMiddleware)
 
 # Middleware de sesion
 app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET_KEY)
+
+# CORS: permite que la app movil (Expo) consuma /api/v1 desde otro origen
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Archivos estaticos
 app.mount("/static", StaticFiles(directory="static"), name="static")

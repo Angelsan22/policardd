@@ -1,0 +1,151 @@
+@extends('layout')
+@section('title', 'Registro — PoliCard')
+
+@section('extra_styles')
+<style>
+.registro-wrap { max-width: 560px; margin: 0 auto; }
+.registro-card { background: var(--blanco); border-radius: var(--radio-lg); box-shadow: var(--sombra-lg); overflow: hidden; }
+.registro-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 2.5rem 2rem; text-align: center; color: var(--blanco); }
+.registro-header h1 { font-family: 'DM Serif Display', serif; font-size: 1.9rem; margin-bottom: 0.3rem; }
+.registro-header p { color: rgba(255,255,255,0.85); font-size: 0.9rem; }
+.registro-body { padding: 2rem; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+.divider-text { text-align: center; font-size: 0.85rem; color: var(--verde-medio); margin-top: 1.25rem; }
+.divider-text a { color: var(--verde-oscuro); font-weight: 700; text-decoration: none; }
+.divider-text a:hover { text-decoration: underline; }
+
+.strength-container { margin-top: 0.5rem; height: 6px; background: var(--gris-claro); border-radius: 3px; overflow: hidden; }
+.strength-bar { height: 100%; width: 0; transition: all 0.3s ease; }
+.strength-bar.weak { background: #e57373; width: 33%; }
+.strength-bar.medium { background: #fbc02d; width: 66%; }
+.strength-bar.strong { background: #81c784; width: 100%; }
+.strength-text { font-size: 0.75rem; font-weight: 700; margin-top: 4px; }
+.password-field-wrap { position: relative; display: flex; align-items: center; }
+.password-toggle { position: absolute; right: 12px; background: none; border: none; color: var(--verde-medio); cursor: pointer; font-size: 1rem; padding: 0; z-index: 10; }
+.password-toggle:hover { color: var(--verde-oscuro); }
+</style>
+@endsection
+
+@section('content')
+<div class="registro-wrap">
+    <div class="registro-card">
+        <div class="registro-header">
+            <div style="font-size:2.5rem; margin-bottom:0.75rem;">🎓</div>
+            <h1>Crea tu cuenta</h1>
+            <p>Regístrate para solicitar tarjetas de crédito</p>
+        </div>
+        <div class="registro-body">
+            <form method="POST" action="/registro">
+                @csrf
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre completo</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Tu nombre" value="{{ old('nombre') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="text" id="telefono" name="telefono" class="form-control" placeholder="10 dígitos" value="{{ old('telefono') }}" maxlength="10" pattern="[0-9]{10}" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" class="form-control" placeholder="correo@ejemplo.com" autocomplete="off" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Fecha de nacimiento</label>
+                    <input type="date" name="fecha_nacimiento" class="form-control" value="{{ old('fecha_nacimiento') }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Dirección</label>
+                    <input type="text" name="direccion" class="form-control" placeholder="Calle, colonia, ciudad" value="{{ old('direccion') }}" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <div class="password-field-wrap">
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Mínimo 6 caracteres" oninput="checkStrength()" autocomplete="new-password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('password', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="strength-container">
+                            <div id="strength-bar" class="strength-bar"></div>
+                        </div>
+                        <div id="strength-text" class="strength-text"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar contraseña</label>
+                        <input type="password" name="confirm_password" class="form-control" placeholder="Repite tu contraseña" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:0.5rem;">
+                    <i class="fas fa-user-plus"></i> Crear cuenta
+                </button>
+            </form>
+            <div class="divider-text">
+                ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('extra_scripts')
+<script>
+function checkStrength() {
+    const password = document.getElementById('password').value;
+    const bar = document.getElementById('strength-bar');
+    const text = document.getElementById('strength-text');
+
+    let strength = 0;
+    if (password.length >= 6) strength++;
+    if (password.match(/[A-Z]/)) strength++;
+    if (password.match(/[0-9]/)) strength++;
+    if (password.match(/[^A-Za-z0-9]/)) strength++;
+
+    bar.className = 'strength-bar';
+    if (password.length === 0) {
+        bar.style.width = '0%';
+        text.innerText = '';
+    } else if (strength <= 1) {
+        bar.classList.add('weak');
+        bar.style.width = '33%';
+        text.innerText = 'Seguridad: Débil';
+        text.style.color = '#e57373';
+    } else if (strength === 2) {
+        bar.classList.add('medium');
+        bar.style.width = '66%';
+        text.innerText = 'Seguridad: Media';
+        text.style.color = '#fbc02d';
+    } else {
+        bar.classList.add('strong');
+        bar.style.width = '100%';
+        text.innerText = 'Seguridad: Fuerte';
+        text.style.color = '#81c784';
+    }
+}
+
+function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', checkStrength);
+</script>
+@endsection

@@ -20,6 +20,46 @@ services:
       - API_KEY=policard-dev-api-key-CHANGE-ME
       - SESSION_SECRET_KEY=policard2025secret
 
+  web2:
+    build: ./web-laravel
+    container_name: web2_policard
+    ports:
+      - "8000:8000"
+    depends_on:
+      - api
+    environment:
+      - APP_KEY=base64:rxBsb+x8navsrRVIPro5logxQsnEYlf/i5+3dF6pDyU=
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_CONNECTION=sqlite
+      - SESSION_DRIVER=database
+      # Servicio web2: no toca Postgres, todo pasa por la API del servicio web1/api
+      - POLICARD_API_URL=http://api:10000/api/v1
+      - POLICARD_API_KEY=policard-dev-api-key-CHANGE-ME
+      - POLICARD_WEB1_URL=http://localhost:10000
+
+  movil:
+    build: ./movil
+    container_name: movil_policard
+    ports:
+      - "8081:8081"
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002"
+    volumes:
+      - ./movil:/app
+      - /app/node_modules
+    depends_on:
+      - api
+    environment:
+      # IP de LAN por la que el celular (Expo Go) debe alcanzar este contenedor.
+      # Debe coincidir con la IP hardcodeada en los fetch() de movil/screens/*.js;
+      # si tu Wi-Fi te reasigna IP, hay que actualizar ambas.
+      - EXPO_PACKAGER_HOSTNAME=192.168.100.10
+      - REACT_NATIVE_PACKAGER_HOSTNAME=192.168.100.10
+    stdin_open: true
+    tty: true
+
   postgres:
     image: postgres:15
     container_name: postgres_policard

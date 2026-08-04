@@ -26,7 +26,14 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "PoliCard Smart necesita acceso a tus fotos para cambiar tu foto de perfil."
+        }
+      ]
     ]
   }
 }

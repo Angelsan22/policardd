@@ -1,18 +1,19 @@
 /* Zona 1: Importaciones */
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ScrollView, View, Text, Image, Switch, Pressable, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from 'expo-router';
 import { COLORS, FONTS } from '../constants/colors';
 import { RADIUS, SHADOW } from '../constants/theme';
 import { GradientHero } from '../components/GradientHero';
-import { BarraInferior } from '../components/BarraInferior';
 import { IconAvatar } from '../components/IconAvatar';
 import { Input } from '../components/Input';
 import { Boton } from '../components/Boton';
 import { ICONS } from '../constants/icons';
-import { alertasMock } from '../data/mock';
+import { useAuth } from '../data/auth';
 
+const API_KEY_HEADER = 'policard-dev-api-key-CHANGE-ME';
 const imagenPorTipo = { pago: ICONS.pago, riesgo: ICONS.riesgo };
 const tonoPorTipo = { pago: 'primary', corte: 'dark', riesgo: 'slate' };
 const TIPOS = [
@@ -23,31 +24,99 @@ const TIPOS = [
 
 /* Zona 2: Componente principal
    Objetivo: programar, listar y cancelar recordatorios de fechas de
-   pago, corte o de riesgo financiero alto (RF01-RF05, interfaz I-06). */
-export default function AlertasScreen({ pantallaActiva, onCambiarPantalla }) {
-  const [alertas, setAlertas] = useState(alertasMock);
+   pago, corte o de riesgo financiero alto contra la API real
+   (RF01, RF03, RF04, RF05, interfaz I-06). Las notificaciones push
+   (RF02) quedan pendientes para una siguiente iteracion. */
+export default function AlertasScreen() {
+  const { sesion } = useAuth();
+  const [alertas, setAlertas] = useState([]);
   const [mostrarForm, setMostrarForm] = useState(false);
   const [titulo, setTitulo] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [fecha, setFecha] = useState('');
   const [tipo, setTipo] = useState('pago');
+  const [errorFecha, setErrorFecha] = useState('');
 
-  const alternarActiva = (id) => {
-    setAlertas(alertas.map((a) => (a.id === id ? { ...a, activa: !a.activa } : a)));
+  const validarFecha = (valor) => /^\d{4}-\d{2}-\d{2}$/.test(valor);
+
+  const encabezados = {
+    'Content-Type': 'application/json',
+    'X-API-Key': API_KEY_HEADER,
+    Authorization: `Bearer ${sesion?.accessToken}`,
   };
 
-  const eliminarAlerta = (id) => {
-    setAlertas(alertas.filter((a) => a.id !== id));
+  const cargarAlertas = async () => {
+    try {
+      const respuesta = await fetch('http://192.168.100.10:10000/api/v1/cliente/alertas', {
+        headers: encabezados,
+      });
+      const datos = await respuesta.json();
+      console.log('Respuesta API alertas:', datos);
+      setAlertas(Array.isArray(datos) ? datos : []);
+    } catch (error) {
+      console.log('Error de API', error);
+    }
   };
 
-  const crearAlerta = () => {
+  useFocusEffect(
+    useCallback(() => {
+      cargarAlertas();
+    }, [])
+  );
+
+  const alternarActiva = async (alerta) => {
+    setAlertas((prev) => prev.map((a) => (a.id === alerta.id ? { ...a, activa: !a.activa } : a)));
+    try {
+      await fetch(`http://192.168.100.10:10000/api/v1/cliente/alertas/${alerta.id}`, {
+        method: 'PATCH',
+        headers: encabezados,
+        body: JSON.stringify({ activa: !alerta.activa }),
+      });
+    } catch (error) {
+      console.log('Error de API', error);
+    }
+  };
+
+  const eliminarAlerta = async (id) => {
+    setAlertas((prev) => prev.filter((a) => a.id !== id));
+    try {
+      await fetch(`http://192.168.100.10:10000/api/v1/cliente/alertas/${id}`, {
+        method: 'DELETE',
+        headers: encabezados,
+      });
+    } catch (error) {
+      console.log('Error de API', error);
+    }
+  };
+
+  const crearAlerta = async () => {
     if (!titulo.trim() || !fecha.trim()) {
       Alert.alert('Faltan datos', 'Ingresa al menos el titulo y la fecha del recordatorio');
       return;
     }
-    setAlertas([{ id: Date.now(), titulo, mensaje, fecha, tipo, activa: true }, ...alertas]);
-    setTitulo(''); setMensaje(''); setFecha(''); setTipo('pago');
-    setMostrarForm(false);
+    if (!validarFecha(fecha.trim())) {
+      setErrorFecha('Formato AAAA-MM-DD, ej. 2026-07-15');
+      return;
+    }
+    setErrorFecha('');
+    try {
+      const respuesta = await fetch('http://192.168.100.10:10000/api/v1/cliente/alertas', {
+        method: 'POST',
+        headers: encabezados,
+        body: JSON.stringify({ titulo, mensaje, fecha, tipo }),
+      });
+      if (!respuesta.ok) {
+        const datos = await respuesta.json();
+        Alert.alert('No se pudo crear la alerta', datos.detail || 'Intenta de nuevo');
+        return;
+      }
+      setTitulo(''); setMensaje(''); setFecha(''); setTipo('pago'); setErrorFecha('');
+      setMostrarForm(false);
+      cargarAlertas();
+    } catch (error) {
+      console.log('Error de API', error);
+      Alert.alert('Error de conexion', 'No se pudo conectar con el servidor');
+    }
   };
 
   return (
@@ -84,7 +153,7 @@ export default function AlertasScreen({ pantallaActiva, onCambiarPantalla }) {
               </View>
               <Input etiqueta="Titulo" valor={titulo} onChangeText={setTitulo} placeholder="Pago Tarjeta Clasica" />
               <Input etiqueta="Mensaje" valor={mensaje} onChangeText={setMensaje} placeholder="Vence el 15 de julio" />
-              <Input etiqueta="Fecha" valor={fecha} onChangeText={setFecha} placeholder="2026-07-15" />
+              <Input etiqueta="Fecha" valor={fecha} onChangeText={setFecha} placeholder="2026-07-15" error={errorFecha} />
               <Boton titulo="Programar alerta" onPress={crearAlerta} />
             </View>
           )}
@@ -103,7 +172,7 @@ export default function AlertasScreen({ pantallaActiva, onCambiarPantalla }) {
               </View>
               <Switch
                 value={a.activa}
-                onValueChange={() => alternarActiva(a.id)}
+                onValueChange={() => alternarActiva(a)}
                 trackColor={{ false: COLORS.silver, true: COLORS.primary }}
                 thumbColor={COLORS.white}
                 activeThumbColor={COLORS.white}
@@ -117,7 +186,6 @@ export default function AlertasScreen({ pantallaActiva, onCambiarPantalla }) {
           {alertas.length === 0 && <Text style={styles.vacio}>No tienes alertas programadas</Text>}
         </View>
       </ScrollView>
-      <BarraInferior pantallaActiva={pantallaActiva} onCambiarPantalla={onCambiarPantalla} />
     </SafeAreaView>
   );
 }

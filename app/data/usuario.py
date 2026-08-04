@@ -11,6 +11,7 @@ class Usuario(Base):
     nombre         = Column(String(100), nullable=False)
     tipo           = Column(String(20), nullable=False)
     activo         = Column(Boolean, default=True)
+    foto_url       = Column(String(300), nullable=True)
     fecha_registro = Column(DateTime, default=datetime.utcnow)
     banco          = relationship("Banco", back_populates="usuario", uselist=False, cascade="all, delete-orphan")
     cliente        = relationship("UsuarioCliente", back_populates="usuario", uselist=False, cascade="all, delete-orphan")

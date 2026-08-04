@@ -1,0 +1,2278 @@
+@extends('layout')
+@section('title', 'Educación Financiera — PoliCard')
+
+@section('extra_styles')
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+/* ── Palette ── */
+:root {
+    --brand-navy:   #0A4269;
+    --brand-teal:   #66C2A4;
+    --brand-yellow: #FEE482;
+    --brand-bg:     #F3F7F9;
+
+    /* Local overrides to match legacy names */
+    --forest:       var(--brand-navy);
+    --forest-mid:   #125785;
+    --sage:         var(--brand-teal);
+    --sage-light:   #85D1B8;
+    --sage-pale:    #E2F5EF;
+    --moss:         #447A8F;
+    --cream:        #F8FAF9;
+    --gold:         var(--brand-yellow);
+    --muted:        #64748B;
+}
+
+/* ── Hero ── */
+.edu-hero {
+    background: linear-gradient(135deg, var(--brand-navy) 0%, #125785 55%, var(--brand-teal) 100%);
+    border-radius: 28px;
+    padding: 2.8rem 3rem;
+    color: #fff;
+    margin-bottom: 2.2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(10,66,105,0.2);
+}
+.edu-hero::before {
+    content: '';
+    position: absolute;
+    top: -70px; right: -50px;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    background: rgba(107,143,94,0.15);
+    pointer-events: none;
+}
+.edu-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 30%;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(200,149,42,0.08);
+    pointer-events: none;
+}
+.edu-hero-icon {
+    font-size: 3.8rem;
+    opacity: 0.92;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+}
+.edu-hero-text { position: relative; z-index: 1; }
+.edu-hero h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    margin-bottom: 0.45rem;
+    letter-spacing: -0.01em;
+}
+.edu-hero p {
+    color: rgba(255,255,255,0.72);
+    font-size: 0.95rem;
+    line-height: 1.65;
+    max-width: 520px;
+    font-family: 'Outfit', sans-serif;
+}
+
+/* ── Tabs ── */
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+.tab-btn {
+    padding: 0.55rem 1.3rem;
+    border-radius: 99px;
+    border: 1.5px solid rgba(107,143,94,0.3);
+    background: #fff;
+    color: var(--moss);
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.22s;
+    font-family: 'Outfit', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.tab-btn:hover {
+    background: var(--sage-pale);
+    border-color: var(--sage);
+    color: var(--forest);
+}
+.tab-btn.active {
+    background: var(--forest);
+    border-color: var(--forest);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(26,46,26,0.22);
+}
+.tab-section { display: none; }
+.tab-section.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);} }
+
+/* ══ CARRUSEL INFINITO ══ */
+.carousel-outer {
+    position: relative;
+    overflow: hidden;
+    margin: 0 -4px;
+    padding: 0.5rem 4px 1rem;
+    /* fade edges */
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 80px, black calc(100% - 80px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black 80px, black calc(100% - 80px), transparent 100%);
+}
+.carousel-outer:hover .carousel-track-infinite {
+    animation-play-state: paused;
+}
+.carousel-track-infinite {
+    display: flex;
+    gap: 1.4rem;
+    width: max-content;
+    animation: infiniteScroll 28s linear infinite;
+}
+@keyframes infiniteScroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+.concept-slide {
+    flex: 0 0 340px;
+    background: #fff;
+    border-radius: 24px;
+    padding: 2rem 1.8rem;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.04), 0 10px 34px rgba(0,0,0,0.08);
+    border: 1px solid rgba(107,143,94,0.13);
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-height: 230px;
+    display: flex;
+    flex-direction: column;
+}
+.concept-slide::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--sage), var(--sage-light));
+    border-radius: 24px 24px 0 0;
+}
+.concept-slide:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 0 rgba(0,0,0,0.06), 0 28px 56px rgba(26,46,26,0.14);
+}
+.slide-icon {
+    width: 52px; height: 52px;
+    border-radius: 15px;
+    background: var(--sage-pale);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.35rem;
+    margin-bottom: 1.2rem;
+    color: var(--forest);
+    box-shadow: 0 2px 10px rgba(107,143,94,0.2);
+    flex-shrink: 0;
+}
+.slide-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    color: var(--forest);
+    margin-bottom: 0.7rem;
+    line-height: 1.25;
+}
+.slide-desc {
+    font-size: 0.875rem;
+    color: var(--muted);
+    line-height: 1.7;
+    font-family: 'Outfit', sans-serif;
+    flex: 1;
+}
+.slide-desc strong { color: var(--forest); font-weight: 600; }
+
+/* ── Section card wrapper ── */
+.info-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 2rem 2.2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+}
+.info-card-title {
+    font-family: 'DM Serif Display', serif;
+    color: var(--primary);
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.info-card-title i { color: var(--secondary); }
+.info-card-sub {
+    font-size: 0.88rem;
+    color: var(--texto-medio);
+    margin-bottom: 1.8rem;
+    font-family: 'DM Sans', sans-serif;
+}
+
+/* ── CAT bar chart ── */
+.cat-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 1.2rem;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: default;
+}
+.cat-bar-row:hover {
+    transform: translateX(10px);
+}
+.cat-bar-row:hover .cat-bar-fill {
+    box-shadow: 0 0 20px rgba(0,0,0,0.1), inset 0 0 0 2px rgba(255,255,255,0.2);
+    filter: brightness(1.05);
+}
+.cat-bar-label {
+    width: 155px;
+    flex-shrink: 0;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--texto-oscuro);
+    font-family: 'DM Sans', sans-serif;
+    transition: color 0.3s;
+}
+.cat-bar-row:hover .cat-bar-label { color: var(--primary); }
+.cat-bar-wrap {
+    flex: 1;
+    height: 38px;
+    background: #f1f5f9;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.04);
+}
+.cat-bar-fill {
+    height: 100%;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    padding-left: 14px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.02em;
+    box-shadow: inset 0 2px 4px rgba(255,255,255,0.1);
+    transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s;
+    width: 38px; /* Start small */
+    overflow: hidden;
+    white-space: nowrap;
+}
+.cat-bar-row:hover .cat-bar-fill {
+    width: var(--target-width);
+}
+
+/* ── Comparison Battle ── */
+.battle-container {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1.5rem;
+    align-items: stretch;
+    padding: 2rem;
+}
+@media(max-width: 850px) { .battle-container { grid-template-columns: 1fr; gap: 2rem; } .battle-vs { display: none; } }
+.battle-card {
+    border-radius: 24px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    border: 1px solid rgba(0,0,0,0.06);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: #ffffff;
+}
+.battle-card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+.battle-vs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    color: var(--texto-medio);
+    opacity: 0.4;
+    transition: opacity 0.3s;
+}
+.battle-container:hover .battle-vs { opacity: 0.8; }
+.battle-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.battle-stat:last-child { border-bottom: none; }
+.battle-stat-label { font-size: 0.85rem; color: var(--texto-medio); }
+.battle-stat-val { font-family: 'DM Serif Display', serif; font-size: 1.15rem; font-weight: 500; }
+
+/* ── Utilization Gauge ── */
+.gauge-track {
+    height: 14px;
+    background: #f0f4f8;
+    border-radius: 99px;
+    margin: 1.5rem 0 2rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+.gauge-part { height: 100%; width: 0; transition: width 1.5s cubic-bezier(0.65, 0, 0.35, 1); }
+.tab-section.active .gauge-part.ideal { width: 30%; background: #38a169; }
+.tab-section.active .gauge-part.warning { width: 30%; background: #d69e2e; }
+.tab-section.active .gauge-part.danger { width: 40%; background: #f56565; }
+
+.gauge-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--texto-medio);
+    margin-top: -1.2rem;
+    margin-bottom: 2rem;
+    padding: 0 5px;
+    font-weight: 600;
+}
+
+/* ── Cards Interaction ── */
+.util-card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.util-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+.cat-bar-pct {
+    margin-left: 0.75rem;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--forest);
+    width: 42px;
+    font-family: 'Outfit', sans-serif;
+}
+.cat-legend {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 1.2rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid rgba(107,143,94,0.12);
+    font-size: 0.78rem;
+    font-family: 'Outfit', sans-serif;
+}
+.cat-legend-item { display: flex; align-items: center; gap: 7px; color: var(--muted); }
+.cat-legend-dot  { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
+
+.util-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+/* ── Cycle steps ── */
+/* ── Cycle steps ── */
+.cycle-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative;
+    margin-bottom: 2rem;
+    padding-top: 1rem;
+}
+.cycle-step {
+    text-align: center;
+    padding: 1rem 0.6rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* Conector (Línea) */
+.cycle-step::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 48px;
+    width: 100%;
+    height: 3px;
+    background: rgba(10, 66, 105, 0.08);
+    z-index: 1;
+}
+.cycle-step:last-child::after { display: none; }
+
+/* La Gota (El pulso de energía) */
+.cycle-step::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 45px;
+    width: 15px;
+    height: 10px;
+    background: #00D4FF;
+    border-radius: 50% 50% 50% 0;
+    transform: translate(-50%, -50%) rotate(-45deg) scale(0);
+    z-index: 5;
+    opacity: 0;
+    box-shadow: 0 0 12px rgba(0, 212, 255, 0.8), inset 2px 2px 5px rgba(255,255,255,0.6);
+    pointer-events: none;
+}
+
+/* Animación Horizontal (PC) */
+@keyframes waterDripDirect {
+    0% { left: 50%; transform: translate(-50%, -50%) rotate(-45deg) scale(0); opacity: 0; }
+    20% { opacity: 1; transform: translate(-50%, -50%) rotate(-45deg) scale(1.3); }
+    80% { opacity: 1; transform: translate(-50%, -50%) rotate(-45deg) scale(1.1); }
+    100% { left: 150%; transform: translate(-50%, -50%) rotate(-45deg) scale(0); opacity: 0; }
+}
+
+.cycle-step:not(:last-child):hover::before {
+    animation: waterDripDirect 0.8s ease-in-out infinite;
+}
+
+@media(max-width:850px) { 
+    .cycle-steps { grid-template-columns: 1fr; gap: 3rem; padding-bottom: 2rem; } 
+    .cycle-step::after { 
+        left: 50%; top: 70px; width: 3px; height: calc(100% + 3rem); 
+        background: rgba(10, 66, 105, 0.1); 
+    }
+    .cycle-step:not(:last-child):hover::before {
+        animation: waterDripDirectVertical 0.8s ease-in-out infinite !important;
+    }
+    @keyframes waterDripDirectVertical {
+        0% { top: 45px; transform: translate(-50%, -50%) rotate(45deg) scale(0); opacity: 0; }
+        20% { opacity: 1; transform: translate(-50%, -50%) rotate(45deg) scale(1.3); }
+        80% { opacity: 1; transform: translate(-50%, -50%) rotate(45deg) scale(1.1); }
+        100% { top: 125px; transform: translate(-50%, -50%) rotate(45deg) scale(0); opacity: 0; }
+    }
+    .util-cards-grid { grid-template-columns: 1fr !important; }
+}
+
+/* Absorption Pulse for Receiveing Orb */
+@keyframes absorbImpact {
+    0%, 75% { transform: scale(1); box-shadow: 0 10px 35px rgba(10, 66, 105, 0.25); }
+    85% { transform: scale(1.1); box-shadow: 0 0 45px rgba(0, 212, 255, 0.6); }
+    100% { transform: scale(1); box-shadow: 0 10px 35px rgba(10, 66, 105, 0.25); }
+}
+
+.cycle-step:hover + .cycle-step .cycle-num {
+    animation: absorbImpact 0.8s ease-out infinite;
+}
+
+.cycle-num {
+    width: 68px; height: 68px;
+    border-radius: 50%;
+    margin: 0 auto 1.2rem;
+    background: radial-gradient(circle at 30% 30%, #1A4269, #051A2E); /* Deep Navy Solid Orb */
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    border: 3px solid #DAE1E7;
+    box-shadow: 0 10px 35px rgba(10, 66, 105, 0.25), 
+                inset -3px -3px 15px rgba(0,0,0,0.4),
+                inset 5px 5px 15px rgba(255,255,255,0.15);
+    position: relative;
+    z-index: 3;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+}
+.cycle-step:hover .cycle-num {
+    transform: translateY(-18px) scale(1.15);
+    background: radial-gradient(circle at 30% 30%, #2A5D8A, #0A4269);
+    border-color: #fff;
+    box-shadow: 0 0 50px rgba(0, 212, 255, 0.4), 
+                0 25px 60px rgba(10, 66, 105, 0.3),
+                inset 0 0 25px rgba(255, 255, 255, 0.2);
+}
+/* Internal Sheen (Orb Highlight) */
+.cycle-num::after {
+    content: '';
+    position: absolute;
+    top: 6px; left: 12px;
+    width: 40%; height: 25%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.7), transparent);
+    border-radius: 50% 50% 40% 40%;
+    pointer-events: none;
+}
+.cycle-num::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(10, 66, 105, 0.15), transparent 70%);
+    opacity: 0.6;
+    z-index: -1;
+    animation: orbPulsePulse 3s ease-in-out infinite alternate;
+}
+@keyframes orbPulsePulse {
+    from { transform: scale(0.95); opacity: 0.3; }
+    to { transform: scale(1.1); opacity: 0.7; }
+}
+.cycle-num i { font-size: 0.9rem; position: absolute; bottom: 5px; opacity: 0.1; }
+
+.cycle-step h4 {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.4rem;
+    font-family: 'DM Sans', sans-serif;
+}
+.cycle-step p {
+    font-size: 0.78rem;
+    color: var(--texto-medio);
+    line-height: 1.5;
+    font-family: 'DM Sans', sans-serif;
+    padding: 0 10px;
+}
+
+/* ── Tip box ── */
+.tip-box {
+    background: linear-gradient(135deg, var(--sage-pale), #f0f5ec);
+    border: 1px solid rgba(107,143,94,0.22);
+    border-radius: 14px;
+    padding: 1rem 1.3rem;
+    font-size: 0.85rem;
+    color: var(--forest);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    font-family: 'Outfit', sans-serif;
+}
+.tip-box i { color: var(--sage); font-size: 1.15rem; flex-shrink: 0; margin-top: 1px; }
+
+/* ══ TIPS ══ */
+.tips-header {
+    background: linear-gradient(135deg, var(--brand-navy) 0%, #125785 60%, var(--brand-teal) 100%);
+    border-radius: 22px;
+    padding: 1.6rem 2rem;
+    margin-bottom: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    box-shadow: 0 6px 32px rgba(26,46,26,0.18);
+    position: relative;
+    overflow: hidden;
+}
+.tips-header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(107,143,94,0.12);
+    pointer-events: none;
+}
+.tips-header-stat {
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+    position: relative;
+    z-index: 1;
+}
+.tips-header-stat + .tips-header-stat {
+    border-left: 1px solid rgba(255,255,255,0.12);
+}
+.tips-header-stat .stat-val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.9rem;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
+}
+.tips-header-stat .stat-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.6);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+.tips-cats {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+    justify-content: center;
+}
+.tips-cat-btn {
+    padding: 0.6rem 1.4rem;
+    border-radius: 99px;
+    border: 1px solid var(--gris-claro);
+    background: var(--blanco);
+    color: var(--texto-medio);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+.tips-cat-btn:hover { 
+    background: #f8fafc; 
+    border-color: var(--primary-light); 
+    color: var(--primary);
+    transform: translateY(-1px);
+}
+.tips-cat-btn.active { 
+    background: var(--primary); 
+    border-color: var(--primary); 
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(10,66,105,0.2);
+}
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 2.5rem;
+}
+@media(max-width: 600px) { 
+    .tips-grid { grid-template-columns: 1fr; gap: 1.5rem; } 
+}
+.tip-card {
+    background: var(--blanco);
+    border-radius: 24px;
+    border: 1px solid rgba(10,66,105,0.08);
+    box-shadow: var(--sombra);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+}
+.tip-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--sombra-lg);
+}
+.tip-card.tip-featured {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    background: linear-gradient(to right, #ffffff, #fcfdfe);
+}
+@media(max-width:900px) { .tip-card.tip-featured { flex-direction: column; } }
+.tip-card-stripe {
+    height: 6px;
+    width: 100%;
+    flex-shrink: 0;
+}
+.tip-card.tip-featured .tip-card-stripe { height: auto; width: 8px; }
+@media(max-width:900px) { .tip-card.tip-featured .tip-card-stripe { height: 6px; width: 100%; } }
+.tip-card-header {
+    padding: 2rem 2rem 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+}
+.tip-card-icon {
+    width: 52px; height: 52px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.tip-card-meta { flex: 1; }
+.tip-card-priority {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 8px;
+    font-family: 'DM Sans', sans-serif;
+}
+.tip-card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.35rem;
+    color: var(--texto-oscuro);
+    line-height: 1.2;
+    font-weight: 400;
+}
+.tip-card-body {
+    padding: 0 2rem 2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+.tip-card-desc {
+    font-size: 0.95rem;
+    color: var(--texto-medio);
+    line-height: 1.75;
+    font-family: 'DM Sans', sans-serif;
+}
+.tip-card-desc strong { color: var(--forest); font-weight: 700; }
+.tip-impact {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+    border-left: 4px solid var(--primary-light);
+}
+.tip-impact-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--moss);
+    font-family: 'Outfit', sans-serif;
+    white-space: nowrap;
+}
+.tip-impact-val {
+    font-size: 0.82rem;
+    color: var(--forest);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    line-height: 1.4;
+}
+.tip-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.tip-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.82rem;
+    font-family: 'Outfit', sans-serif;
+    color: var(--muted);
+    line-height: 1.5;
+}
+.tip-step-dot {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: #f0f4f8;
+    border: 1px solid var(--gris-claro);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-family: 'DM Sans', sans-serif;
+}
+.tip-donotdo {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: #fff8f8;
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+    border-left: 4px solid #feb2b2;
+    font-size: 0.9rem;
+    color: #822727;
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.6;
+}
+.tip-donotdo i { font-size: 0.85rem; flex-shrink: 0; margin-top: 1px; }
+.priority-critica .tip-card-icon   { background: #fff1f0; color: #cf222e; }
+.priority-critica .tip-card-stripe { background: linear-gradient(90deg, #cf222e, #ff8182); }
+.priority-critica .tip-card-priority { background: #fff1f2; color: #cf222e; border: 1px solid rgba(207,34,46,0.1); }
+.priority-critica .tip-impact      { border-left-color: #cf222e; }
+.priority-alta .tip-card-icon   { background: #fff9db; color: #856404; }
+.priority-alta .tip-card-stripe { background: linear-gradient(90deg, var(--accent), #f9d51e); }
+.priority-alta .tip-card-priority { background: var(--accent); color: #725b00; border: 1px solid rgba(133,100,4,0.1); }
+.priority-alta .tip-impact      { border-left-color: var(--accent); }
+.priority-media .tip-card-icon   { background: var(--sage-pale); color: var(--forest); }
+.priority-media .tip-card-stripe { background: linear-gradient(90deg, var(--sage), var(--sage-light)); }
+.priority-media .tip-card-priority { background: rgba(107,143,94,0.12); color: var(--forest); }
+.priority-media .tip-impact      { border-left-color: var(--sage); }
+.priority-pro .tip-card-icon   { background: #EEF2FD; color: #2c4da0; }
+.priority-pro .tip-card-stripe { background: linear-gradient(90deg, #3a5fc8, #5a7ee0); }
+.priority-pro .tip-card-priority { background: rgba(58,95,200,0.1); color: #2c4da0; }
+.priority-pro .tip-impact      { border-left-color: #3a5fc8; }
+
+/* ── Glosario ── */
+.glosario-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.glos-cats {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.4rem;
+}
+.glos-cat-btn {
+    padding: 0.38rem 1rem;
+    border-radius: 99px;
+    border: 1.5px solid rgba(107,143,94,0.25);
+    background: #fff;
+    color: var(--moss);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.18s;
+}
+.glos-cat-btn:hover { background: var(--sage-pale); border-color: var(--sage); color: var(--forest); }
+.glos-cat-btn.active { background: var(--forest); border-color: var(--forest); color: #fff; }
+.termino-card {
+    background: #fff;
+    border-radius: 20px;
+    border: 1px solid rgba(107,143,94,0.12);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.03), 0 6px 22px rgba(0,0,0,0.06);
+    overflow: hidden;
+    transition: transform 0.22s, box-shadow 0.22s;
+    position: relative;
+}
+.termino-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 0 rgba(0,0,0,0.05), 0 16px 40px rgba(0,0,0,0.1);
+}
+.termino-card.hidden { display: none; }
+.termino-card.highlighted {
+    border-color: rgba(107,143,94,0.4);
+    box-shadow: 0 2px 0 rgba(107,143,94,0.08), 0 10px 30px rgba(107,143,94,0.14);
+}
+.tc-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 1.5rem 1rem;
+    border-bottom: 1px solid rgba(107,143,94,0.1);
+    position: relative;
+}
+.tc-icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+.tc-title-group { flex: 1; }
+.tc-term {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.12rem;
+    color: var(--forest);
+    line-height: 1.2;
+    margin-bottom: 3px;
+}
+.tc-term mark {
+    background: var(--sage-pale);
+    color: var(--forest);
+    border-radius: 3px;
+    padding: 0 2px;
+}
+.tc-category {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 2px 9px;
+    border-radius: 99px;
+}
+.tc-body {
+    padding: 1rem 1.5rem 1.2rem;
+}
+.tc-def {
+    font-size: 0.88rem;
+    color: #3a5a4a;
+    line-height: 1.7;
+    font-family: 'Outfit', sans-serif;
+    margin-bottom: 1rem;
+}
+.tc-def mark {
+    background: var(--sage-pale);
+    color: var(--forest);
+    border-radius: 3px;
+    padding: 0 2px;
+}
+.tc-def strong { color: var(--forest); font-weight: 700; }
+.tc-example {
+    background: var(--cream);
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-family: 'Outfit', sans-serif;
+    line-height: 1.55;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-bottom: 0.85rem;
+    border-left: 3px solid var(--sage-light);
+}
+.tc-example i { color: var(--sage); flex-shrink: 0; margin-top: 1px; font-size: 0.75rem; }
+.tc-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.tc-chip {
+    background: var(--sage-pale);
+    border: 1px solid rgba(107,143,94,0.2);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 0.74rem;
+    font-family: 'Outfit', sans-serif;
+    color: var(--forest);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.tc-chip i { color: var(--sage); font-size: 0.68rem; }
+.tc-chip.bad  { background: #fff5f5; border-color: #feb2b2; color: #c53030; }
+.tc-chip.bad i { color: #f56565; }
+.tc-chip.good { background: #EFF8F0; border-color: rgba(46,125,50,0.18); color: #1e5e30; }
+.tc-chip.good i { color: #3B7A46; }
+.tc-chip.warn { background: #fffef0; border-color: #fef3c7; color: #92400e; }
+.tc-chip.warn i { color: #d97706; }
+/* ── MODERN GLOSSARY REDESIGN (BLOCK-BASED) ── */
+.glosario-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    gap: 2.5rem;
+    align-items: start;
+}
+@media(max-width:900px) { .glosario-grid { grid-template-columns: 1fr; } }
+
+.glos-letter-group {
+    position: relative;
+    padding: 2.5rem 2rem 2rem;
+    border-radius: 2.5rem;
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s ease;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+/* Color Tints for Groups */
+.group-navy { background: linear-gradient(135deg, rgba(10, 66, 105, 0.05), rgba(10, 66, 105, 0.02)); border-color: rgba(10, 66, 105, 0.1); }
+.group-teal { background: linear-gradient(135deg, rgba(0, 212, 255, 0.06), rgba(0, 212, 255, 0.01)); border-color: rgba(0, 212, 255, 0.1); }
+.group-gold { background: linear-gradient(135deg, rgba(255, 191, 0, 0.06), rgba(255, 191, 0, 0.01)); border-color: rgba(255, 191, 0, 0.1); }
+
+.glos-big-letter {
+    position: absolute;
+    top: -20px;
+    right: 15px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 9rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--primary);
+    opacity: 0.06;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+}
+
+.glos-group-content {
+    position: relative;
+    z-index: 1;
+}
+
+.glos-group-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px dashed rgba(0,0,0,0.05);
+}
+.glos-group-header h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem;
+    margin: 0;
+    color: var(--primary);
+}
+
+.termino-card {
+    background: #fff;
+    border-radius: 1.5rem;
+    padding: 1.8rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(0,0,0,0.03);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+}
+.termino-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(10, 66, 105, 0.08);
+    border-color: rgba(10, 66, 105, 0.15);
+}
+
+/* ── Glosario Search ── */
+.glosario-search-wrap {
+    position: relative;
+    margin-bottom: 1.8rem;
+}
+.glosario-search-box {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1.5px solid rgba(107,143,94,0.3);
+    border-radius: 16px;
+    padding: 6px 6px 6px 16px;
+    gap: 8px;
+    box-shadow: 0 4px 20px rgba(26,46,26,0.08);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.glosario-search-box:focus-within {
+    border-color: var(--sage);
+    box-shadow: 0 4px 24px rgba(107,143,94,0.18);
+}
+.gsb-icon { color: var(--sage); font-size: 0.95rem; flex-shrink: 0; }
+.gsb-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    font-family: 'Outfit', sans-serif;
+    color: var(--forest);
+    background: transparent;
+    padding: 6px 0;
+}
+.gsb-input::placeholder { color: #9cb89c; }
+.gsb-clear {
+    background: rgba(107,143,94,0.1);
+    color: var(--moss);
+    border: none;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: none;
+}
+.gsb-clear:hover { background: rgba(107,143,94,0.2); color: var(--forest); }
+.gsb-status {
+    margin-top: 10px;
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-family: 'Outfit', sans-serif;
+    display: none;
+    align-items: center;
+    gap: 8px;
+}
+.gsb-status-count {
+    background: var(--sage-pale);
+    color: var(--forest);
+    border-radius: 99px;
+    padding: 2px 10px;
+    font-weight: 700;
+    font-size: 0.78rem;
+}
+.gsb-no-results {
+    display: none;
+    background: #fff;
+    border: 1px solid rgba(107,143,94,0.15);
+    border-radius: 16px;
+    padding: 20px 22px;
+    margin-top: 10px;
+    font-family: 'Outfit', sans-serif;
+}
+.gsb-no-results-title {
+    font-weight: 700;
+    color: var(--forest);
+    font-size: 0.94rem;
+    margin-bottom: 6px;
+}
+.gsb-no-results-sub {
+    font-size: 0.83rem;
+    color: var(--muted);
+    line-height: 1.55;
+}
+.gsb-similar-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--sage);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 12px 0 8px;
+    font-family: 'Outfit', sans-serif;
+}
+.gsb-similar-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.gsb-pill {
+    background: var(--sage-pale);
+    color: var(--forest);
+    border: 1px solid rgba(107,143,94,0.25);
+    border-radius: 99px;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+.gsb-pill:hover {
+    background: var(--forest);
+    color: #fff;
+    border-color: var(--forest);
+}
+.gsb-section-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--sage);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-family: 'Outfit', sans-serif;
+    margin-bottom: 0.8rem;
+    display: none;
+}
+</style>
+@endsection
+
+@section('content')
+
+<!-- HERO -->
+<div class="edu-hero">
+    <div class="edu-hero-icon"><i class="fas fa-graduation-cap"></i></div>
+    <div class="edu-hero-text">
+        <h2>Educación Financiera</h2>
+        <p>Aprende a manejar tu dinero y tus tarjetas de forma inteligente. Conocimiento claro, sin tecnicismos, para tomar mejores decisiones.</p>
+    </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+    <button class="tab-btn active" onclick="showTab('conceptos',this)"><i class="fas fa-book"></i> Conceptos clave</button>
+    <button class="tab-btn" onclick="showTab('infografias',this)"><i class="fas fa-chart-bar"></i> Infografías</button>
+    <button class="tab-btn" onclick="showTab('tips',this)"><i class="fas fa-lightbulb"></i> Consejos</button>
+    <button class="tab-btn" onclick="showTab('glosario',this)"><i class="fas fa-list"></i> Glosario</button>
+</div>
+
+<!-- ══ CONCEPTOS ══ -->
+<div class="tab-section active" id="tab-conceptos">
+
+    <div class="carousel-outer" id="carouselOuter">
+        <!-- La pista se duplica para el efecto infinito -->
+        <div class="carousel-track-infinite" id="carouselTrack">
+
+            <!-- SET 1 (original) -->
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-percentage"></i></div>
+                <div class="slide-title">¿Qué es el CAT?</div>
+                <div class="slide-desc">El <strong>Costo Anual Total</strong> refleja el costo real de un crédito: tasa de interés + comisiones + cargos. A menor CAT, más barato el crédito. Siempre compara el CAT, no solo la tasa.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="slide-title">Fecha de corte y pago</div>
+                <div class="slide-desc">La <strong>fecha de corte</strong> cierra tu periodo y genera el estado de cuenta. La <strong>fecha límite</strong> es hasta cuándo puedes pagar sin intereses. Conocer ambas es fundamental.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-dollar-sign"></i></div>
+                <div class="slide-title">Anualidad</div>
+                <div class="slide-desc">Comisión anual por tener la tarjeta. Muchas tarjetas para jóvenes la <strong>condonan</strong> si realizas cierto número de compras al mes. Siempre verifica las condiciones del contrato.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-sync"></i></div>
+                <div class="slide-title">Meses sin intereses</div>
+                <div class="slide-desc">Los MSI te permiten diferir compras en pagos iguales <strong>sin pagar intereses</strong>. Son útiles si no acumulas varias compras simultáneamente ni excedes tu capacidad de pago.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-coins"></i></div>
+                <div class="slide-title">Cashback y puntos</div>
+                <div class="slide-desc">El <strong>cashback</strong> regresa un % de tus compras en efectivo. Los <strong>puntos</strong> se canjean por productos o saldos. No compres cosas innecesarias solo para acumularlos.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="slide-title">Historial crediticio</div>
+                <div class="slide-desc">Tu <strong>buró de crédito</strong> registra cómo pagas. Un historial positivo te abre puertas a mejores tasas, mayor límite y mejores productos financieros en el futuro.</div>
+            </div>
+
+            <!-- SET 2 (duplicado para loop infinito sin saltos) -->
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-percentage"></i></div>
+                <div class="slide-title">¿Qué es el CAT?</div>
+                <div class="slide-desc">El <strong>Costo Anual Total</strong> refleja el costo real de un crédito: tasa de interés + comisiones + cargos. A menor CAT, más barato el crédito. Siempre compara el CAT, no solo la tasa.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="slide-title">Fecha de corte y pago</div>
+                <div class="slide-desc">La <strong>fecha de corte</strong> cierra tu periodo y genera el estado de cuenta. La <strong>fecha límite</strong> es hasta cuándo puedes pagar sin intereses. Conocer ambas es fundamental.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-dollar-sign"></i></div>
+                <div class="slide-title">Anualidad</div>
+                <div class="slide-desc">Comisión anual por tener la tarjeta. Muchas tarjetas para jóvenes la <strong>condonan</strong> si realizas cierto número de compras al mes. Siempre verifica las condiciones del contrato.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-sync"></i></div>
+                <div class="slide-title">Meses sin intereses</div>
+                <div class="slide-desc">Los MSI te permiten diferir compras en pagos iguales <strong>sin pagar intereses</strong>. Son útiles si no acumulas varias compras simultáneamente ni excedes tu capacidad de pago.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-coins"></i></div>
+                <div class="slide-title">Cashback y puntos</div>
+                <div class="slide-desc">El <strong>cashback</strong> regresa un % de tus compras en efectivo. Los <strong>puntos</strong> se canjean por productos o saldos. No compres cosas innecesarias solo para acumularlos.</div>
+            </div>
+            <div class="concept-slide">
+                <div class="slide-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="slide-title">Historial crediticio</div>
+                <div class="slide-desc">Tu <strong>buró de crédito</strong> registra cómo pagas. Un historial positivo te abre puertas a mejores tasas, mayor límite y mejores productos financieros en el futuro.</div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- ══ INFOGRAFÍAS ══ -->
+<div class="tab-section" id="tab-infografias">
+
+    <div class="info-card">
+        <div class="info-card-title"><i class="fas fa-chart-bar"></i> Comparación de CAT por tarjeta</div>
+        <div class="info-card-sub">Entre más corta la barra, menos pagas de intereses</div>
+        <div class="cat-bar-row">
+            <span class="cat-bar-label">Nu Ultravioleta</span>
+            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="--target-width:35%; background:linear-gradient(90deg,#38a169,#68d391);">35%</div></div>
+            <span class="cat-bar-pct">35%</span>
+        </div>
+        <div class="cat-bar-row">
+            <span class="cat-bar-label">Banamex Tec</span>
+            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="--target-width:38.5%; background:linear-gradient(90deg,#2f855a,#48bb78);">38.5%</div></div>
+            <span class="cat-bar-pct">38.5%</span>
+        </div>
+        <div class="cat-bar-row">
+            <span class="cat-bar-label">Santander Like U</span>
+            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="--target-width:42%; background:linear-gradient(90deg,#276749,#38a169);">42%</div></div>
+            <span class="cat-bar-pct">42%</span>
+        </div>
+        <div class="cat-bar-row">
+            <span class="cat-bar-label">BBVA Azul</span>
+            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="--target-width:45.5%; background:linear-gradient(90deg,var(--accent),#f9d51e);">45.5%</div></div>
+            <span class="cat-bar-pct">45.5%</span>
+        </div>
+        <div class="cat-bar-row">
+            <span class="cat-bar-label">HSBC Zero</span>
+            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="--target-width:50%; background:linear-gradient(90deg,#ed8936,#f6ad55);">50%</div></div>
+            <span class="cat-bar-pct">50%</span>
+        </div>
+        <div class="cat-bar-row">
+            <span class="cat-bar-label">Banorte Clásica</span>
+            <div class="cat-bar-wrap"><div class="cat-bar-fill" style="--target-width:55%; background:linear-gradient(90deg,#f56565,#fc8181);">55%</div></div>
+            <span class="cat-bar-pct">55%</span>
+        </div>
+        <div class="cat-legend">
+            <div class="cat-legend-item"><div class="cat-legend-dot" style="background:#38a169;"></div> Excelente (&lt;40%)</div>
+            <div class="cat-legend-item"><div class="cat-legend-dot" style="background:#2f855a;"></div> Bueno (40–46%)</div>
+            <div class="cat-legend-item"><div class="cat-legend-dot" style="background:var(--accent);"></div> Regular (46–50%)</div>
+            <div class="cat-legend-item"><div class="cat-legend-dot" style="background:#f56565;"></div> Alto (&gt;50%)</div>
+        </div>
+    </div>
+
+    <div class="info-card">
+        <div class="info-card-title"><i class="fas fa-sync-alt"></i> Ciclo de facturación mensual</div>
+        <div class="cycle-steps">
+            <div class="cycle-step">
+                <div class="cycle-num">1</div>
+                <h4>Haces compras</h4>
+                <p>Durante el periodo usas tu tarjeta normalmente</p>
+            </div>
+            <div class="cycle-step">
+                <div class="cycle-num">2</div>
+                <h4>Fecha de corte</h4>
+                <p>El banco cierra el periodo y genera tu estado de cuenta</p>
+            </div>
+            <div class="cycle-step">
+                <div class="cycle-num">3</div>
+                <h4>Recibes estado</h4>
+                <p>Tienes 20–25 días para pagar sin intereses</p>
+            </div>
+            <div class="cycle-step">
+                <div class="cycle-num">4</div>
+                <h4>Fecha límite</h4>
+                <p>Paga el total = $0 intereses. Solo mínimo = intereses</p>
+            </div>
+        </div>
+        <div class="tip-box">
+            <i class="fas fa-lightbulb"></i>
+            <span><strong>Tip clave:</strong> Si pagas el 100% antes de la fecha límite, nunca pagas intereses. Así es como debes usar tu tarjeta.</span>
+        </div>
+    </div>
+
+    <div class="info-card" style="padding:0;overflow:hidden;">
+        <div class="info-card-title" style="padding:2.5rem 2.5rem 0;">
+            <i class="fas fa-balance-scale" style="color:var(--primary);"></i> Pago mínimo vs pago total
+            <span style="font-size: 0.8rem; font-family:'DM Sans', sans-serif; margin-left: auto; color: var(--texto-medio); font-weight: normal;">Deuda de $5,000 al 45% CAT</span>
+        </div>
+        
+        <div class="battle-container">
+            <!-- Pagando el mínimo -->
+            <div class="battle-card" style="background: #fff8f8; border-color: rgba(245,101,101,0.15);">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:42px; height:42px; border-radius:12px; background:#fff5f5; color:#f56565; display:flex; align-items:center; justify-content:center;">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div>
+                        <span style="display:block; font-size:0.75rem; font-weight:700; color:#f56565; text-transform:uppercase;">Decisión Arriesgada</span>
+                        <span style="font-size:0.9rem; font-weight:600; color:#822727;">Pagar solo el mínimo</span>
+                    </div>
+                </div>
+                
+                <div style="margin: 1rem 0;">
+                    <span style="display:block; font-size: 0.7rem; color: var(--texto-medio); text-transform: uppercase;">Tiempo para liquidar</span>
+                    <span style="font-family:'DM Serif Display', serif; font-size: 2.5rem; color: #f56565; line-height:1;">~3.5 años</span>
+                </div>
+
+                <div class="battle-stats">
+                    <div class="battle-stat">
+                        <span class="battle-stat-label">Total pagado</span>
+                        <span class="battle-stat-val" style="color:#f56565;">~$10,500</span>
+                    </div>
+                    <div class="battle-stat">
+                        <span class="battle-stat-label">Intereses Extra</span>
+                        <span class="battle-stat-val" style="color:#f56565;">+$5,500</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="battle-vs">VS</div>
+
+            <!-- Pagando el Total -->
+            <div class="battle-card" style="background: #f6fcf9; border-color: rgba(56,161,105,0.1); box-shadow: 0 10px 30px rgba(56,161,105,0.05);">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:42px; height:42px; border-radius:12px; background:#e6fffa; color:#38a169; display:flex; align-items:center; justify-content:center;">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div>
+                        <span style="display:block; font-size:0.75rem; font-weight:700; color:#38a169; text-transform:uppercase;">Decisión Inteligente</span>
+                        <span style="font-size:0.9rem; font-weight:600; color:#234e52;">Pagar el total al corte</span>
+                    </div>
+                </div>
+
+                <div style="margin: 1rem 0;">
+                    <span style="display:block; font-size: 0.7rem; color: var(--texto-medio); text-transform: uppercase;">Tiempo para liquidar</span>
+                    <span style="font-family:'DM Serif Display', serif; font-size: 2.5rem; color: #38a169; line-height:1;">1 mes</span>
+                </div>
+
+                <div class="battle-stats">
+                    <div class="battle-stat">
+                        <span class="battle-stat-label">Total pagado</span>
+                        <span class="battle-stat-val" style="color:#38a169;">$5,000</span>
+                    </div>
+                    <div class="battle-stat">
+                        <span class="battle-stat-label">Tu Ahorro Real</span>
+                        <span class="battle-stat-val" style="color:#38a169;">$5,500</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-card">
+        <div class="info-card-title"><i class="fas fa-tachometer-alt" style="color:var(--primary);"></i> La regla del 30% — ¿Cuánto de tu límite usar?</div>
+        
+        <div class="gauge-track">
+            <div class="gauge-part ideal"></div>
+            <div class="gauge-part warning"></div>
+            <div class="gauge-part danger"></div>
+        </div>
+        <div class="gauge-labels">
+            <span>0%</span>
+            <span>30%</span>
+            <span>60%</span>
+            <span>100%</span>
+        </div>
+
+        <div class="util-cards-grid">
+            <div class="util-card" style="background:#f0fff4;border:2px solid #c6f6d5;border-radius:24px;padding:2rem 1rem;text-align:center;">
+                <div style="font-family:'DM Serif Display',serif;font-size:2.2rem;color:#276749;margin-bottom:0.5rem;">0–30%</div>
+                <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#2f855a; margin-bottom:1rem; letter-spacing:0.05em;">✅ Zona Ideal</div>
+                <p style="font-size:0.85rem; color:#2f855a; line-height:1.5;">Buen score, margen de emergencia y perfil sano.</p>
+            </div>
+            <div class="util-card" style="background:#fffaf0;border:2px solid #feebc8;border-radius:24px;padding:2rem 1rem;text-align:center;">
+                <div style="font-family:'DM Serif Display',serif;font-size:2.2rem;color:#9c4221;margin-bottom:0.5rem;">31–60%</div>
+                <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#b7791f; margin-bottom:1rem; letter-spacing:0.05em;">⚠️ Zona Alerta</div>
+                <p style="font-size:0.85rem; color:#744210; line-height:1.5;">Score bajando, riesgo de sobre-endeudamiento.</p>
+            </div>
+            <div class="util-card" style="background:#fffafa;border:2px solid #fed7d7;border-radius:24px;padding:2rem 1rem;text-align:center;">
+                <div style="font-family:'DM Serif Display',serif;font-size:2.2rem;color:#c53030;margin-bottom:0.5rem;">61–100%</div>
+                <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#f56565; margin-bottom:1rem; letter-spacing:0.05em;">🔥 Zona Riesgo</div>
+                <p style="font-size:0.85rem; color:#822727; line-height:1.5;">Score muy afectado. Acceso a crédito difícil.</p>
+            </div>
+        </div>
+
+        <div class="tip-box" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; border:none; padding:1.25rem 1.5rem; border-radius:18px;">
+            <div style="background: rgba(255,255,255,0.2); width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-right:1rem; flex-shrink:0;">
+                <i class="fas fa-lightbulb" style="color:#fff;"></i>
+            </div>
+            <span style="font-size:0.9rem; line-height:1.5;">
+                <strong style="display:block; margin-bottom:3px; font-family:'DM Serif Display', serif; font-size:1.1rem; font-weight:normal;">Pro-Tip Especial</strong>
+                Si tu límite es $10,000, usa <strong>máximo $3,000</strong> al mes para mantener un perfil crediticio perfecto.
+            </span>
+        </div>
+    </div>
+
+</div>
+
+<!-- ══ TIPS ══ -->
+<div class="tab-section" id="tab-tips">
+
+    <div class="tips-cats">
+        <button class="tips-cat-btn active" onclick="filterTips('all',this)">Todos</button>
+        <button class="tips-cat-btn" onclick="filterTips('pago',this)"><i class="fas fa-money-bill-wave"></i> Pagos</button>
+        <button class="tips-cat-btn" onclick="filterTips('credito',this)"><i class="fas fa-chart-line"></i> Historial</button>
+        <button class="tips-cat-btn" onclick="filterTips('habitos',this)"><i class="fas fa-brain"></i> Hábitos</button>
+        <button class="tips-cat-btn" onclick="filterTips('pro',this)"><i class="fas fa-star"></i> Nivel pro</button>
+    </div>
+
+    <div class="tips-grid" id="tips-grid">
+
+        <div class="tip-card tip-featured priority-critica" data-tipcat="pago">
+            <div class="tip-card-stripe"></div>
+            <div style="flex:1;display:flex;flex-direction:column;">
+                <div class="tip-card-header">
+                    <div class="tip-card-icon" style="background: rgba(229, 62, 62, 0.1); color: #c53030; font-size: 1.5rem;">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="tip-card-meta">
+                        <div class="tip-card-priority" style="background: rgba(197, 48, 48, 0.12); color: #c53030;">
+                            <i class="fas fa-fire"></i> Regla de oro — Prioridad crítica
+                        </div>
+                        <h3 class="tip-card-title" style="font-size: 1.6rem; margin-top: 4px;">Paga el saldo total antes de la fecha límite, siempre</h3>
+                    </div>
+                </div>
+                <div class="tip-card-body">
+                    <p class="tip-card-desc" style="font-size: 1.05rem; max-width: 800px;">
+                        Esta es la regla más importante del uso inteligente de tarjetas de crédito. Si liquidas el <strong>100% de tu saldo</strong> antes de la fecha límite de pago, el banco no puede cobrarte ningún interés. La tarjeta se convierte en una herramienta gratuita con beneficios incluidos.
+                    </p>
+                    <div class="tip-impact">
+                        <div class="tip-card-icon" style="width: 32px; height: 32px; font-size: 0.9rem; background: #fff; box-shadow: none;">
+                            <i class="fas fa-wallet" style="color: var(--primary);"></i>
+                        </div>
+                        <div class="tip-impact-val">
+                            <span style="display: block; font-size: 0.7rem; text-transform: uppercase; color: var(--texto-medio); letter-spacing: 0.05em; font-weight: 700;">Impacto de Ahorro Real</span>
+                            Con saldo promedio de $8,000 y CAT del 45%, pagar el total te ahorra <strong>~$3,600 al año</strong> en intereses.
+                        </div>
+                    </div>
+                    <div class="tip-donotdo">
+                        <i class="fas fa-times-circle" style="color: #e53e3e;"></i>
+                        <span>No racionalices el pago parcial. Cada peso que no liquidas rompe tu periodo de gracia de inmediato.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tip-card priority-critica" data-tipcat="pago">
+            <div class="tip-card-stripe"></div>
+            <div class="tip-card-header">
+                <div class="tip-card-icon"><i class="fas fa-ban"></i></div>
+                <div class="tip-card-meta">
+                    <div class="tip-card-priority"><i class="fas fa-exclamation-triangle"></i> Prioridad crítica</div>
+                    <h3 class="tip-card-title">Nunca pagues solo el mínimo</h3>
+                </div>
+            </div>
+            <div class="tip-card-body">
+                <p class="tip-card-desc">
+                    El pago mínimo apenas cubre intereses y una fracción mínima del capital. <strong>Es el mecanismo que más beneficia al banco y más daña al usuario.</strong>
+                </p>
+                <div class="tip-impact">
+                    <div class="tip-impact-val">
+                        <span style="display: block; font-size: 0.7rem; text-transform: uppercase; color: var(--texto-medio); letter-spacing: 0.05em; font-weight: 700;">Dato de Realidad</span>
+                        $10k a 45% CAT pagando mínimo = <strong>$22k+</strong> al final. Pagando el total = <strong>$0</strong> interés.
+                    </div>
+                </div>
+                <div class="tip-donotdo">
+                    <i class="fas fa-times-circle"></i>
+                    <span>Si no puedes pagar el total, paga el máximo posible. No te conformes con el mínimo.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tip-card priority-alta" data-tipcat="credito">
+            <div class="tip-card-stripe"></div>
+            <div class="tip-card-header">
+                <div class="tip-card-icon"><i class="fas fa-tachometer-alt"></i></div>
+                <div class="tip-card-meta">
+                    <div class="tip-card-priority"><i class="fas fa-arrow-up"></i> Alta prioridad</div>
+                    <h3 class="tip-card-title">Regla del 30% de utilización</h3>
+                </div>
+            </div>
+            <div class="tip-card-body">
+                <p class="tip-card-desc">
+                    Tu score depende mucho de cuánto de tu límite usas. Mantenerlo bajo optimiza tu perfil para futuros créditos.
+                </p>
+                <div class="tip-impact">
+                    <div class="tip-impact-val">
+                        <span style="display: block; font-size: 0.7rem; text-transform: uppercase; color: var(--texto-medio); letter-spacing: 0.05em; font-weight: 700;">Impacto en Score</span>
+                        Bajar de 80% a 30% de uso puede subir tu score hasta <strong>80 puntos</strong> en un solo mes.
+                    </div>
+                </div>
+                <div class="tip-steps">
+                    <div class="tip-step"><div class="tip-step-dot">1</div>No satures una sola tarjeta</div>
+                    <div class="tip-step"><div class="tip-step-dot">2</div>Paga antes de tu fecha de corte</div>
+                    <div class="tip-step"><div class="tip-step-dot">3</div>Pide incrementos de línea de crédito</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tip-card priority-alta" data-tipcat="habitos">
+            <div class="tip-card-stripe"></div>
+            <div class="tip-card-header">
+                <div class="tip-card-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                <div class="tip-card-meta">
+                    <div class="tip-card-priority"><i class="fas fa-arrow-up"></i> Alta prioridad</div>
+                    <div class="tip-card-title">Revisa tu estado de cuenta cada mes sin falta</div>
+                </div>
+            </div>
+            <div class="tip-card-body">
+                <div class="tip-card-desc">
+                    Tu estado de cuenta mensual es la radiografía financiera de tu tarjeta. Revisarlo te permite detectar <strong>cargos no reconocidos, cobros duplicados, comisiones indebidas y suscripciones olvidadas</strong>. En México tienes hasta <strong>90 días hábiles</strong> desde la fecha del cargo para presentar un contracargo ante el banco sin costo.
+                </div>
+                <div class="tip-impact">
+                    <span class="tip-impact-label">🔍 Por qué importa</span>
+                    <span class="tip-impact-val">El fraude con tarjetas en México creció un 34% en 2023. La mayoría se detecta tarde porque los usuarios no revisan sus estados de cuenta.</span>
+                </div>
+                <div class="tip-steps">
+                    <div class="tip-step"><div class="tip-step-dot">1</div>Activa notificaciones SMS o push por cada cargo realizado</div>
+                    <div class="tip-step"><div class="tip-step-dot">2</div>Revisa el estado completo dentro de los 5 días después del corte</div>
+                    <div class="tip-step"><div class="tip-step-dot">3</div>Ante un cargo desconocido, llama de inmediato y solicita aclaración</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tip-card priority-media" data-tipcat="habitos">
+            <div class="tip-card-stripe"></div>
+            <div class="tip-card-header">
+                <div class="tip-card-icon"><i class="fas fa-robot"></i></div>
+                <div class="tip-card-meta">
+                    <div class="tip-card-priority"><i class="fas fa-check"></i> Buena práctica</div>
+                    <h3 class="tip-card-title">Automatiza tu tranquilidad</h3>
+                </div>
+            </div>
+            <div class="tip-card-body">
+                <p class="tip-card-desc">
+                    El olvido es la causa #1 de intereses. Configura el pago automático para no depender de tu memoria.
+                </p>
+                <div class="tip-impact">
+                    <div class="tip-impact-val">
+                        <span style="display: block; font-size: 0.7rem; text-transform: uppercase; color: var(--texto-medio); letter-spacing: 0.05em; font-weight: 700;">Configuración</span>
+                        App del banco → Pagos → Automático → <strong>Seleccionar "Saldo Total"</strong>.
+                    </div>
+                </div>
+                <div class="tip-donotdo" style="background: #e6fffa; border-left-color: #38b2ac; color: #234e52;">
+                    <i class="fas fa-info-circle" style="color: #319795;"></i>
+                    <span>Asegúrate de tener fondos 2 días antes de tu fecha límite para evitar fallos.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tip-card priority-media" data-tipcat="habitos">
+            <div class="tip-card-stripe"></div>
+            <div class="tip-card-header">
+                <div class="tip-card-icon"><i class="fas fa-shield-alt"></i></div>
+                <div class="tip-card-meta">
+                    <div class="tip-card-priority"><i class="fas fa-check"></i> Buena práctica</div>
+                    <h3 class="tip-card-title">Domina tus beneficios</h3>
+                </div>
+            </div>
+            <div class="tip-card-body">
+                <p class="tip-card-desc">
+                    Tu tarjeta tiene seguros y beneficios que ya estás pagando. Úsalos en gastos que ya tenías planeados.
+                </p>
+                <div class="tip-impact">
+                    <div class="tip-impact-val">
+                        <span style="display: block; font-size: 0.7rem; text-transform: uppercase; color: var(--texto-medio); letter-spacing: 0.05em; font-weight: 700;">Lo que casi nadie usa</span>
+                        Seguros de viaje, protección de compras y extensión de garantía. <strong>Valen miles de pesos.</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tip-card priority-media" data-tipcat="credito">
+            <div class="tip-card-stripe"></div>
+            <div class="tip-card-header">
+                <div class="tip-card-icon"><i class="fas fa-seedling"></i></div>
+                <div class="tip-card-meta">
+                    <div class="tip-card-priority"><i class="fas fa-check"></i> Buena práctica</div>
+                    <div class="tip-card-title">Empieza con una tarjeta sin anualidad y CAT bajo</div>
+                </div>
+            </div>
+            <div class="tip-card-body">
+                <div class="tip-card-desc">
+                    Si estás construyendo tu historial crediticio, la primera tarjeta debe tener <strong>anualidad $0, CAT menor al 40% y límite modesto</strong>. Úsala únicamente para gastos que ya hacías en efectivo y paga el total cada mes. En 6–12 meses tendrás historial suficiente para acceder a productos mejores.
+                </div>
+                <div class="tip-impact">
+                    <span class="tip-impact-label">📅 Línea de tiempo</span>
+                    <span class="tip-impact-val">Mes 1–6: construyes historial básico. Mes 6–12: score supera 650. Año 2: accedes a tarjetas con mejores beneficios, mayor límite y tasas preferenciales.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tip-card priority-pro" data-tipcat="pro">
+            <div class="tip-card-stripe"></div>
+            <div class="tip-card-header">
+                <div class="tip-card-icon"><i class="fas fa-chess-knight"></i></div>
+                <div class="tip-card-meta">
+                    <div class="tip-card-priority"><i class="fas fa-star"></i> Nivel pro</div>
+                    <h3 class="tip-card-title">El día después del corte</h3>
+                </div>
+            </div>
+            <div class="tip-card-body">
+                <p class="tip-card-desc">
+                    Comprar justo después de tu corte te da hasta <strong>50 días</strong> de financiamiento gratis.
+                </p>
+                <div class="tip-impact">
+                    <div class="tip-impact-val">
+                        <span style="display: block; font-size: 0.7rem; text-transform: uppercase; color: var(--texto-medio); letter-spacing: 0.05em; font-weight: 700;">Estrategia</span>
+                        Corte día 10. Compra día 11. Pagas hasta el día 5 del subsidiente mes. <strong>Liquidez $0 costo.</strong>
+                    </div>
+                </div>
+                <div class="tip-steps">
+                    <div class="tip-step"><div class="tip-step-dot">1</div>Conoce tu fecha de corte</div>
+                    <div class="tip-step"><div class="tip-step-dot">2</div>Espera al día siguiente para compras grandes</div>
+                    <div class="tip-step"><div class="tip-step-dot">3</div>No falles en la fecha límite</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tip-card priority-pro" data-tipcat="pro">
+            <div class="tip-card-stripe"></div>
+            <div class="tip-card-header">
+                <div class="tip-card-icon"><i class="fas fa-layer-group"></i></div>
+                <div class="tip-card-meta">
+                    <div class="tip-card-priority"><i class="fas fa-star"></i> Nivel pro</div>
+                    <h3 class="tip-card-title">Domina los MSI</h3>
+                </div>
+            </div>
+            <div class="tip-card-body">
+                <p class="tip-card-desc">
+                    Los Meses Sin Intereses son geniales para liquidez, pero peligrosos para tu límite total. Úsalos solo en compras que ya podías pagar de contado.
+                </p>
+                <div class="tip-impact">
+                    <div class="tip-impact-val">
+                        <span style="display: block; font-size: 0.7rem; text-transform: uppercase; color: var(--texto-medio); letter-spacing: 0.05em; font-weight: 700;">Riesgo de Saturación</span>
+                        Acumular varios MSI puede comprometer el <strong>80–100%</strong> de tu límite, dejándote sin margen de emergencia por meses.
+                    </div>
+                </div>
+                <div class="tip-donotdo">
+                    <i class="fas fa-times-circle"></i>
+                    <span>No los uses en gastos pequeños o recurrentes. Los MSI son para bienes duraderos (electronica, hogar).</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ══ GLOSARIO ══ -->
+<div class="tab-section" id="tab-glosario">
+
+    <div class="glosario-search-wrap">
+        <div class="glosario-search-box">
+            <div class="gsb-icon"><i class="fas fa-search"></i></div>
+            <input
+                type="text"
+                id="glosarioInput"
+                class="gsb-input"
+                placeholder="Buscar término… ej: CAT, interés, anualidad, buró"
+                autocomplete="off"
+                oninput="onGlosarioInput(this.value)"
+            >
+            <button class="gsb-clear" id="gsb-clear" onclick="clearSearch()">
+                <i class="fas fa-times"></i> Limpiar
+            </button>
+        </div>
+        <div class="gsb-status" id="gsb-status"><span id="gsb-status-text"></span></div>
+        <div class="gsb-no-results" id="gsb-no-results">
+            <div class="gsb-no-results-title">Sin resultados exactos para "<span id="gsb-query-echo"></span>"</div>
+            <div class="gsb-no-results-sub">No encontramos ese término, pero quizás buscabas:</div>
+            <div class="gsb-similar-label">Términos similares</div>
+            <div class="gsb-similar-pills" id="gsb-similar-pills"></div>
+        </div>
+    </div>
+
+    <div class="glos-cats">
+        <button class="glos-cat-btn active" onclick="filterCat('all',this)">Todos</button>
+        <button class="glos-cat-btn" onclick="filterCat('costo',this)"><i class="fas fa-percentage" style="margin-right:4px;"></i>Costos y tasas</button>
+        <button class="glos-cat-btn" onclick="filterCat('tiempo',this)"><i class="fas fa-calendar" style="margin-right:4px;"></i>Fechas y ciclos</button>
+        <button class="glos-cat-btn" onclick="filterCat('pago',this)"><i class="fas fa-money-bill-wave" style="margin-right:4px;"></i>Pagos</button>
+        <button class="glos-cat-btn" onclick="filterCat('credito',this)"><i class="fas fa-credit-card" style="margin-right:4px;"></i>Crédito e historial</button>
+        <button class="glos-cat-btn" onclick="filterCat('bene',this)"><i class="fas fa-gift" style="margin-right:4px;"></i>Beneficios</button>
+    </div>
+
+    <div class="gsb-section-label" id="gsb-section-label"></div>
+
+    <div class="glosario-grid" id="glosario-grid">
+
+        <!-- GROUP A -->
+        <div class="glos-letter-group group-navy" data-letter="A">
+            <span class="glos-big-letter">A</span>
+            <div class="glos-group-content">
+                <div class="glos-group-header">
+                    <i class="fas fa-font"></i>
+                    <h2>A — Base y Cargos</h2>
+                </div>
+                <div class="termino-card cat-costo" data-cat="costo" data-term="anualidad" data-def="comision anual cargo fijo tarjeta condonacion compras membresía">
+                    <span class="tc-term">Anualidad</span>
+                    <div class="tc-body">
+                        <div class="tc-def">La <strong>anualidad</strong> es una comisión fija que el banco cobra una vez al año simplemente por mantenerte como titular de la tarjeta. Su costo varía desde <strong>$0</strong> hasta más de $3,000 anuales. Muchos bancos la condonan si realizas un número mínimo de compras al mes.</div>
+                        <div class="tc-example"><i class="fas fa-lightbulb"></i><span>Una tarjeta con anualidad de $1,200 requiere que tus beneficios (cashback/puntos) superen ese monto para ser rentable.</span></div>
+                        <div class="tc-chips">
+                            <div class="tc-chip good"><i class="fas fa-check"></i> Muchas tarjetas la condonan</div>
+                            <div class="tc-chip warn"><i class="fas fa-exclamation"></i> Se cobra aunque no uses la tarjeta</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="termino-card cat-bene" data-cat="bene" data-term="tarjeta adicional" data-def="plastico prestado extension limite hijos familiares responsable titular">
+                    <span class="tc-term">Tarjeta Adicional</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Plástico extra emitido bajo la misma cuenta para familiares. Comparte el <strong>mismo límite total</strong>. Recuerda: el titular legal (tú) es el único responsable cien por ciento de la deuda.</div>
+                        <div class="tc-chips">
+                            <div class="tc-chip warn"><i class="fas fa-exclamation"></i> El titular asume toda la deuda legal</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GROUP B -->
+        <div class="glos-letter-group group-teal" data-letter="B">
+            <span class="glos-big-letter">B</span>
+            <div class="glos-group-content">
+                <div class="glos-group-header">
+                    <i class="fas fa-file-invoice"></i>
+                    <h2>B — Buró e Historial</h2>
+                </div>
+                <div class="termino-card cat-credito" data-cat="credito" data-term="buro de credito historial crediticio" data-def="registro pagos historial score calificacion banco credito futuro condusef reporte">
+                    <span class="tc-term">Buró de crédito</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Institución que recopila tu <strong>historial completo de pagos</strong>. Los bancos lo consultan para otorgarte créditos. Estar en buró es normal; lo importante es tener "palomitas verdes" de pago puntual.</div>
+                        <div class="tc-chips">
+                            <div class="tc-chip good"><i class="fas fa-check"></i> Historial sano = mejores tasas</div>
+                            <div class="tc-chip"><i class="fas fa-info"></i> Consulta gratis en buro.gob.mx</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GROUP C -->
+        <div class="glos-letter-group group-gold" data-letter="C">
+            <span class="glos-big-letter">C</span>
+            <div class="glos-group-content">
+                <div class="glos-group-header">
+                    <i class="fas fa-percentage"></i>
+                    <h2>C — Costos y Seguridad</h2>
+                </div>
+                <div class="termino-card cat-costo" data-cat="costo" data-term="cat" data-def="costo anual total porcentaje real del costo del credito incluyendo todos los cargos comisiones seguros intereses">
+                    <span class="tc-term">CAT — Costo Anual Total</span>
+                    <div class="tc-body">
+                        <div class="tc-def">El indicador más importante para comparar. Incluye <strong>tasa de interés, anualidad y comisiones</strong> en un solo porcentaje anual. Siempre es mayor que la tasa nominal.</div>
+                        <div class="tc-chips"><div class="tc-chip good"><i class="fas fa-check"></i> Menos CAT = crédito más barato</div></div>
+                    </div>
+                </div>
+                <div class="termino-card cat-costo" data-cat="costo" data-term="comision por mora" data-def="cargo adicional no pagar minimo vencimiento penalizacion multa retraso">
+                    <span class="tc-term">Comisión por mora</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Cargo fijo (ej. $400 - $600) que el banco aplica si <strong>no realizas ni el pago mínimo</strong> antes de la fecha límite. Daña tu historial instantáneamente.</div>
+                    </div>
+                </div>
+                <div class="termino-card cat-costo" data-cat="costo" data-term="cargo no reconocido" data-def="transaccion fraudulenta clonacion contracargo disputa reclamo banco">
+                    <span class="tc-term">Cargo no reconocido</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Compra que tú no autorizaste. En México tienes <strong>90 días</strong> para reportarlo. El banco debe investigar y normalmente devolver los fondos de inmediato.</div>
+                    </div>
+                </div>
+                <div class="termino-card cat-credito" data-cat="credito" data-term="cvv cvc codigo de seguridad" data-def="numero tres digitos reverso tarjeta compras en linea seguridad fraude">
+                    <span class="tc-term">CVV / Código de Seguridad</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Código de 3 dítigos al reverso. Es la llave para compras digitales. Los <strong>CVV dinámicos</strong> de las apps son mucho más seguros contra fraude.</div>
+                    </div>
+                </div>
+                <div class="termino-card cat-bene" data-cat="bene" data-term="cashback reembolso" data-def="devolucion porcentaje compras saldo favor efectivo reembolso beneficio porcentaje">
+                    <span class="tc-term">Cashback</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Beneficio que te devuelve un <strong>porcentaje de tus compras</strong> (1-5%) como dinero real o saldo a favor. Es un ahorro directo por usar tu tarjeta correctamente.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GROUP F -->
+        <div class="glos-letter-group group-navy" data-letter="F">
+            <span class="glos-big-letter">F</span>
+            <div class="glos-group-content">
+                <div class="glos-group-header">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h2>F — Fechas del Ciclo</h2>
+                </div>
+                <div class="termino-card cat-tiempo" data-cat="tiempo" data-term="fecha de corte" data-def="dia banco cierra periodo estado de cuenta mensual ciclo facturacion">
+                    <span class="tc-term">Fecha de corte</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Día del mes en que el banco <strong>corta tu facturación</strong>. Todo lo que gastaste antes de este día entra en tu estado de cuenta actual.</div>
+                        <div class="tc-example"><i class="fas fa-lightbulb"></i><span>Comprar un día después del corte te da hasta 50 días para pagar.</span></div>
+                    </div>
+                </div>
+                <div class="termino-card cat-tiempo" data-cat="tiempo" data-term="fecha limite de pago" data-def="ultimo dia pagar sin intereses vencimiento estado cuenta mora">
+                    <span class="tc-term">Fecha límite de pago</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Último día para liquidar tu deuda <strong>sin pagar intereses</strong>. Suele ser 20 días después del corte. Si no pagas el total, se generan intereses.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GROUP I -->
+        <div class="glos-letter-group group-teal" data-letter="I">
+            <span class="glos-big-letter">I</span>
+            <div class="glos-group-content">
+                <div class="glos-group-header">
+                    <i class="fas fa-chart-line"></i>
+                    <h2>I — Intereses</h2>
+                </div>
+                <div class="termino-card cat-costo" data-cat="costo" data-term="tasa de interes" data-def="porcentaje banco cobra prestarte dinero saldo pendiente mensual anual ordinaria moratoria">
+                    <span class="tc-term">Tasa de interés</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Porcentaje que el banco cobra por el dinero prestado. La <strong>tasa ordinaria</strong> aplica sobre el saldo no pagado; la <strong>tasa moratoria</strong> aplica si no pagas ni el mínimo.</div>
+                        <div class="tc-example"><i class="fas fa-lightbulb"></i><span>Si debes $10,000 a una tasa mensual del 3.5%, pagarás $350 de puro interés ese mes.</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GROUP L -->
+        <div class="glos-letter-group group-gold" data-letter="L">
+            <span class="glos-big-letter">L</span>
+            <div class="glos-group-content">
+                <div class="glos-group-header">
+                    <i class="fas fa-align-left"></i>
+                    <h2>L — Límites</h2>
+                </div>
+                <div class="termino-card cat-credito" data-cat="credito" data-term="limite de credito" data-def="maximo gastar tarjeta banco autorizacion incremento utilizacion 30 porciento">
+                    <span class="tc-term">Límite de crédito</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Monto máximo que el banco te autoriza gastar. Se basa en tu capacidad de pago e historial. <strong>No es "dinero extra"</strong>, es un préstamo.</div>
+                        <div class="tc-chips"><div class="tc-chip good"><i class="fas fa-check"></i> Usar menos del 30% mejora tu score</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GROUP M -->
+        <div class="glos-letter-group group-navy" data-letter="M">
+            <span class="glos-big-letter">M</span>
+            <div class="glos-group-content">
+                <div class="glos-group-header">
+                    <i class="fas fa-layer-group"></i>
+                    <h2>M — Modalidades</h2>
+                </div>
+                <div class="termino-card cat-pago" data-cat="pago" data-term="msi meses sin intereses" data-def="diferir compras pagos iguales sin interes plazo cuotas mensualidades">
+                    <span class="tc-term">MSI — Meses Sin Intereses</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Permiten dividir una compra en pagos iguales <strong>sin intereses</strong>. Riesgo principal: comprometer demasiado tu límite total y quedarte sin margen.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GROUP P -->
+        <div class="glos-letter-group group-teal" data-letter="P">
+            <span class="glos-big-letter">P</span>
+            <div class="glos-group-content">
+                <div class="glos-group-header">
+                    <i class="fas fa-wallet"></i>
+                    <h2>P — Pagos y Plazos</h2>
+                </div>
+                <div class="termino-card cat-pago" data-cat="pago" data-term="pago minimo" data-def="monto minimo mora intereses deuda larga pago parcial riesgo">
+                    <span class="tc-term">Pago mínimo</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Monto más bajo para mantener tu crédito vigente. <strong>Evítalo a toda costa</strong>: casi todo se va a intereses y tu deuda apenas bajará.</div>
+                        <div class="tc-example"><i class="fas fa-lightbulb"></i><span>Una deuda de $10,000 pagando solo el mínimo puede tardar años en liquidarse.</span></div>
+                    </div>
+                </div>
+                <div class="termino-card cat-tiempo" data-cat="tiempo" data-term="periodo de gracia" data-def="dias corte fecha limite sin intereses ventana pago">
+                    <span class="tc-term">Periodo de gracia</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Días entre el corte y la fecha límite donde puedes liquidar tu saldo <strong>sin pagar ni un peso de intereses</strong>. Suele ser de 20 a 25 días.</div>
+                    </div>
+                </div>
+                <div class="termino-card cat-bene" data-cat="bene" data-term="puntos recompensas programa lealtad" data-def="acumular puntos canjear productos vuelos hoteles saldo recompensas miles">
+                    <span class="tc-term">Puntos y recompensas</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Créditos que acumulas por cada peso gastado. Canjeables por viajes, productos o efectivo. Valen la pena si eres <strong>totalero</strong>.</div>
+                    </div>
+                </div>
+                <div class="termino-card cat-pago" data-cat="pago" data-term="disposicion de efectivo retiro cajero" data-def="retirar dinero tarjeta credito cajero atm intereses inmediatos comision cara">
+                    <span class="tc-term">Disposición de efectivo</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Retirar dinero de un cajero con tu tarjeta. <strong>¡Cuidado!</strong> Genera intereses desde el primer día y comisiones altas. Úsalo solo en emergencias extremas.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GROUP S -->
+        <div class="glos-letter-group group-gold" data-letter="S">
+            <span class="glos-big-letter">S</span>
+            <div class="glos-group-content">
+                <div class="glos-group-header">
+                    <i class="fas fa-chart-pie"></i>
+                    <h2>S — Score y Saldo</h2>
+                </div>
+                <div class="termino-card cat-credito" data-cat="credito" data-term="score crediticio puntaje" data-def="numero calificacion comportamiento pago 400 850 utilización credito consultas">
+                    <span class="tc-term">Score crediticio</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Tu <strong>calificación numérica (400-850)</strong>. Resume tu confiabilidad para los bancos. Un score de 700+ te da acceso a las mejores tasas del mercado.</div>
+                    </div>
+                </div>
+                <div class="termino-card cat-pago" data-cat="pago" data-term="saldo" data-def="monto total debes banco momento deuda pendiente acumulado">
+                    <span class="tc-term">Saldo</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Monto total que debes. <strong>Saldo al corte</strong> es lo del mes pasado; <strong>Saldo actual</strong> es lo que debes hoy (incluyendo compras nuevas).</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GROUP T -->
+        <div class="glos-letter-group group-navy" data-letter="T">
+            <span class="glos-big-letter">T</span>
+            <div class="glos-group-content">
+                <div class="glos-group-header">
+                    <i class="fas fa-chart-line"></i>
+                    <h2>T — Tasas e Interés</h2>
+                </div>
+                <div class="termino-card cat-costo" data-cat="costo" data-term="tasa de interes" data-def="porcentaje banco cobra prestarte dinero saldo pendiente mensual anual ordinaria moratoria">
+                    <span class="tc-term">Tasa de interés</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Porcentaje que el banco cobra por el dinero prestado. La <strong>tasa ordinaria</strong> aplica sobre el saldo no pagado; la <strong>tasa moratoria</strong> aplica si no pagas ni el mínimo.</div>
+                        <div class="tc-example"><i class="fas fa-lightbulb"></i><span>Si debes $10,000 a una tasa mensual del 3.5%, pagarás $350 de puro interés ese mes.</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GROUP U -->
+        <div class="glos-letter-group group-teal" data-letter="U">
+            <span class="glos-big-letter">U</span>
+            <div class="glos-group-content">
+                <div class="glos-group-header">
+                    <i class="fas fa-battery-half"></i>
+                    <h2>U — Utilización</h2>
+                </div>
+                <div class="termino-card cat-credito" data-cat="credito" data-term="utilizacion del credito" data-def="porcentaje limite usando saldo score impacto 30 porciento regla">
+                    <span class="tc-term">Utilización del crédito</span>
+                    <div class="tc-body">
+                        <div class="tc-def">Porcentaje de tu límite que estás usando. Mantenerla <strong>debajo del 30%</strong> es el secreto más grande para subir tu score crediticio rápido.</div>
+                        <div class="tc-chips"><div class="tc-chip good"><i class="fas fa-check"></i> Ideal: menos del 30%</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+/* ── Tab switcher ── */
+function showTab(id, btn) {
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+}
+
+/* ══ GLOSARIO LOGIC ══ */
+let currentGlosCat = 'all';
+
+function filterCat(cat, btn) {
+    currentGlosCat = cat;
+    document.querySelectorAll('.glos-cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilters();
+}
+
+function onGlosarioInput(val) {
+    const clearBtn = document.getElementById('gsb-clear');
+    clearBtn.style.display = val ? 'flex' : 'none';
+    applyFilters();
+}
+
+function clearSearch() {
+    const input = document.getElementById('glosarioInput');
+    input.value = '';
+    onGlosarioInput('');
+}
+
+function applyFilters() {
+    const query = document.getElementById('glosarioInput').value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.termino-card');
+    const groups = document.querySelectorAll('.glos-letter-group');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+        const catMatch = currentGlosCat === 'all' || card.dataset.cat === currentGlosCat;
+        const term = card.dataset.term.toLowerCase();
+        const def = card.dataset.def.toLowerCase();
+        const searchMatch = !query || term.includes(query) || def.includes(query);
+
+        const isVisible = catMatch && searchMatch;
+        card.style.display = isVisible ? 'block' : 'none';
+        if (isVisible) visibleCount++;
+    });
+
+    // Hide/Show groups based on visible children
+    groups.forEach(group => {
+        const visibleCardsInGroup = group.querySelectorAll('.termino-card[style="display: block;"]').length;
+        group.style.display = visibleCardsInGroup > 0 ? 'flex' : 'none';
+    });
+
+    // Status & Empty state
+    const statusText = document.getElementById('gsb-status-text');
+    const noResults = document.getElementById('gsb-no-results');
+    
+    if (query) {
+        statusText.textContent = `Encontramos ${visibleCount} término${visibleCount !== 1 ? 's' : ''}`;
+        noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        document.getElementById('gsb-query-echo').textContent = query;
+    } else {
+        statusText.textContent = '';
+        noResults.style.display = 'none';
+    }
+}
+
+/* ── Tips category filter ── */
+function filterTips(cat, btn) {
+    document.querySelectorAll('.tips-cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#tips-grid .tip-card').forEach(card => {
+        const match = cat === 'all' || card.dataset.tipcat === cat;
+        card.style.display = match ? '' : 'none';
+    });
+    const featured = document.querySelector('.tip-card.tip-featured');
+    if (featured) {
+        featured.style.gridColumn = featured.style.display === 'none' ? '' : '1 / -1';
+    }
+}
+
+/* ══ CARRUSEL INFINITO ══ */
+(function() {
+    const track    = document.getElementById('carouselTrack');
+    const pauseBtn = document.getElementById('carouselPause');
+    const pauseIcon = document.getElementById('pauseIcon');
+    const pauseLabel = document.getElementById('pauseLabel');
+    let isPaused   = false;
+    let speed      = 28; // segundos para recorrer el 50% (un set completo)
+
+    function setSpeed(s) {
+        speed = s;
+        track.style.animationDuration = s + 's';
+    }
+
+    window.togglePause = function() {
+        isPaused = !isPaused;
+        track.style.animationPlayState = isPaused ? 'paused' : 'running';
+        pauseIcon.className = isPaused ? 'fas fa-play' : 'fas fa-pause';
+        pauseLabel.textContent = isPaused ? 'Reanudar' : 'Pausar';
+        pauseBtn.classList.toggle('paused', isPaused);
+    };
+
+    document.getElementById('carouselSlower').addEventListener('click', function() {
+        setSpeed(Math.min(speed + 8, 60));
+    });
+    document.getElementById('carouselFaster').addEventListener('click', function() {
+        setSpeed(Math.max(speed - 8, 8));
+    });
+
+    // Pausa al hacer hover sobre el carrusel
+    const outer = document.getElementById('carouselOuter');
+    outer.addEventListener('mouseenter', function() {
+        if (!isPaused) track.style.animationPlayState = 'paused';
+    });
+    outer.addEventListener('mouseleave', function() {
+        if (!isPaused) track.style.animationPlayState = 'running';
+    });
+})();
+
+/* ── Glosario: category filter ── */
+var activeCat = 'all';
+function filterCat(cat, btn) {
+    activeCat = cat;
+    document.querySelectorAll('.glos-cat-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    onGlosarioInput(document.getElementById('glosarioInput').value);
+}
+
+function norm(str) {
+    return str.toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim();
+}
+
+function levenshtein(a, b) {
+    var m = a.length, n = b.length;
+    if (m === 0) return n;
+    if (n === 0) return m;
+    var dp = Array.from({length: m + 1}, function(_, i) {
+        var row = new Array(n + 1).fill(0);
+        row[0] = i;
+        return row;
+    });
+    for (var j = 0; j <= n; j++) dp[0][j] = j;
+    for (var i = 1; i <= m; i++)
+        for (var jj = 1; jj <= n; jj++)
+            dp[i][jj] = a[i-1] === b[jj-1]
+                ? dp[i-1][jj-1]
+                : 1 + Math.min(dp[i-1][jj], dp[i][jj-1], dp[i-1][jj-1]);
+    return dp[m][n];
+}
+
+function highlight(text, query) {
+    if (!query) return text;
+    var escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    var re = new RegExp('(' + escaped + ')(?![^<]*>)', 'gi');
+    return text.replace(re, '<mark>$1</mark>');
+}
+
+var glosarioCache = [];
+document.querySelectorAll('#glosario-grid .termino-card').forEach(function(card, idx) {
+    glosarioCache[idx] = {
+        termOrig: card.querySelector('.tc-term').innerHTML || '',
+        defOrig:  card.querySelector('.tc-def').innerHTML || ''
+    };
+    card.setAttribute('data-idx', idx);
+});
+
+function restoreCards() {
+    document.querySelectorAll('#glosario-grid .termino-card').forEach(function(card) {
+        var idx = card.getAttribute('data-idx');
+        if (typeof idx !== 'undefined' && idx !== null && glosarioCache[idx]) {
+            card.querySelector('.tc-term').innerHTML = glosarioCache[idx].termOrig;
+            card.querySelector('.tc-def').innerHTML  = glosarioCache[idx].defOrig;
+        }
+        var catMatch = activeCat === 'all' || card.dataset.cat === activeCat;
+        card.classList.toggle('hidden', !catMatch);
+        card.classList.remove('highlighted');
+    });
+}
+
+function onGlosarioInput(val) {
+    var q        = norm(val);
+    var status   = document.getElementById('gsb-status');
+    var noRes    = document.getElementById('gsb-no-results');
+    var label    = document.getElementById('gsb-section-label');
+    var clearBtn = document.getElementById('gsb-clear');
+
+    if (!q || q.length < 1) {
+        restoreCards();
+        status.style.display   = 'none';
+        noRes.style.display    = 'none';
+        label.style.display    = 'none';
+        clearBtn.style.display = 'none';
+        return;
+    }
+
+    clearBtn.style.display = 'inline-flex';
+
+    var cards = Array.from(document.querySelectorAll('#glosario-grid .termino-card'));
+    var exactCount  = 0;
+    var fuzzyMatches = [];
+
+    cards.forEach(function(card) {
+        var catMatch = activeCat === 'all' || card.dataset.cat === activeCat;
+        var termN    = card.dataset.term;
+        var defN     = card.dataset.def;
+        var inTerm   = termN.includes(q);
+        var inDef    = defN.includes(q);
+
+        if ((inTerm || inDef) && catMatch) {
+            card.classList.remove('hidden');
+            card.classList.add('highlighted');
+            var idx = card.getAttribute('data-idx');
+            var cT  = glosarioCache[idx] ? glosarioCache[idx].termOrig : '';
+            var cD  = glosarioCache[idx] ? glosarioCache[idx].defOrig  : '';
+            card.querySelector('.tc-term').innerHTML = highlight(cT, val.trim());
+            card.querySelector('.tc-def').innerHTML  = highlight(cD, val.trim());
+            exactCount++;
+        } else {
+            card.classList.add('hidden');
+            card.classList.remove('highlighted');
+            var idx = card.getAttribute('data-idx');
+            if (typeof idx !== 'undefined' && idx !== null && glosarioCache[idx]) {
+                card.querySelector('.tc-term').innerHTML = glosarioCache[idx].termOrig;
+                card.querySelector('.tc-def').innerHTML  = glosarioCache[idx].defOrig;
+            }
+            if (catMatch) {
+                var score = levenshtein(q, termN.substring(0, Math.max(q.length, termN.length)));
+                fuzzyMatches.push({ card: card, score: score });
+            }
+        }
+    });
+
+    fuzzyMatches.sort(function(a, b) { return a.score - b.score; });
+
+    if (exactCount > 0) {
+        var plural = exactCount === 1 ? 'resultado' : 'resultados';
+        status.innerHTML     = '<span class="gsb-status-count">' + exactCount + ' ' + plural + '</span> para "<strong>' + val.trim() + '</strong>"';
+        status.style.display = 'flex';
+        noRes.style.display  = 'none';
+        label.style.display  = 'none';
+    } else {
+        status.style.display = 'none';
+        noRes.style.display  = 'block';
+        label.style.display  = 'none';
+        document.getElementById('gsb-query-echo').textContent = val.trim();
+
+        var pills = document.getElementById('gsb-similar-pills');
+        pills.innerHTML = '';
+        var top4 = fuzzyMatches.slice(0, 4);
+
+        if (top4.length === 0) {
+            pills.innerHTML = '<span style="font-size:0.8rem;color:var(--muted);font-family:\'Outfit\',sans-serif;">No hay términos similares disponibles.</span>';
+        } else {
+            top4.forEach(function(item) {
+                var tmpDiv = document.createElement('div');
+                var cId = item.card.getAttribute('data-idx');
+                tmpDiv.innerHTML = glosarioCache[cId] ? glosarioCache[cId].termOrig : '';
+                var pill = document.createElement('button');
+                pill.className   = 'gsb-pill';
+                pill.textContent = tmpDiv.textContent;
+                pill.onclick = function() {
+                    document.getElementById('glosarioInput').value = tmpDiv.textContent;
+                    onGlosarioInput(tmpDiv.textContent);
+                };
+                pills.appendChild(pill);
+            });
+        }
+    }
+}
+
+function clearSearch() {
+    document.getElementById('glosarioInput').value = '';
+    onGlosarioInput('');
+}
+</script>
+@endsection

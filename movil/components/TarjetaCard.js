@@ -1,12 +1,13 @@
-/* Tarjeta visual: representa una tarjeta de credito personal, con el mismo
-   lenguaje visual (chip, degradado, logo) que las tarjetas de la web */
+/* Tarjeta visual: representa una tarjeta de credito personal del usuario,
+   con el mismo lenguaje visual (chip, degradado, logo) que las tarjetas
+   de la web */
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, FONTS } from '../constants/colors';
 import { RADIUS, SHADOW, GRADIENT_HERO } from '../constants/theme';
 
 export const TarjetaCard = ({ alias, banco, limite, saldoUtilizado, fechaPago }) => {
-  const utilizacion = Math.min(Math.round((saldoUtilizado / limite) * 100), 100);
+  const utilizacion = limite > 0 ? Math.min(Math.round((saldoUtilizado / limite) * 100), 100) : 0;
   /* Un solo color (blanco) con opacidad variable: mas solido = mayor uso.
      Evita introducir rojo/verde y se mantiene dentro de la paleta de marca. */
   const colorBarra = utilizacion >= 70 ? 'rgba(255,255,255,0.95)' : utilizacion >= 40 ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.4)';

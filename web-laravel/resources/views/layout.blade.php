@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', 'PoliCard')</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Brand Colors from Logo */
+            --primary:        #0A4269; /* Navy Mortarboard */
+            --primary-dark:   #062D48;
+            --secondary:      #66C2A4; /* Initial Light Teal */
+            --secondary-dark: #4A9E84;
+            --accent:         #FEE482; /* Yellow Card Detail */
+            --accent-dark:    #E4CC76;
+
+            /* Functional Palette */
+            --fondo:          #F0F4F7; /* Light navy tint */
+            --gris-claro:     #DAE1E7;
+            --blanco:         #FFFFFF;
+            --texto-oscuro:   #1A2B34;
+            --texto-medio:    #435761;
+            --sombra:         0 1px 3px rgba(10,66,105,0.06), 0 6px 24px rgba(10,66,105,0.08);
+            --sombra-lg:      0 4px 6px rgba(10,66,105,0.07), 0 16px 40px rgba(10,66,105,0.12);
+            --radio:          14px;
+            --radio-lg:       22px;
+
+            /* Backward compatibility for templates still using old names */
+            --verde-oscuro:   var(--primary);
+            --verde-medio:    var(--texto-medio);
+            --verde-salvia:   var(--secondary);
+            --verde-claro:    #D1EAE2;
+            --beige:          #F9F4E8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--fondo);
+            color: var(--texto-oscuro);
+            min-height: 100vh;
+        }
+
+        /* ─── NAVBAR ─── */
+        nav {
+            background: var(--primary);
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 16px rgba(10,66,105,0.25);
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+        }
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            height: 100%;
+            padding: 0.5rem 0;
+        }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--blanco);
+            flex-shrink: 0;
+        }
+        .nav-brand img {
+            height: 45px;
+            width: auto;
+            object-fit: contain;
+        }
+        .nav-brand span {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--verde-claro);
+            text-decoration: none;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex; align-items: center; gap: 6px;
+            white-space: nowrap;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255,255,255,0.1);
+            color: var(--blanco);
+        }
+        .nav-links .btn-auth {
+            background: var(--secondary);
+            color: var(--blanco) !important;
+            margin-left: 0.5rem;
+            white-space: nowrap;
+        }
+        .nav-links .btn-auth:hover { background: var(--secondary-dark); }
+
+        /* ─── FLASH MESSAGES ─── */
+        .flash-container {
+            max-width: 1200px;
+            margin: 1rem auto 0;
+            padding: 0 1.5rem;
+        }
+        .flash {
+            padding: 0.85rem 1.2rem;
+            border-radius: var(--radio);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex; align-items: center; gap: 0.6rem;
+            animation: slideDown 0.3s ease;
+        }
+        .flash-success { background: #d4edda; color: #276339; border-left: 4px solid var(--verde-salvia); }
+        .flash-error   { background: #fde8e8; color: #9b2c2c; border-left: 4px solid #e57373; }
+        .flash-info    { background: #e8f0e9; color: var(--texto-medio); border-left: 4px solid var(--verde-claro); }
+        @keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+
+        /* ─── MAIN CONTENT ─── */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+            width: 100%;
+        }
+
+        img { max-width: 100%; height: auto; display: block; }
+
+        /* ─── CARDS ─── */
+        .card {
+            background: var(--blanco);
+            border-radius: var(--radio-lg);
+            box-shadow: var(--sombra);
+            padding: 1.75rem;
+            border: 1px solid rgba(0,0,0,0.06);
+            transition: box-shadow 0.25s, transform 0.25s;
+        }
+        .card:hover { box-shadow: var(--sombra-lg); transform: translateY(-2px); }
+
+        /* ─── BUTTONS ─── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.6rem 1.4rem;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-primary   { background: var(--primary); color: var(--blanco); }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-secondary { background: var(--secondary); color: var(--blanco); }
+        .btn-secondary:hover { background: var(--secondary-dark); }
+        .btn-outline   { background: transparent; border: 2px solid var(--verde-oscuro); color: var(--verde-oscuro); }
+        .btn-outline:hover { background: var(--verde-oscuro); color: var(--blanco); }
+        .btn-light     { background: var(--blanco); color: var(--texto-oscuro); border: 1.5px solid var(--gris-claro); }
+        .btn-light:hover { background: var(--fondo); }
+        .btn-danger    { background: #e57373; color: var(--blanco); }
+        .btn-danger:hover { background: #c62828; }
+        .btn-sm  { padding: 0.4rem 0.9rem; font-size: 0.8rem; }
+        .btn-lg  { padding: 0.85rem 2rem; font-size: 1rem; }
+        .btn-full { width: 100%; justify-content: center; }
+
+        /* ─── FORM ELEMENTS ─── */
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--texto-medio);
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 1.5px solid var(--gris-claro);
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            color: var(--texto-oscuro);
+            background: var(--blanco);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--verde-salvia);
+            box-shadow: 0 0 0 3px rgba(123,150,105,0.15);
+        }
+        select.form-control { cursor: pointer; }
+
+        /* ─── BADGES ─── */
+        .badge {
+            display: inline-flex; align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .badge-estudiante { background: #d4edda; color: #276339; }
+        .badge-joven      { background: #e8f0e9; color: var(--verde-oscuro); }
+        .badge-clasica    { background: var(--beige); color: #7a5c3a; }
+        .badge-gratis     { background: #d4edda; color: #276339; }
+
+        /* ─── SECTION TITLE ─── */
+        .section-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2.2rem;
+            color: var(--verde-oscuro);
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+        .section-subtitle {
+            color: var(--verde-medio);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* ─── FOOTER ─── */
+        .footer {
+            background: var(--primary);
+            color: var(--blanco);
+            padding: 1.2rem 2rem;
+            opacity: 0.95;
+            font-size: 0.85rem;
+        }
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .footer-left h2 {
+            font-family: 'DM Serif Display', serif;
+            color: var(--blanco);
+            font-size: 1.2rem;
+        }
+        .footer-center { text-align: center; flex: 1; }
+        .footer-right { display: flex; gap: 10px; }
+        .footer-right a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            transition: all 0.25s ease;
+        }
+        .footer-right img { width: 18px; height: 18px; }
+        .footer-right a:hover { background: var(--verde-salvia); transform: translateY(-2px); }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 900px) {
+            nav { padding: 0.5rem 1rem; height: auto; min-height: auto; }
+            .nav-inner { flex-direction: column; gap: 0.8rem; height: auto; }
+            .nav-brand img { height: 40px; }
+            .nav-brand span { font-size: 1.3rem; }
+            .nav-links { width: 100%; justify-content: center; flex-wrap: wrap; gap: 4px; }
+            .nav-links a { font-size: 0.8rem; padding: 0.4rem 0.6rem; }
+            .nav-links a span { display: none; }
+            .nav-links .btn-auth { margin-left: 0; padding: 0.4rem 1rem; }
+
+            main { padding: 1.5rem 1.25rem 3rem; }
+            .section-title { font-size: 1.7rem; }
+        }
+        @media (max-width: 768px) {
+            .footer-container { flex-direction: column; text-align: center; }
+            .footer-center { order: 3; }
+            .footer-right { order: 2; }
+            .footer-left { order: 1; }
+        }
+
+        /* ─── UTILITIES ─── */
+        .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 1.5rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+        .grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        @media (max-width: 900px) { .grid-3 { grid-template-columns: repeat(2,1fr); } }
+        @media (max-width: 600px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+        .text-center { text-align: center; }
+        .mt-1 { margin-top: 0.5rem; } .mt-2 { margin-top: 1rem; } .mt-3 { margin-top: 1.5rem; }
+        .mb-1 { margin-bottom: 0.5rem; } .mb-2 { margin-bottom: 1rem; } .mb-3 { margin-bottom: 1.5rem; }
+        .flex { display: flex; } .items-center { align-items: center; } .justify-between { justify-content: space-between; } .gap-1 { gap: 0.5rem; } .gap-2 { gap: 1rem; }
+        .divider { border: none; border-top: 2px solid var(--gris-claro); margin: 1.5rem 0; }
+        .text-muted { color: var(--verde-medio); }
+        .text-success { color: #276339; }
+        .fw-bold { font-weight: 700; }
+        .text-sm { font-size: 0.85rem; }
+    </style>
+    @yield('extra_styles')
+</head>
+<body>
+
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="nav-brand">
+                <img src="{{ asset('img/logo.png') }}" alt="PoliCard">
+                <span>PoliCard</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="/tarjetas"><i class="fas fa-credit-card"></i><span>Tarjetas</span></a></li>
+                <li><a href="/buscar"><i class="fas fa-search"></i><span>Buscar</span></a></li>
+                <li><a href="/educacion"><i class="fas fa-graduation-cap"></i><span>Educación</span></a></li>
+                <li><a href="/calculadora"><i class="fas fa-calculator"></i><span>Calcular</span></a></li>
+                @if (session('policard_token'))
+                    <li><a href="/perfil"><i class="fas fa-user"></i><span>Mi Perfil</span></a></li>
+                    <li><a href="/logout" class="btn-auth"><i class="fas fa-sign-out-alt"></i><span>Salir</span></a></li>
+                @else
+                    <li><a href="/registro"><i class="fas fa-user-plus"></i><span>Registrarse</span></a></li>
+                    <li><a href="/login" class="btn-auth"><i class="fas fa-sign-in-alt"></i><span>Acceder</span></a></li>
+                @endif
+            </ul>
+        </div>
+    </nav>
+
+    @if (session('success') || session('error') || $errors->any())
+    <div class="flash-container">
+        @if (session('success'))
+        <div class="flash flash-success"><i class="fas fa-check-circle"></i> {{ session('success') }}</div>
+        @endif
+        @if (session('error'))
+        <div class="flash flash-error"><i class="fas fa-exclamation-circle"></i> {{ session('error') }}</div>
+        @endif
+        @foreach ($errors->all() as $mensajeError)
+        <div class="flash flash-error"><i class="fas fa-exclamation-circle"></i> {{ $mensajeError }}</div>
+        @endforeach
+    </div>
+    @endif
+
+    <main>
+        @yield('content')
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-left">
+                <h2>PoliCard</h2>
+            </div>
+            <div class="footer-center">
+                <p>© 2026 PoliCard · Plataforma de ayuda a los jóvenes en el ámbito financiero · Todos los derechos reservados.</p>
+            </div>
+            <div class="footer-right">
+                <a href="https://facebook.com" target="_blank"><img src="https://cdn.simpleicons.org/facebook/white" alt="Facebook"></a>
+                <a href="https://instagram.com" target="_blank"><img src="https://cdn.simpleicons.org/instagram/white" alt="Instagram"></a>
+                <a href="https://twitter.com" target="_blank"><img src="https://cdn.simpleicons.org/x/white" alt="X"></a>
+            </div>
+        </div>
+    </footer>
+
+    @yield('extra_scripts')
+</body>
+</html>

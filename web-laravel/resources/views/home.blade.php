@@ -1,0 +1,302 @@
+@extends('layout')
+@section('title', 'PoliCard — Inicio')
+
+@section('extra_styles')
+<style>
+    :root {
+        --brand-navy:   #0A4269;
+        --brand-teal:   #66C2A4;
+        --brand-yellow: #FEE482;
+        --brand-bg:     #F3F7F9;
+        --forest:       var(--brand-navy);
+        --forest-mid:   #125785;
+        --sage:         var(--brand-teal);
+        --sage-light:   #85D1B8;
+        --sage-pale:    #E2F5EF;
+        --cream:        #F8FAF9;
+        --gold:         var(--brand-yellow);
+    }
+
+    .hero {
+        background: linear-gradient(135deg, var(--brand-navy) 0%, #125785 55%, var(--brand-teal) 100%);
+        border-radius: var(--radio-lg);
+        padding: 4rem 3rem;
+        color: var(--blanco);
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero::before {
+        content: ''; position: absolute; top: -60px; right: -60px;
+        width: 280px; height: 280px; border-radius: 50%;
+        background: rgba(186, 200, 177, 0.12);
+    }
+    .hero::after {
+        content: ''; position: absolute; bottom: -80px; left: 40%;
+        width: 200px; height: 200px; border-radius: 50%;
+        background: rgba(186, 200, 177, 0.08);
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 600px; }
+    .hero-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(186, 200, 177, 0.2);
+        border: 1px solid rgba(186, 200, 177, 0.3);
+        color: var(--verde-claro);
+        padding: 0.3rem 0.9rem; border-radius: 99px;
+        font-size: 0.8rem; font-weight: 600; margin-bottom: 1.25rem;
+        text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .hero h1 {
+        font-family: 'DM Serif Display', serif; font-size: 3rem;
+        line-height: 1.15; margin-bottom: 1rem; color: var(--blanco);
+    }
+    .hero p { font-size: 1.05rem; color: var(--verde-claro); margin-bottom: 2rem; line-height: 1.65; }
+
+    .como-section { margin-bottom: 3.5rem; }
+    .como-section .section-title { margin-bottom: 0.4rem; }
+    .como-section .section-subtitle { margin-bottom: 2.5rem; }
+    .pasos-grid { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: start; gap: 0; }
+    .paso {
+        background: var(--blanco); border-radius: var(--radio-lg);
+        padding: 2rem 1.75rem; box-shadow: var(--sombra);
+        border: 1px solid rgba(0, 0, 0, 0.06); text-align: center;
+        position: relative; transition: box-shadow 0.25s, transform 0.25s;
+    }
+    .paso:hover { box-shadow: var(--sombra-lg); transform: translateY(-3px); }
+    .paso-numero {
+        position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+        background: var(--verde-oscuro); color: var(--blanco);
+        width: 28px; height: 28px; border-radius: 50%;
+        font-size: 0.8rem; font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 2px 8px rgba(64, 78, 59, 0.3);
+    }
+    .paso-icono {
+        width: 72px; height: 72px; border-radius: 20px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.7rem; margin: 0.75rem auto 1.25rem;
+        background: var(--brand-bg); color: var(--brand-navy);
+    }
+    .paso h3 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--verde-oscuro); margin-bottom: 0.5rem; }
+    .paso p { font-size: 0.87rem; color: var(--verde-medio); line-height: 1.6; margin-bottom: 1.25rem; }
+    .paso .paso-link {
+        display: inline-flex; align-items: center; gap: 5px;
+        font-size: 0.82rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.06em; text-decoration: none; color: var(--verde-oscuro);
+        transition: gap 0.2s;
+    }
+    .paso .paso-link:hover { gap: 8px; }
+    .paso-flecha { display: flex; align-items: center; justify-content: center; padding: 0 0.5rem; margin-top: 3.5rem; color: var(--verde-claro); font-size: 1.4rem; }
+    .paso-items { display: flex; flex-direction: column; gap: 0.4rem; text-align: left; margin-top: 0.25rem; }
+    .paso-item {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 0.83rem; color: var(--texto-medio);
+        background: var(--fondo); border-radius: 8px; padding: 0.4rem 0.7rem;
+    }
+    .paso-item i { color: var(--verde-salvia); font-size: 0.75rem; flex-shrink: 0; }
+
+    @media (max-width: 900px) {
+        .hero { padding: 2rem 1.5rem; margin-bottom: 1.5rem; }
+        .hero h1 { font-size: 1.8rem; }
+        .hero p { font-size: 0.95rem; }
+        .hero::before, .hero::after { display: none; }
+        .pasos-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+        .paso-flecha { transform: rotate(90deg); margin: -0.5rem auto; padding: 0; }
+    }
+
+    .client-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+    @media (max-width: 880px) { .client-panels { grid-template-columns: 1fr; } }
+    .cl-panel { background: var(--blanco); border-radius: var(--radio-lg); box-shadow: var(--sombra); overflow: hidden; border: 1px solid rgba(0, 0, 0, 0.05); }
+    .cl-panel-header { padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--gris-claro); }
+    .cl-panel-header h3 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--verde-oscuro); display: flex; align-items: center; gap: 0.5rem; }
+    .cl-panel-header .cl-count { background: var(--verde-oscuro); color: #fff; padding: 0.2rem 0.65rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; }
+    .notif-list { list-style: none; padding: 0; margin: 0; max-height: 320px; overflow-y: auto; }
+    .notif-item { padding: 1rem 1.5rem; border-bottom: 1px solid var(--gris-claro); display: flex; align-items: flex-start; gap: 0.85rem; }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.85rem; }
+    .notif-icon.aprobada { background: #d4edda; color: #276339; }
+    .notif-icon.pendiente { background: #fef9e7; color: #9a6e00; }
+    .notif-icon.rechazada { background: #fdecea; color: #c0392b; }
+    .notif-text { font-size: 0.88rem; color: var(--texto-oscuro); line-height: 1.4; }
+    .notif-text strong { color: var(--verde-oscuro); }
+    .notif-date { font-size: 0.75rem; color: var(--texto-medio); margin-top: 2px; }
+    .notif-badge { display: inline-block; padding: 0.15rem 0.55rem; border-radius: 99px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; }
+    .nb-aprobada { background: #d4edda; color: #276339; }
+    .nb-pendiente { background: #fef9e7; color: #9a6e00; }
+    .nb-rechazada { background: #fdecea; color: #c0392b; }
+    .my-cards { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; max-height: 320px; overflow-y: auto; }
+    .my-card { display: flex; align-items: center; gap: 1rem; background: linear-gradient(135deg, #f8faf9, #eef3ec); border: 1px solid rgba(107, 143, 94, 0.18); border-radius: 14px; padding: 1rem 1.25rem; }
+    .my-card-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: #fff; flex-shrink: 0; }
+    .my-card-info { flex: 1; }
+    .my-card-info .mc-name { font-family: 'DM Serif Display', serif; font-size: 1rem; color: var(--verde-oscuro); margin-bottom: 2px; }
+    .my-card-info .mc-banco { font-size: 0.78rem; color: var(--verde-medio); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .my-card-badge { background: #d4edda; color: #276339; padding: 0.25rem 0.7rem; border-radius: 99px; font-size: 0.7rem; font-weight: 700; white-space: nowrap; }
+    .cl-empty { padding: 2.5rem 1.5rem; text-align: center; color: var(--texto-medio); }
+    .cl-empty i { font-size: 2rem; opacity: 0.3; display: block; margin-bottom: 0.5rem; }
+</style>
+@endsection
+
+@section('content')
+
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge"><i class="fas fa-leaf"></i> Finanzas para jóvenes</div>
+        <h1>Encuentra la tarjeta de crédito ideal para ti</h1>
+        <p>Compara, aprende y decide con confianza. PoliCard te guía en el mundo de las tarjetas de crédito con
+            información clara y sin letra pequeña.</p>
+    </div>
+</section>
+
+@if (session('policard_token'))
+<div class="client-panels">
+    <div class="cl-panel">
+        <div class="cl-panel-header">
+            <h3><i class="fas fa-bell" style="color:#e67e22;"></i> Notificaciones</h3>
+            @if (count($misSolicitudes)) <span class="cl-count">{{ count($misSolicitudes) }}</span> @endif
+        </div>
+        <div class="cl-panel-body">
+            @if (count($misSolicitudes))
+            <ul class="notif-list">
+                @foreach ($misSolicitudes as $sol)
+                <li class="notif-item">
+                    <div class="notif-icon {{ $sol['estado'] }}">
+                        <i class="fas fa-{{ $sol['estado'] === 'aprobada' ? 'check-circle' : ($sol['estado'] === 'pendiente' ? 'clock' : 'times-circle') }}"></i>
+                    </div>
+                    <div>
+                        <div class="notif-text">
+                            @if ($sol['estado'] === 'aprobada')
+                                Tu solicitud de <strong>{{ $sol['tarjeta_nombre'] }}</strong> fue <span class="notif-badge nb-aprobada">aprobada</span>
+                            @elseif ($sol['estado'] === 'pendiente')
+                                <strong>{{ $sol['tarjeta_nombre'] }}</strong> esta <span class="notif-badge nb-pendiente">en revision</span>
+                            @else
+                                Tu solicitud de <strong>{{ $sol['tarjeta_nombre'] }}</strong> fue <span class="notif-badge nb-rechazada">rechazada</span>
+                            @endif
+                        </div>
+                        <div class="notif-date">
+                            <i class="fas fa-calendar-alt" style="margin-right:3px;"></i>
+                            {{ \Carbon\Carbon::parse($sol['fecha_solicitud'])->format('d/m/Y H:i') }}
+                            · {{ $sol['tarjeta_banco'] }}
+                        </div>
+                    </div>
+                </li>
+                @endforeach
+            </ul>
+            @else
+            <div class="cl-empty">
+                <i class="fas fa-bell-slash"></i>
+                <p>Aun no has solicitado ninguna tarjeta.</p>
+                <a href="/tarjetas" class="btn btn-outline btn-sm" style="margin-top:0.5rem;">
+                    <i class="fas fa-credit-card"></i> Explorar tarjetas
+                </a>
+            </div>
+            @endif
+        </div>
+    </div>
+
+    <div class="cl-panel">
+        <div class="cl-panel-header">
+            <h3><i class="fas fa-wallet" style="color:var(--verde-salvia);"></i> Mis Tarjetas</h3>
+            @if (count($misAprobadas)) <span class="cl-count">{{ count($misAprobadas) }}</span> @endif
+        </div>
+        <div class="cl-panel-body">
+            @if (count($misAprobadas))
+            <div class="my-cards">
+                @foreach ($misAprobadas as $sol)
+                @php
+                    $bn = strtolower($sol['tarjeta_banco']);
+                    $bg = 'linear-gradient(135deg,#2E4A2E,#5A7A6A)';
+                    if (str_contains($bn, 'bbva')) $bg = 'linear-gradient(135deg,#003b8e,#1a6fd4)';
+                    elseif (str_contains($bn, 'santander')) $bg = 'linear-gradient(135deg,#8b0000,#cc0000)';
+                    elseif (str_contains($bn, 'banamex')) $bg = 'linear-gradient(135deg,#7a5800,#c8952a)';
+                    elseif (str_contains($bn, 'hsbc')) $bg = 'linear-gradient(135deg,#8b0010,#db0011)';
+                    elseif (str_contains($bn, 'banorte')) $bg = 'linear-gradient(135deg,#b34000,#f06000)';
+                    elseif (str_contains($bn, 'nu')) $bg = 'linear-gradient(135deg,#3d0060,#8b1db8)';
+                @endphp
+                <div class="my-card">
+                    <div class="my-card-icon" style="background:{{ $bg }};"><i class="fas fa-credit-card"></i></div>
+                    <div class="my-card-info">
+                        <div class="mc-name">{{ $sol['tarjeta_nombre'] }}</div>
+                        <div class="mc-banco">{{ $sol['tarjeta_banco'] }}</div>
+                    </div>
+                    <span class="my-card-badge"><i class="fas fa-check" style="margin-right:3px;"></i> Activa</span>
+                </div>
+                @endforeach
+            </div>
+            @else
+            <div class="cl-empty">
+                <i class="fas fa-wallet"></i>
+                <p>Aun no tienes tarjetas aprobadas.</p>
+                <a href="/tarjetas" class="btn btn-outline btn-sm" style="margin-top:0.5rem;">
+                    <i class="fas fa-search"></i> Solicitar una
+                </a>
+            </div>
+            @endif
+        </div>
+    </div>
+</div>
+@endif
+
+<div class="como-section">
+    <h2 class="section-title">¿Cómo funciona PoliCard?</h2>
+    <p class="section-subtitle">En tres pasos encuentras la tarjeta que más te conviene</p>
+
+    <div class="pasos-grid">
+        <div class="paso">
+            <div class="paso-numero">1</div>
+            <div class="paso-icono"><i class="fas fa-search"></i></div>
+            <h3>Busca</h3>
+            <p>Dinos qué necesitas: tipo de tarjeta, anualidad máxima, CAT o edad.</p>
+            <div class="paso-items">
+                <div class="paso-item"><i class="fas fa-check-circle"></i> Estudiante, joven o clásica</div>
+                <div class="paso-item"><i class="fas fa-check-circle"></i> Con o sin anualidad</div>
+                <div class="paso-item"><i class="fas fa-check-circle"></i> Desde 18 años</div>
+            </div>
+            <br>
+            <a href="/buscar" class="paso-link">Ir a buscar <i class="fas fa-arrow-right"></i></a>
+        </div>
+
+        <div class="paso-flecha"><i class="fas fa-chevron-right"></i></div>
+
+        <div class="paso">
+            <div class="paso-numero">2</div>
+            <div class="paso-icono" style="background:var(--sage-pale); color:var(--brand-navy);"><i class="fas fa-balance-scale"></i></div>
+            <h3>Compara</h3>
+            <p>Revisa CAT, anualidad, beneficios y requisitos de cada opción lado a lado.</p>
+            <div class="paso-items">
+                <div class="paso-item"><i class="fas fa-check-circle"></i> CAT real sin letra pequeña</div>
+                <div class="paso-item"><i class="fas fa-check-circle"></i> Beneficios detallados</div>
+                <div class="paso-item"><i class="fas fa-check-circle"></i> Requisitos de edad</div>
+            </div>
+            <br>
+            <a href="/tarjetas" class="paso-link">Ver tarjetas <i class="fas fa-arrow-right"></i></a>
+        </div>
+
+        <div class="paso-flecha"><i class="fas fa-chevron-right"></i></div>
+
+        <div class="paso">
+            <div class="paso-numero">3</div>
+            <div class="paso-icono" style="background:var(--beige); color:#7a5c3a;"><i class="fas fa-lightbulb"></i></div>
+            <h3>Decide</h3>
+            <p>Usa nuestra calculadora y guías para elegir con seguridad y sin sorpresas.</p>
+            <div class="paso-items">
+                <div class="paso-item"><i class="fas fa-check-circle"></i> Calculadora de intereses</div>
+                <div class="paso-item"><i class="fas fa-check-circle"></i> Glosario financiero</div>
+                <div class="paso-item"><i class="fas fa-check-circle"></i> Consejos para jóvenes</div>
+            </div>
+            <br>
+            <a href="/calculadora" class="paso-link">Calcular <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </div>
+</div>
+
+@unless (session('policard_token'))
+<div style="background:linear-gradient(135deg, var(--brand-navy), var(--brand-teal)); border-radius:var(--radio-lg); padding:2.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
+    <div>
+        <h3 style="font-family:'DM Serif Display',serif; color:#fff; font-size:1.5rem; margin-bottom:0.4rem;">¿Representas a un banco?</h3>
+        <p style="color:var(--brand-bg); font-size:0.95rem; opacity:0.9;">Registra tu institución y gestiona tus tarjetas en nuestra plataforma.</p>
+    </div>
+    <a href="{{ config('services.policard.web1_url') }}/registro_banco" class="btn btn-secondary btn-lg"><i class="fas fa-building"></i> Registrar banco</a>
+</div>
+@endunless
+
+@endsection

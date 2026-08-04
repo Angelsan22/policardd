@@ -1,29 +1,133 @@
 /* Zona 1: Importaciones */
-import { useState } from 'react';
-import { ScrollView, View, Text, Image, Pressable, StyleSheet } from 'react-native';
+import { useCallback, useState } from 'react';
+import { ScrollView, View, Text, Image, Pressable, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { COLORS, FONTS } from '../constants/colors';
 import { RADIUS, SHADOW } from '../constants/theme';
 import { GradientHero } from '../components/GradientHero';
-import { BarraInferior } from '../components/BarraInferior';
 import { Boton } from '../components/Boton';
 import { Badge } from '../components/Badge';
 import { IconAvatar } from '../components/IconAvatar';
 import { ICONS } from '../constants/icons';
-import { tarjetasMock, analisisMock, tarjetasSugeridasMock } from '../data/mock';
+import { useAuth } from '../data/auth';
 
+const API_KEY_HEADER = 'policard-dev-api-key-CHANGE-ME';
 const tonoNivel = { Alto: 'dark', Medio: 'slate', Bajo: 'primary' };
 const colorNivel = (pct) => (pct >= 70 ? COLORS.dark : pct >= 40 ? COLORS.slate : COLORS.primary);
 
+const clasificar = (pct) => (pct >= 70 ? 'Alto' : pct >= 40 ? 'Medio' : 'Bajo');
+
 /* Zona 2: Componente principal
    Objetivo: calcular el nivel de utilizacion, endeudamiento y riesgo
-   financiero del usuario, y generar recomendaciones personalizadas
+   financiero del usuario a partir de sus tarjetas reales, generar
+   recomendaciones y sugerir tarjetas del catalogo real de la API
    (RF01-RF05, interfaz I-05). */
-export default function AnalizadorScreen({ pantallaActiva, onCambiarPantalla }) {
+export default function AnalizadorScreen() {
+  const router = useRouter();
+  const { sesion } = useAuth();
+  const [misTarjetas, setMisTarjetas] = useState([]);
+  const [ultimoGuardado, setUltimoGuardado] = useState(null);
   const [resultado, setResultado] = useState(null);
+  const [sugeridas, setSugeridas] = useState([]);
+  const [generando, setGenerando] = useState(false);
 
-  const generarAnalisis = () => {
-    setResultado(analisisMock);
+  const encabezados = {
+    'Content-Type': 'application/json',
+    'X-API-Key': API_KEY_HEADER,
+    Authorization: `Bearer ${sesion?.accessToken}`,
+  };
+
+  const cargarDatos = async () => {
+    try {
+      const respuestaTarjetas = await fetch('http://192.168.100.10:10000/api/v1/cliente/tarjetas-personales', {
+        headers: encabezados,
+      });
+      const datosTarjetas = await respuestaTarjetas.json();
+      setMisTarjetas(Array.isArray(datosTarjetas) ? datosTarjetas.map((t) => ({
+        id: t.id, alias: t.alias, limite: t.limite, saldoUtilizado: t.saldo_utilizado,
+      })) : []);
+
+      const respuestaHistorial = await fetch('http://192.168.100.10:10000/api/v1/cliente/historial', {
+        headers: encabezados,
+      });
+      const datosHistorial = await respuestaHistorial.json();
+      if (Array.isArray(datosHistorial) && datosHistorial.length > 0) {
+        setUltimoGuardado(datosHistorial[0]);
+      }
+    } catch (error) {
+      console.log('Error de API', error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      cargarDatos();
+    }, [])
+  );
+
+  const generarAnalisis = async () => {
+    if (misTarjetas.length === 0) {
+      Alert.alert('Sin tarjetas', 'Registra al menos una tarjeta en "Mis tarjetas" para generar un analisis');
+      return;
+    }
+
+    setGenerando(true);
+    const limiteTotal = misTarjetas.reduce((suma, t) => suma + t.limite, 0);
+    const saldoTotal = misTarjetas.reduce((suma, t) => suma + t.saldoUtilizado, 0);
+    const utilizacionGlobal = limiteTotal > 0 ? Math.round((saldoTotal / limiteTotal) * 100) : 0;
+    const nivel = clasificar(utilizacionGlobal);
+
+    const recomendaciones = [];
+    const tarjetaAlta = misTarjetas.find((t) => t.limite > 0 && t.saldoUtilizado / t.limite >= 0.9);
+    if (tarjetaAlta) {
+      recomendaciones.push(`Reduce el saldo de tu ${tarjetaAlta.alias}, esta al ${Math.round((tarjetaAlta.saldoUtilizado / tarjetaAlta.limite) * 100)}% de su limite.`);
+    }
+    recomendaciones.push('Paga antes de la fecha de corte para evitar intereses.');
+    if (nivel === 'Alto') {
+      recomendaciones.push('Evita solicitar una tarjeta nueva hasta bajar tu endeudamiento global.');
+    }
+
+    setResultado({ utilizacionGlobal, nivelEndeudamiento: nivel, riesgoFinanciero: nivel, recomendaciones });
+
+    try {
+      await fetch('http://192.168.100.10:10000/api/v1/cliente/historial', {
+        method: 'POST',
+        headers: encabezados,
+        body: JSON.stringify({
+          utilizacion_global: utilizacionGlobal,
+          nivel_endeudamiento: nivel,
+          riesgo_financiero: nivel,
+        }),
+      });
+
+      if (nivel === 'Alto') {
+        await fetch('http://192.168.100.10:10000/api/v1/cliente/alertas', {
+          method: 'POST',
+          headers: encabezados,
+          body: JSON.stringify({
+            titulo: 'Riesgo financiero alto detectado',
+            mensaje: `Tu utilizacion de credito llego al ${utilizacionGlobal}%`,
+            fecha: new Date().toISOString().slice(0, 10),
+            tipo: 'riesgo',
+          }),
+        });
+      }
+
+      const respuestaCatalogo = await fetch('http://192.168.100.10:10000/api/v1/tarjetas', {
+        headers: { 'X-API-Key': API_KEY_HEADER },
+      });
+      const catalogo = await respuestaCatalogo.json();
+      if (Array.isArray(catalogo)) {
+        setSugeridas([...catalogo].sort((a, b) => a.cat - b.cat).slice(0, 3));
+      }
+
+      cargarDatos();
+    } catch (error) {
+      console.log('Error de API', error);
+    } finally {
+      setGenerando(false);
+    }
   };
 
   return (
@@ -32,17 +136,19 @@ export default function AnalizadorScreen({ pantallaActiva, onCambiarPantalla }) 
         <GradientHero eyebrow="Analizador financiero" title="Tu diagnostico" compact />
 
         <View style={styles.body}>
-          <Boton titulo="Generar analisis" onPress={generarAnalisis} />
+          <Boton titulo={generando ? 'Generando...' : 'Generar analisis'} onPress={generarAnalisis} disabled={generando} />
 
-          <Pressable style={styles.filaUltimo} onPress={() => onCambiarPantalla('historial')}>
-            <IconAvatar imagen={ICONS.historial} tono="primary" tamano={34} />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.filaUltimoLabel}>Ultimo analisis guardado</Text>
-              <Text style={styles.filaUltimoFecha}>{analisisMock.fecha}</Text>
-            </View>
-            <Badge texto={analisisMock.riesgoFinanciero} tono={tonoNivel[analisisMock.riesgoFinanciero]} />
-            <Image source={ICONS.detalle} style={styles.iconoDetalle} resizeMode="contain" />
-          </Pressable>
+          {ultimoGuardado && (
+            <Pressable style={styles.filaUltimo} onPress={() => router.push('/historial')}>
+              <IconAvatar imagen={ICONS.historial} tono="primary" tamano={34} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.filaUltimoLabel}>Ultimo analisis guardado</Text>
+                <Text style={styles.filaUltimoFecha}>{ultimoGuardado.fecha}</Text>
+              </View>
+              <Badge texto={ultimoGuardado.riesgo_financiero} tono={tonoNivel[ultimoGuardado.riesgo_financiero]} />
+              <Image source={ICONS.detalle} style={styles.iconoDetalle} resizeMode="contain" />
+            </Pressable>
+          )}
 
           {resultado && (
             <>
@@ -62,8 +168,8 @@ export default function AnalizadorScreen({ pantallaActiva, onCambiarPantalla }) 
               </View>
 
               <Text style={styles.seccion}>Utilizacion por tarjeta</Text>
-              {tarjetasMock.map((t) => {
-                const pct = Math.round((t.saldoUtilizado / t.limite) * 100);
+              {misTarjetas.map((t) => {
+                const pct = t.limite > 0 ? Math.round((t.saldoUtilizado / t.limite) * 100) : 0;
                 return (
                   <View key={t.id} style={styles.filaTarjeta}>
                     <View style={styles.filaTarjetaTop}>
@@ -87,7 +193,7 @@ export default function AnalizadorScreen({ pantallaActiva, onCambiarPantalla }) 
 
               <Text style={styles.seccion}>Tarjetas sugeridas</Text>
               <Text style={styles.seccionNota}>Consultado en el catalogo de la API de PoliCard</Text>
-              {tarjetasSugeridasMock.map((s) => (
+              {sugeridas.map((s) => (
                 <View key={s.id} style={styles.tarjetaSugerida}>
                   <View style={styles.sugeridaTop}>
                     <View style={{ flex: 1 }}>
@@ -96,14 +202,13 @@ export default function AnalizadorScreen({ pantallaActiva, onCambiarPantalla }) 
                     </View>
                     <Badge texto={s.anualidad === 0 ? 'Sin anualidad' : `Anualidad $${s.anualidad}`} tono="primary" />
                   </View>
-                  <Text style={styles.sugeridaMotivo}>{s.motivo} · CAT {s.cat}%</Text>
+                  <Text style={styles.sugeridaMotivo}>{s.beneficios} · CAT {s.cat}%</Text>
                 </View>
               ))}
             </>
           )}
         </View>
       </ScrollView>
-      <BarraInferior pantallaActiva={pantallaActiva} onCambiarPantalla={onCambiarPantalla} />
     </SafeAreaView>
   );
 }

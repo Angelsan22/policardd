@@ -1,29 +1,79 @@
 /* Zona 1: Importaciones */
+import { useCallback, useState } from 'react';
 import { ScrollView, View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from 'expo-router';
 import { COLORS, FONTS } from '../constants/colors';
 import { RADIUS, SHADOW } from '../constants/theme';
 import { GradientHero } from '../components/GradientHero';
-import { BarraInferior } from '../components/BarraInferior';
 import { IconAvatar } from '../components/IconAvatar';
 import { ICONS } from '../constants/icons';
-import { tarjetasMock, analisisMock, alertasMock, usuarioMock } from '../data/mock';
+import { useAuth } from '../data/auth';
+
+const API_KEY_HEADER = 'policard-dev-api-key-CHANGE-ME';
 
 /* Zona 2: Componente principal
-   Objetivo: mostrar un resumen del estado financiero del usuario:
+   Objetivo: mostrar un resumen del estado financiero real del usuario:
    tarjetas registradas, endeudamiento global, alertas activas y
    accesos rapidos a las demas secciones (RF01-RF05, interfaz I-03). */
-export default function DashboardScreen({ pantallaActiva, onCambiarPantalla }) {
-  const limiteTotal = tarjetasMock.reduce((suma, t) => suma + t.limite, 0);
-  const saldoTotal = tarjetasMock.reduce((suma, t) => suma + t.saldoUtilizado, 0);
-  const alertasActivas = alertasMock.filter((a) => a.activa);
+export default function DashboardScreen() {
+  const { sesion } = useAuth();
+  const [tarjetas, setTarjetas] = useState([]);
+  const [alertasActivas, setAlertasActivas] = useState([]);
+  const [ultimoAnalisis, setUltimoAnalisis] = useState(null);
+
+  const encabezados = {
+    'X-API-Key': API_KEY_HEADER,
+    Authorization: `Bearer ${sesion?.accessToken}`,
+  };
+
+  const cargarResumen = async () => {
+    try {
+      const respuestaTarjetas = await fetch('http://192.168.100.10:10000/api/v1/cliente/tarjetas-personales', {
+        headers: encabezados,
+      });
+      const datosTarjetas = await respuestaTarjetas.json();
+      setTarjetas(Array.isArray(datosTarjetas) ? datosTarjetas.map((t) => ({
+        id: t.id, alias: t.alias, banco: t.banco, saldoUtilizado: t.saldo_utilizado, limite: t.limite,
+      })) : []);
+
+      const respuestaAlertas = await fetch('http://192.168.100.10:10000/api/v1/cliente/alertas', {
+        headers: encabezados,
+      });
+      const datosAlertas = await respuestaAlertas.json();
+      setAlertasActivas(Array.isArray(datosAlertas) ? datosAlertas.filter((a) => a.activa) : []);
+
+      const respuestaHistorial = await fetch('http://192.168.100.10:10000/api/v1/cliente/historial', {
+        headers: encabezados,
+      });
+      const datosHistorial = await respuestaHistorial.json();
+      if (Array.isArray(datosHistorial) && datosHistorial.length > 0) {
+        setUltimoAnalisis(datosHistorial[0]);
+      }
+    } catch (error) {
+      console.log('Error de API', error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      cargarResumen();
+    }, [])
+  );
+
+  const limiteTotal = tarjetas.reduce((suma, t) => suma + t.limite, 0);
+  const saldoTotal = tarjetas.reduce((suma, t) => suma + t.saldoUtilizado, 0);
+  const utilizacionGlobal = ultimoAnalisis
+    ? ultimoAnalisis.utilizacion_global
+    : (limiteTotal > 0 ? Math.round((saldoTotal / limiteTotal) * 100) : 0);
+  const nivelEndeudamiento = ultimoAnalisis ? ultimoAnalisis.nivel_endeudamiento : '--';
 
   return (
     <SafeAreaView style={styles.contenedor}>
       <ScrollView contentContainerStyle={styles.scroll} bounces={false}>
-        <GradientHero eyebrow={`Hola, ${usuarioMock.nombre.split(' ')[0]}`} title={`${analisisMock.utilizacionGlobal}%`} compact>
+        <GradientHero eyebrow={`Hola, ${sesion?.nombre?.split(' ')[0] || ''}`} title={`${utilizacionGlobal}%`} compact>
           <Text style={styles.heroDetalle}>
-            Endeudamiento global · Nivel {analisisMock.nivelEndeudamiento}
+            Endeudamiento global · Nivel {nivelEndeudamiento}
           </Text>
           <Text style={styles.heroMonto}>
             ${saldoTotal.toLocaleString('es-MX')} usados de ${limiteTotal.toLocaleString('es-MX')}
@@ -31,14 +81,15 @@ export default function DashboardScreen({ pantallaActiva, onCambiarPantalla }) {
         </GradientHero>
 
         <View style={styles.body}>
-          <Text style={styles.seccion}>Tus tarjetas ({tarjetasMock.length})</Text>
-          {tarjetasMock.map((t) => (
+          <Text style={styles.seccion}>Tus tarjetas ({tarjetas.length})</Text>
+          {tarjetas.map((t) => (
             <View key={t.id} style={styles.fila}>
               <IconAvatar imagen={ICONS.tarjetas} tono="primary" />
               <Text style={styles.filaTexto}>{t.alias} · {t.banco}</Text>
               <Text style={styles.filaSaldo}>${t.saldoUtilizado.toLocaleString('es-MX')}</Text>
             </View>
           ))}
+          {tarjetas.length === 0 && <Text style={styles.vacio}>Aun no registras tarjetas</Text>}
 
           <Text style={styles.seccion}>Alertas activas ({alertasActivas.length})</Text>
           {alertasActivas.map((a) => (
@@ -50,9 +101,9 @@ export default function DashboardScreen({ pantallaActiva, onCambiarPantalla }) {
               </View>
             </View>
           ))}
+          {alertasActivas.length === 0 && <Text style={styles.vacio}>No tienes alertas activas</Text>}
         </View>
       </ScrollView>
-      <BarraInferior pantallaActiva={pantallaActiva} onCambiarPantalla={onCambiarPantalla} />
     </SafeAreaView>
   );
 }
@@ -119,5 +170,11 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.regular,
     fontSize: 12,
     color: COLORS.slate,
+  },
+  vacio: {
+    fontFamily: FONTS.regular,
+    fontSize: 13,
+    color: COLORS.slate,
+    marginBottom: 8,
   },
 });

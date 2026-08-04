@@ -1,27 +1,60 @@
 /* Zona 1: Importaciones */
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ScrollView, View, Text, Image, Pressable, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from 'expo-router';
 import { COLORS, FONTS } from '../constants/colors';
 import { RADIUS, SHADOW } from '../constants/theme';
 import { GradientHero } from '../components/GradientHero';
-import { BarraInferior } from '../components/BarraInferior';
 import { IconAvatar } from '../components/IconAvatar';
 import { Badge } from '../components/Badge';
 import { ICONS } from '../constants/icons';
-import { historialMock } from '../data/mock';
+import { useAuth } from '../data/auth';
 
+const API_KEY_HEADER = 'policard-dev-api-key-CHANGE-ME';
 const tonoRiesgo = { Alto: 'dark', Medio: 'slate', Bajo: 'primary' };
+
+const mapearRegistro = (h) => ({
+  id: h.id,
+  fecha: h.fecha,
+  utilizacionGlobal: h.utilizacion_global,
+  riesgoFinanciero: h.riesgo_financiero,
+});
 
 /* Zona 2: Componente principal
    Objetivo: consultar los analisis financieros generados previamente,
    compararlos entre si y eliminar registros (RF01-RF05, interfaz I-07). */
-export default function HistorialScreen({ pantallaActiva, onCambiarPantalla, onRegresar }) {
-  const [historial, setHistorial] = useState(historialMock);
+export default function HistorialScreen() {
+  const { sesion } = useAuth();
+  const [historial, setHistorial] = useState([]);
   const [seleccionado, setSeleccionado] = useState(null);
   const [modoComparar, setModoComparar] = useState(false);
   const [comparar, setComparar] = useState([]);
+
+  const encabezados = {
+    'X-API-Key': API_KEY_HEADER,
+    Authorization: `Bearer ${sesion?.accessToken}`,
+  };
+
+  const cargarHistorial = async () => {
+    try {
+      const respuesta = await fetch('http://192.168.100.10:10000/api/v1/cliente/historial', {
+        headers: encabezados,
+      });
+      const datos = await respuesta.json();
+      console.log('Respuesta API historial:', datos);
+      setHistorial(Array.isArray(datos) ? datos.map(mapearRegistro) : []);
+    } catch (error) {
+      console.log('Error de API', error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      cargarHistorial();
+    }, [])
+  );
 
   const alternarModoComparar = () => {
     setModoComparar(!modoComparar);
@@ -39,7 +72,21 @@ export default function HistorialScreen({ pantallaActiva, onCambiarPantalla, onR
   const eliminarRegistro = (id) => {
     Alert.alert('Eliminar registro', 'Se eliminara este analisis del historial', [
       { text: 'Cancelar', style: 'cancel' },
-      { text: 'Eliminar', style: 'destructive', onPress: () => setHistorial(historial.filter((h) => h.id !== id)) },
+      {
+        text: 'Eliminar',
+        style: 'destructive',
+        onPress: async () => {
+          setHistorial((prev) => prev.filter((h) => h.id !== id));
+          try {
+            await fetch(`http://192.168.100.10:10000/api/v1/cliente/historial/${id}`, {
+              method: 'DELETE',
+              headers: encabezados,
+            });
+          } catch (error) {
+            console.log('Error de API', error);
+          }
+        },
+      },
     ]);
   };
 
@@ -50,7 +97,7 @@ export default function HistorialScreen({ pantallaActiva, onCambiarPantalla, onR
   return (
     <SafeAreaView style={styles.contenedor}>
       <ScrollView contentContainerStyle={styles.scroll} bounces={false}>
-        <GradientHero eyebrow="Seguimiento" title="Historial de analisis" compact onRegresar={onRegresar} />
+        <GradientHero eyebrow="Seguimiento" title="Historial de analisis" compact />
 
         <View style={styles.body}>
           <Pressable style={styles.botonComparar} onPress={alternarModoComparar}>
@@ -125,9 +172,10 @@ export default function HistorialScreen({ pantallaActiva, onCambiarPantalla, onR
               </Pressable>
             );
           })}
+
+          {historial.length === 0 && <Text style={styles.vacio}>Aun no tienes analisis guardados</Text>}
         </View>
       </ScrollView>
-      <BarraInferior pantallaActiva={pantallaActiva} onCambiarPantalla={onCambiarPantalla} />
     </SafeAreaView>
   );
 }
@@ -243,5 +291,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.slate,
     marginBottom: 2,
+  },
+  vacio: {
+    fontFamily: FONTS.regular,
+    fontSize: 13,
+    color: COLORS.slate,
+    textAlign: 'center',
+    marginTop: 40,
   },
 });

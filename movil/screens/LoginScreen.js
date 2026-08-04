@@ -1,6 +1,6 @@
 /* Zona 1: Importaciones */
 import { useState } from 'react';
-import { ScrollView, View, Image, Text, Switch, StyleSheet, Alert } from 'react-native';
+import { ScrollView, View, Image, Text, Switch, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS, FONTS } from '../constants/colors';
 import { RADIUS, SHADOW } from '../constants/theme';
@@ -9,27 +9,45 @@ import { Input } from '../components/Input';
 import { Boton } from '../components/Boton';
 
 /* Zona 2: Componente principal
-   Objetivo: autenticar al usuario registrado y generar su sesion
-   para acceder al Dashboard (RF01-RF05, interfaz I-02). */
+   Objetivo: autenticar al usuario registrado contra la API de PoliCard y
+   generar su sesion para acceder al Dashboard (RF01-RF05, interfaz I-02). */
 export default function LoginScreen({ onLoginExitoso, onIrARegistro }) {
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [error, setError] = useState('');
   const [recordarSesion, setRecordarSesion] = useState(true);
+  const [cargando, setCargando] = useState(false);
 
-  const iniciarSesion = () => {
+  const iniciarSesion = async () => {
     if (!correo.trim() || !contrasena.trim()) {
       setError('Ingresa tu correo y contrasena');
       return;
     }
     setError('');
-    Alert.alert(
-      'Sesion iniciada',
-      recordarSesion
-        ? 'Token de sesion generado. Se mantendra activa en este dispositivo.'
-        : 'Token de sesion generado para esta sesion unicamente.'
-    );
-    onLoginExitoso();
+    setCargando(true);
+    try {
+      const respuesta = await fetch('http://192.168.100.10:10000/api/v1/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': 'policard-dev-api-key-CHANGE-ME',
+        },
+        body: JSON.stringify({ email: correo.trim(), password: contrasena }),
+      });
+      const datos = await respuesta.json();
+
+      if (!respuesta.ok) {
+        setError(datos.detail || 'Credenciales invalidas');
+        return;
+      }
+
+      onLoginExitoso(datos.access_token, datos.tipo, datos.nombre);
+    } catch (error) {
+      console.log('Error de API', error);
+      setError('No se pudo conectar con el servidor');
+    } finally {
+      setCargando(false);
+    }
   };
 
   return (
@@ -56,7 +74,7 @@ export default function LoginScreen({ onLoginExitoso, onIrARegistro }) {
             />
           </View>
 
-          <Boton titulo="Iniciar sesion" onPress={iniciarSesion} />
+          <Boton titulo={cargando ? 'Iniciando...' : 'Iniciar sesion'} onPress={iniciarSesion} disabled={cargando} />
           <Boton titulo="Crear una cuenta" variante="contorno" onPress={onIrARegistro} />
         </View>
       </ScrollView>

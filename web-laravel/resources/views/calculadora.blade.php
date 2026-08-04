@@ -1,0 +1,622 @@
+@extends('layout')
+@section('title', 'Calculadora de Intereses — PoliCard')
+
+@section('extra_styles')
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+:root {
+    /* PoliCard Brand Palette - Synchronized with base.html */
+    --primary:       #0A4269; /* Navy */
+    --primary-dark:  #062D48;
+    --primary-light: #5B8FB9;
+    --secondary:     #66C2A4; /* Light Teal */
+    --accent:        #FEE482; /* Yellow */
+    --success:       #10B981; 
+    --warning:       #F59E0B;
+    --danger:        #EF4444;
+    
+    --brand-bg:      #F0F4F7; /* Matches base.html --fondo */
+    --brand-grey:    #DAE1E7;
+    
+    --slate-900:     var(--primary);
+    --slate-800:     #1A2B34;
+    --slate-700:     #435761;
+    --slate-600:     #475569;
+    --slate-500:     #64748B;
+    --slate-400:     #94A3B8;
+    --slate-200:     var(--brand-grey);
+    --slate-100:     #EBF0F3;
+    --slate-50:      var(--brand-bg);
+    
+    --glass:         rgba(255, 255, 255, 0.7);
+    --card-shadow:   0 1px 3px rgba(10,66,105,0.06), 0 6px 24px rgba(10,66,105,0.08);
+    --card-shadow-lg: 0 4px 6px rgba(10,66,105,0.07), 0 16px 40px rgba(10,66,105,0.12);
+}
+
+/* ══ Global Reset & Typography ══ */
+body {
+    background-color: var(--slate-50);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--slate-800);
+}
+
+/* ══ Hero Section ══ */
+.calc-hero {
+    background: linear-gradient(135deg, var(--slate-900) 0%, var(--primary) 100%);
+    border-radius: 24px;
+    padding: 3.5rem 4rem;
+    color: #fff;
+    margin-bottom: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--card-shadow-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.calc-hero::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.calc-hero-content {
+    max-width: 600px;
+    position: relative;
+    z-index: 2;
+}
+
+.calc-hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3rem;
+    font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+}
+
+.calc-hero p {
+    font-size: 1.125rem;
+    color: var(--slate-200);
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.calc-hero-visual {
+    width: 140px;
+    height: 140px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    transform: rotate(-10deg);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+@media(max-width: 768px) {
+    .calc-hero { padding: 2.5rem; flex-direction: column; text-align: center; gap: 2rem; }
+    .calc-hero h1 { font-size: 2.25rem; }
+    .calc-hero-visual { width: 100px; height: 100px; font-size: 2.5rem; }
+}
+
+/* ══ Central Calculator Card ══ */
+.calc-main-card {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid var(--slate-200);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    margin-bottom: 3rem;
+}
+
+.calc-unified-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+@media(max-width: 991px) {
+    .calc-unified-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Left Column: Inputs ── */
+.calc-inputs-section {
+    padding: 3rem;
+    background: #ffffff;
+}
+
+.section-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--primary);
+    margin-bottom: 2rem;
+}
+
+.input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media(max-width: 480px) {
+    .input-grid { grid-template-columns: 1fr; }
+}
+
+.field-group {
+    margin-bottom: 1.5rem;
+}
+
+.field-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--slate-700);
+    margin-bottom: 0.5rem;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    color: var(--slate-400);
+    font-size: 1rem;
+}
+
+.input-suffix {
+    position: absolute;
+    right: 1rem;
+    font-weight: 700;
+    color: var(--slate-400);
+    font-size: 0.875rem;
+}
+
+.calc-input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 2.75rem;
+    background: var(--slate-50);
+    border: 2px solid var(--slate-200);
+    border-radius: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--slate-900);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.calc-input:focus {
+    outline: none;
+    background: #fff;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+.calc-input.has-value {
+    border-color: var(--secondary);
+    background: #fff;
+}
+
+/* ── Right Column: Results ── */
+.calc-results-section {
+    padding: 3rem;
+    background: var(--slate-900);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.results-header {
+    margin-bottom: 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.results-header h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin: 0;
+}
+
+.badge-live {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success);
+    padding: 0.25rem 0.75rem;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.badge-live::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--success);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--success);
+}
+
+.result-main {
+    margin-bottom: 2.5rem;
+}
+
+.res-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--slate-400);
+    margin-bottom: 0.5rem;
+}
+
+.res-value-hero {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: #fff;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.res-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 1.25rem;
+    border-radius: 16px;
+}
+
+.res-card .label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--slate-400);
+    margin-bottom: 0.5rem;
+}
+
+.res-card .value {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* ── Visual Progress Bar ── */
+.visual-breakdown {
+    margin-bottom: 2.5rem;
+}
+
+.bar-label-group {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--slate-300);
+}
+
+.progress-bar-container {
+    height: 12px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+}
+
+.progress-capital {
+    height: 100%;
+    background: var(--secondary);
+    transition: width 0.5s ease;
+}
+
+.progress-interest {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.5s ease;
+}
+
+.res-status-box {
+    padding: 1.25rem;
+    border-radius: 16px;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    display: flex;
+    gap: 1rem;
+    border: 1px solid transparent;
+}
+
+.res-status-box.success { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #D1FAE5; }
+.res-status-box.warning { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); color: #FEF3C7; }
+.res-status-box.danger  { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #FEE2E2; }
+
+/* ══ Info Sidebar Redesigned ══ */
+.info-rail {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+}
+
+.smart-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid var(--slate-200);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.smart-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-shadow-lg);
+    border-color: var(--primary-light);
+}
+
+.sc-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--slate-50);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.smart-card:hover .sc-icon {
+    background: var(--primary);
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.smart-card h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--slate-900);
+}
+
+.smart-card p {
+    font-size: 0.9375rem;
+    color: var(--slate-600);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.smart-card strong {
+    color: var(--slate-900);
+}
+
+
+</style>
+@endsection
+
+@section('content')
+
+<!-- HERO MODERNIZADO -->
+<div class="calc-hero">
+    <div class="calc-hero-content">
+        <h1>Calculadora Interactiva de Crédito</h1>
+        <p>Proyecta tus pagos, visualiza el costo real de tus intereses y descubre el camino más rápido hacia la libertad financiera.</p>
+    </div>
+    <div class="calc-hero-visual">
+        <i class="fas fa-calculator"></i>
+    </div>
+</div>
+
+<!-- CALCULADORA INTEGRADA -->
+<div class="calc-main-card">
+    <div class="calc-unified-grid">
+        
+        <!-- PARTE IZQUIERDA: CONFIGURACIÓN -->
+        <div class="calc-inputs-section">
+            <div class="section-label">
+                <i class="fas fa-sliders-h"></i> Configuración del Crédito
+            </div>
+            
+            <div class="input-grid">
+                <div class="field-group">
+                    <label class="field-label">Monto de la Deuda</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-dollar-sign input-icon"></i>
+                        <input type="number" id="monto" class="calc-input" placeholder="0.00" oninput="calcular(); markFilled(this)">
+                    </div>
+                </div>
+                
+                <div class="field-group">
+                    <label class="field-label">CAT Anual</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-percent input-icon"></i>
+                        <input type="number" id="cat" class="calc-input" placeholder="0.0" oninput="calcular(); markFilled(this)">
+                        <span class="input-suffix">%</span>
+                    </div>
+                </div>
+                
+                <div class="field-group">
+                    <label class="field-label">Pago Mensual</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-hand-holding-usd input-icon"></i>
+                        <input type="number" id="pago" class="calc-input" placeholder="0.00" oninput="calcular(); markFilled(this)">
+                    </div>
+                </div>
+                
+                <div class="field-group">
+                    <label class="field-label">Plazo Estimado</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-calendar-alt input-icon"></i>
+                        <input type="number" id="plazo" class="calc-input" placeholder="0" oninput="calcular(); markFilled(this)">
+                        <span class="input-suffix">meses</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem; padding: 1.5rem; background: var(--slate-50); border-radius: 16px; border: 1px dashed var(--slate-300);">
+                <p style="font-size: 0.875rem; color: var(--slate-600); margin: 0; line-height: 1.6;">
+                    <i class="fas fa-info-circle" style="color: var(--primary);"></i> 
+                    Los resultados son proyecciones basadas en saldos insolutos. Los cálculos exactos pueden variar según las fechas de corte y comisiones específicas de tu banco.
+                </p>
+            </div>
+        </div>
+
+        <!-- PARTE DERECHA: RESULTADO EN TIEMPO REAL -->
+        <div class="calc-results-section" id="results-panel">
+            <div class="results-header">
+                <h2>Tu Proyección</h2>
+                <div class="badge-live">En vivo</div>
+            </div>
+
+            <div class="result-main">
+                <div class="res-label">Total a pagar al final del plazo</div>
+                <div class="res-value-hero" id="res-total">$0.00</div>
+            </div>
+
+            <div class="results-grid">
+                <div class="res-card">
+                    <div class="label">Capital Original</div>
+                    <div class="value" id="res-capital">$0.00</div>
+                </div>
+                <div class="res-card">
+                    <div class="label">Total Intereses</div>
+                    <div class="value" id="res-interes-total" style="color: var(--accent);">$0.00</div>
+                </div>
+            </div>
+
+            <div class="visual-breakdown">
+                <div class="bar-label-group">
+                    <span>Distribución del pago</span>
+                    <span id="res-pct-text">Capital vs Interés</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-capital" id="bar-capital" style="width: 0%"></div>
+                    <div class="progress-interest" id="bar-interest" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div id="res-status" style="margin-top: auto;">
+                <div class="res-status-box" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
+                    <i class="fas fa-mouse-pointer" style="margin-top: 3px; opacity: 0.5;"></i>
+                    <span>Ingresa los valores de tu crédito para comenzar a visualizar tu proyección financiera.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SECCIÓN DE INFORMACIÓN REIMAGINADA -->
+<div class="info-rail">
+    <div class="smart-card">
+        <div class="sc-icon"><i class="fas fa-chart-line"></i></div>
+        <h3>¿Qué es el CAT?</h3>
+        <p>El <strong>Costo Anual Total</strong> es tu mejor herramienta para comparar. Incluye la tasa de interés fundamental más comisiones y cargos extras. <strong>Siempre busca el CAT más bajo.</strong></p>
+    </div>
+    
+    <div class="smart-card">
+        <div class="sc-icon"><i class="fas fa-fire-extinguisher"></i></div>
+        <h3>Evita el Pago Mínimo</h3>
+        <p>Pagar solo el mínimo es como intentar apagar un incendio con un vaso de agua. Tu deuda puede tardar <strong>años</strong> en liquidarse. Intenta pagar al menos el doble.</p>
+    </div>
+    
+    <div class="smart-card">
+        <div class="sc-icon"><i class="fas fa-gem"></i></div>
+        <h3>Estrategia Totalera</h3>
+        <p>Si liquidas el <strong>100% de tu saldo</strong> antes de la fecha límite, no pagas ni un peso de intereses. Usas el dinero del banco gratis por hasta 50 días.</p>
+    </div>
+
+</div>
+
+<script>
+function fmt(n) {
+    return '$' + n.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function markFilled(el) {
+    if (el.value) el.classList.add('has-value');
+    else el.classList.remove('has-value');
+}
+
+function calcular() {
+    const monto  = parseFloat(document.getElementById('monto').value);
+    const cat    = parseFloat(document.getElementById('cat').value);
+    const pago   = parseFloat(document.getElementById('pago').value);
+    const plazo  = parseInt(document.getElementById('plazo').value);
+
+    // Si no hay datos suficientes para el cálculo básico, no hacer nada
+    if (!monto || !cat || isNaN(plazo)) return;
+
+    const tasaMes    = (cat / 100) / 12;
+    const interesMes = monto * tasaMes;
+
+    let total = 0;
+    if (pago && pago > 0) {
+        total = pago * plazo;
+    } else {
+        if (tasaMes > 0) {
+            const factor = Math.pow(1 + tasaMes, plazo);
+            const cuota  = monto * (tasaMes * factor) / (factor - 1);
+            total = cuota * plazo;
+        } else {
+            total = monto;
+        }
+    }
+
+    const interesTotal = Math.max(total - monto, 0);
+    const totalPagar   = total;
+    const pctInteres   = (interesTotal / totalPagar) * 100;
+    const pctCapital   = 100 - pctInteres;
+
+    // Actualizar Textos
+    document.getElementById('res-total').innerText         = fmt(totalPagar);
+    document.getElementById('res-capital').innerText       = fmt(monto);
+    document.getElementById('res-interes-total').innerText = fmt(interesTotal);
+    document.getElementById('res-pct-text').innerText     = `${pctCapital.toFixed(0)}% Capital vs ${pctInteres.toFixed(0)}% Interés`;
+
+    // Actualizar Barra Visual
+    document.getElementById('bar-capital').style.width = pctCapital + '%';
+    document.getElementById('bar-interest').style.width = pctInteres + '%';
+
+    // Actualizar Estado / Alerta
+    const statusBox = document.getElementById('res-status');
+    const ratio = interesTotal / monto;
+    
+    let statusHTML = '';
+    if (ratio < 0.2) {
+        statusHTML = `<div class="res-status-box success"><i class="fas fa-check-circle"></i><span><strong>¡Excelente Plan!</strong> Los intereses representan una parte pequeña de tu deuda. Este es un crédito muy saludable.</span></div>`;
+    } else if (ratio < 0.6) {
+        statusHTML = `<div class="res-status-box warning"><i class="fas fa-exclamation-triangle"></i><span><strong>Cuidado con el costo.</strong> Estás pagando una cantidad considerable de intereses. Considera aumentar el pago mensual.</span></div>`;
+    } else {
+        statusHTML = `<div class="res-status-box danger"><i class="fas fa-skull-crossbones"></i><span><strong>Alerta Roja.</strong> Estás pagando más del 60% de tu deuda original en intereses. ¡Busca liquidar antes!</span></div>`;
+    }
+    statusBox.innerHTML = statusHTML;
+}
+</script>
+@endsection

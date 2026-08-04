@@ -1,28 +1,40 @@
-/* Barra de navegacion inferior: cambia la pantalla activa mediante estado (sin libreria de navegacion) */
+/* Barra de navegacion inferior: tabBar personalizado para el Tabs de
+   expo-router (recibe {state, descriptors, navigation} como cualquier
+   tabBar custom de React Navigation), mismo diseno visual de siempre */
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { COLORS, FONTS, TONES } from '../constants/colors';
 import { RADIUS } from '../constants/theme';
 import { ICONS } from '../constants/icons';
 
-const TABS = [
-  { clave: 'dashboard', etiqueta: 'Inicio', icono: ICONS.inicio },
-  { clave: 'tarjetas', etiqueta: 'Tarjetas', icono: ICONS.tarjetas },
-  { clave: 'analizador', etiqueta: 'Analisis', icono: ICONS.analisis },
-  { clave: 'alertas', etiqueta: 'Alertas', icono: ICONS.alertas },
-  { clave: 'perfil', etiqueta: 'Perfil', icono: ICONS.perfil },
-];
+const ICONO_POR_RUTA = {
+  index: ICONS.inicio,
+  tarjetas: ICONS.tarjetas,
+  analizador: ICONS.analisis,
+  alertas: ICONS.alertas,
+  perfil: ICONS.perfil,
+};
 
-export const BarraInferior = ({ pantallaActiva, onCambiarPantalla }) => {
+export const BarraInferior = ({ state, descriptors, navigation }) => {
   return (
     <View style={styles.barra}>
-      {TABS.map((tab) => {
-        const activo = pantallaActiva === tab.clave;
+      {state.routes.map((route, index) => {
+        const { options } = descriptors[route.key];
+        const etiqueta = options.title ?? route.name;
+        const activo = state.index === index;
+
+        const irATab = () => {
+          const evento = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+          if (!activo && !evento.defaultPrevented) {
+            navigation.navigate(route.name);
+          }
+        };
+
         return (
-          <Pressable key={tab.clave} style={styles.tab} onPress={() => onCambiarPantalla(tab.clave)}>
+          <Pressable key={route.key} style={styles.tab} onPress={irATab}>
             <View style={[styles.pildora, activo && { backgroundColor: TONES.primary.bg }]}>
-              <Image source={tab.icono} style={[styles.icono, !activo && styles.iconoInactivo]} resizeMode="contain" />
+              <Image source={ICONO_POR_RUTA[route.name]} style={[styles.icono, !activo && styles.iconoInactivo]} resizeMode="contain" />
             </View>
-            <Text style={[styles.etiqueta, activo && styles.etiquetaActiva]}>{tab.etiqueta}</Text>
+            <Text style={[styles.etiqueta, activo && styles.etiquetaActiva]}>{etiqueta}</Text>
           </Pressable>
         );
       })}
